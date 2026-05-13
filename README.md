@@ -9,3 +9,7 @@ The main goal of Aequitas is to reduce the immense administrative burden on pare
 Additionally, through intelligent case comparisons and a recommender system, the platform provides support in identifying entitled services and better contextualizing authority decisions.
 
 For more detailed information on the problems, solutions, and administrative processes, please read the [Whitepaper](WHITEPAPER.md).
+
+## Deployment
+
+Aequitas is designed to be easily deployable using Docker Compose. For detailed instructions on how to run this platform, specifically targeting QNAP Container Station and other Linux environments, please read the **[QNAP Deployment Guide](DEPLOYMENT_QNAP.md)**.
