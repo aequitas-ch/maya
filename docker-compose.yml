@@ -3,38 +3,48 @@ version: '3.8'
 services:
   db:
     image: postgres:15-alpine
-    container_name: aequitas_db
     environment:
-      POSTGRES_USER: aequitas
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: aequitas_db
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: aequitas
+      POSTGRES_USER: aequitas_user
+      POSTGRES_PASSWORD: aequitas_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
+    ports:
+      - "5432:5432"
 
   backend:
     build:
       context: ./backend
-    container_name: aequitas_backend
-    environment:
-      - DATABASE_URL=postgresql://aequitas:password@db:5432/aequitas_db
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://aequitas_user:aequitas_password@db:5432/aequitas
     depends_on:
       - db
-    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
-    container_name: aequitas_frontend
+      # Override the Dockerfile specifically for dev
+      dockerfile_inline: |
+        FROM node:20-alpine
+        WORKDIR /app
+        COPY package*.json ./
+        RUN npm install
+        COPY . .
+        CMD ["npm", "run", "dev", "--", "--host"]
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     ports:
-      - "80:80"
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
     depends_on:
       - backend
-    restart: unless-stopped
 
 volumes:
   postgres_data:
