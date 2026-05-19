@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Run gunicorn for production
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8080} aequitas.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "aequitas.wsgi:application"]
