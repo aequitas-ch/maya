@@ -23,7 +23,7 @@ To make the deployment work, configure the following in your GitHub Repository s
 
 1. **Secrets (`Settings` -> `Secrets and variables` -> `Actions`)**:
    - `GCP_PROJECT_ID`: Your Google Cloud Project ID.
-   - `GCP_CREDENTIALS`: The JSON key of a Google Cloud Service Account with permissions to use Cloud Build, Push to Container Registry (GCR), and Deploy to Cloud Run.
+   - `GCP_CREDENTIALS`: The JSON key of a Google Cloud Service Account with permissions to push images to Container Registry (GCR) or Artifact Registry and deploy to Cloud Run.
 
 2. **Environments (`Settings` -> `Environments`)**:
    - Create an environment named `production`.
