@@ -12,4 +12,21 @@ For more detailed information on the problems, solutions, and administrative pro
 
 ## Deployment
 
-Aequitas is designed to be easily deployable using Docker Compose. For detailed instructions on how to run this platform, specifically targeting QNAP Container Station and other Linux environments, please read the **[QNAP Deployment Guide](DEPLOYMENT_QNAP.md)**.
+Aequitas uses GitHub Actions for continuous deployment to Google Cloud Run. The workflow configures two environments:
+
+1. **Test Environment (`test`)**: Automatically deploys when a pull request is opened or a push is made to the `main` branch.
+2. **Production Environment (`production`)**: Deploys only on pushes to the `main` branch, after the test deployment succeeds.
+
+### Setup GitHub Secrets & Environments
+
+To make the deployment work, configure the following in your GitHub Repository settings:
+
+1. **Secrets (`Settings` -> `Secrets and variables` -> `Actions`)**:
+   - `GCP_PROJECT_ID`: Your Google Cloud Project ID.
+   - `GCP_CREDENTIALS`: The JSON key of a Google Cloud Service Account with permissions to push images to Container Registry (GCR) or Artifact Registry and deploy to Cloud Run.
+
+2. **Environments (`Settings` -> `Environments`)**:
+   - Create an environment named `production`.
+   - Check "Required reviewers" and select the users/teams who must approve production deployments.
+
+Aequitas is also designed to be easily deployable locally using Docker Compose. For detailed instructions on how to run this platform, specifically targeting QNAP Container Station and other Linux environments, please read the **[QNAP Deployment Guide](DEPLOYMENT_QNAP.md)**.

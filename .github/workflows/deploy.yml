@@ -1,0 +1,106 @@
+name: Deploy to Cloud Run
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-test:
+    name: Deploy to Test
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker gcr.io --quiet
+
+      - name: Build Backend Image
+        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-backend-test:${{ github.sha }} ./backend
+
+      - name: Push Backend Image
+        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-backend-test:${{ github.sha }}
+
+      - name: Deploy Backend to Cloud Run
+        run: |
+          gcloud run deploy aequitas-backend-test \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-backend-test:${{ github.sha }} \
+            --region europe-west6 \
+            --platform managed \
+            --allow-unauthenticated
+
+      - name: Build Frontend Image
+        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-frontend-test:${{ github.sha }} ./frontend
+
+      - name: Push Frontend Image
+        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-frontend-test:${{ github.sha }}
+
+      - name: Deploy Frontend to Cloud Run
+        run: |
+          gcloud run deploy aequitas-frontend-test \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-frontend-test:${{ github.sha }} \
+            --region europe-west6 \
+            --platform managed \
+            --allow-unauthenticated
+
+  deploy-prod:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+    needs: deploy-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker gcr.io --quiet
+
+      - name: Build Backend Image
+        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-backend-prod:${{ github.sha }} ./backend
+
+      - name: Push Backend Image
+        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-backend-prod:${{ github.sha }}
+
+      - name: Deploy Backend to Cloud Run
+        run: |
+          gcloud run deploy aequitas-backend \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-backend-prod:${{ github.sha }} \
+            --region europe-west6 \
+            --platform managed \
+            --allow-unauthenticated
+
+      - name: Build Frontend Image
+        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-frontend-prod:${{ github.sha }} ./frontend
+
+      - name: Push Frontend Image
+        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-frontend-prod:${{ github.sha }}
+
+      - name: Deploy Frontend to Cloud Run
+        run: |
+          gcloud run deploy aequitas-frontend \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/aequitas-frontend-prod:${{ github.sha }} \
+            --region europe-west6 \
+            --platform managed \
+            --allow-unauthenticated
