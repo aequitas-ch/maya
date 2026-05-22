@@ -1,0 +1,28 @@
+meta {
+  name: Token Refresh Positive
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/api/token/refresh/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refresh": "{{refresh_token}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("access_token", res.body.access);
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.access: isDefined
+}
