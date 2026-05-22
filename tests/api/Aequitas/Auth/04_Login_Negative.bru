@@ -1,0 +1,22 @@
+meta {
+  name: Login Negative
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/api/token/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{test_username}}",
+    "password": "WrongPassword123!"
+  }
+}
+
+assert {
+  res.status: eq 401
+}
