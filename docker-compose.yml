@@ -22,29 +22,23 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgres://aequitas_user:aequitas_password@db:5432/aequitas
+      - SECRET_KEY=django-insecure-test-key-for-local-dev
+      - DEBUG=True
     depends_on:
       - db
 
   frontend:
-    build:
-      context: ./frontend
-      # Override the Dockerfile specifically for dev
-      dockerfile_inline: |
-        FROM node:20-alpine
-        WORKDIR /app
-        COPY package*.json ./
-        RUN npm install
-        COPY . .
-        CMD ["npm", "run", "dev", "--", "--host"]
+    image: node:20-alpine
+    working_dir: /app
     volumes:
       - ./frontend:/app
-      - /app/node_modules
     ports:
-      - "5173:5173"
+      - "3000:3000"
     environment:
       - VITE_API_URL=http://localhost:8000
     depends_on:
       - backend
+    command: ["sh", "-c", "npm install && npm run dev -- --host --port 3000"]
 
 volumes:
   postgres_data:
