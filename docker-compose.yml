@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: aequitas
+      POSTGRES_USER: aequitas_user
+      POSTGRES_PASSWORD: aequitas_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://aequitas_user:aequitas_password@db:5432/aequitas
+      - SECRET_KEY=django-insecure-test-key-for-local-dev
+      - DEBUG=True
+    depends_on:
+      - db
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    command: ["sh", "-c", "npm install && npm run dev -- --host --port 3000"]
+
+volumes:
+  postgres_data:
