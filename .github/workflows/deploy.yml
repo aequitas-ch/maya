@@ -3,7 +3,8 @@ name: Deploy to Cloud Run
 on:
   push:
     branches:
-      - main
+      - test
+      - prod
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -13,6 +14,7 @@ jobs:
     name: Deploy to Test
     runs-on: ubuntu-latest
     environment: test
+    if: github.ref == 'refs/heads/test'
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -60,8 +62,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     environment: production
-    needs: deploy-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/prod'
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
