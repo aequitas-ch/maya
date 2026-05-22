@@ -1,0 +1,31 @@
+meta {
+  name: Create Dependent Invalid AHV Negative
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/dependents/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "first_name": "Invalid",
+    "last_name": "AHV",
+    "address": "Teststreet",
+    "city": "Testcity",
+    "postal_code": "1000",
+    "main_diagnosis": "None",
+    "ahv_number": "invalid-ahv"
+  }
+}
+
+assert {
+  res.status: eq 400
+}

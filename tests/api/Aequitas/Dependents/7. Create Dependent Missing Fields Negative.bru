@@ -1,0 +1,26 @@
+meta {
+  name: Create Dependent Missing Fields Negative
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{base_url}}/api/dependents/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "last_name": "NoFirstName",
+    "ahv_number": "756.9999.8888.77"
+  }
+}
+
+assert {
+  res.status: eq 400
+}

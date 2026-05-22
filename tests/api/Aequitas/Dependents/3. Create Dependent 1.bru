@@ -26,6 +26,10 @@ body:json {
   }
 }
 
+vars:post-response {
+  dependent_id_1: res.body.id
+}
+
 assert {
   res.status: eq 201
   res.body.first_name: eq Hans

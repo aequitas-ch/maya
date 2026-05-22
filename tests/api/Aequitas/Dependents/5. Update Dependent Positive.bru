@@ -1,0 +1,33 @@
+meta {
+  name: Update Dependent Positive
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{base_url}}/api/dependents/{{dependent_id_1}}/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "first_name": "Hans Updated",
+    "last_name": "Muster Updated",
+    "address": "Mustergasse 2",
+    "city": "Zürich",
+    "postal_code": "8000",
+    "main_diagnosis": "Autism Spectrum",
+    "ahv_number": "756.1234.5678.90"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.first_name: eq Hans Updated
+  res.body.address: eq Mustergasse 2
+}
