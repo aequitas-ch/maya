@@ -39,9 +39,9 @@ jobs:
       - name: Derive Backend Secret Key
         id: backend-secret-test
         env:
-          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          SECRET_SOURCE: ${{ secrets.DJANGO_SECRET_KEY || secrets.GCP_CREDENTIALS }}
         run: |
-          BACKEND_SECRET_KEY=$(printf '%s' "$GCP_CREDENTIALS" | sha256sum | cut -d' ' -f1)
+          BACKEND_SECRET_KEY=$(printf '%s' "$SECRET_SOURCE" | sha256sum | cut -d' ' -f1)
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
 
@@ -99,9 +99,9 @@ jobs:
       - name: Derive Backend Secret Key
         id: backend-secret-prod
         env:
-          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          SECRET_SOURCE: ${{ secrets.DJANGO_SECRET_KEY || secrets.GCP_CREDENTIALS }}
         run: |
-          BACKEND_SECRET_KEY=$(printf '%s' "$GCP_CREDENTIALS" | sha256sum | cut -d' ' -f1)
+          BACKEND_SECRET_KEY=$(printf '%s' "$SECRET_SOURCE" | sha256sum | cut -d' ' -f1)
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
 
