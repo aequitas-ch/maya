@@ -1,0 +1,17 @@
+meta {
+  name: 5. Access Without Auth
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}/api/health/records/
+  body: none
+  auth: none
+}
+
+tests {
+  test("Should deny access without auth", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+}
