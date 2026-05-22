@@ -36,12 +36,24 @@ jobs:
       - name: Push Backend Image
         run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }}
 
+      - name: Derive Backend Secret Key
+        id: backend-secret-test
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+          BACKEND_SECRET_KEY=$(printf '%s' "$GCP_CREDENTIALS" | sha256sum | cut -d' ' -f1)
+          echo "::add-mask::$BACKEND_SECRET_KEY"
+          echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Backend to Cloud Run
+        env:
+          BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
         run: |
           gcloud run deploy aequitas-backend-test \
             --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
             --region europe-west6 \
             --platform managed \
+            --set-env-vars SECRET_KEY=${BACKEND_SECRET_KEY} \
             --allow-unauthenticated
 
       - name: Build Frontend Image
@@ -84,12 +96,24 @@ jobs:
       - name: Push Backend Image
         run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }}
 
+      - name: Derive Backend Secret Key
+        id: backend-secret-prod
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+          BACKEND_SECRET_KEY=$(printf '%s' "$GCP_CREDENTIALS" | sha256sum | cut -d' ' -f1)
+          echo "::add-mask::$BACKEND_SECRET_KEY"
+          echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Backend to Cloud Run
+        env:
+          BACKEND_SECRET_KEY: ${{ steps.backend-secret-prod.outputs.secret_key }}
         run: |
           gcloud run deploy aequitas-backend \
             --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }} \
             --region europe-west6 \
             --platform managed \
+            --set-env-vars SECRET_KEY=${BACKEND_SECRET_KEY} \
             --allow-unauthenticated
 
       - name: Build Frontend Image
