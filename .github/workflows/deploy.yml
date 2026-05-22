@@ -97,7 +97,10 @@ jobs:
         id: get-frontend-url
         run: |
           FRONTEND_URL=$(gcloud run services describe aequitas-frontend-test --region europe-west6 --format 'value(status.url)')
+<<<<<<< HEAD
           echo "frontend_url=$FRONTEND_URL" >> $GITHUB_OUTPUT
+=======
+>>>>>>> origin/main
 
 
   cypress-test:
@@ -113,12 +116,10 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           working-directory: tests/e2e
-          record: true
         env:
           CYPRESS_BASE_URL: ${{ needs.deploy-test.outputs.frontend_url }}
+
           CYPRESS_API_URL: ${{ needs.deploy-test.outputs.backend_url }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
   bruno-test:

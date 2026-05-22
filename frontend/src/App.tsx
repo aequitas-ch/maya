@@ -6,7 +6,6 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Profile } from './pages/Profile';
 import { Dashboard } from './pages/Dashboard';
-import { Dependents } from './pages/Dependents';
 
 function App() {
   return (
@@ -21,7 +20,6 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/dependents" element={<Dependents />} />
             </Route>
           </Routes>
         </div>

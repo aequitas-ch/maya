@@ -10,5 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Apply migrations, then run gunicorn for production
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:${PORT:-8080} aequitas.wsgi:application"]
+# Run gunicorn for production
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8080} aequitas.wsgi:application"]

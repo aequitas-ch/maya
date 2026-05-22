@@ -12,8 +12,8 @@ post {
 
 body:json {
   {
-    "username": "dependent_tester_{{timestamp}}",
-    "email": "dependent_tester_{{timestamp}}@example.com",
+    "username": "api_testuser_{{timestamp}}",
+    "email": "api_testuser_{{timestamp}}@example.com",
     "first_name": "API",
     "last_name": "Tester",
     "password": "StrongPassword123!",
@@ -28,4 +28,6 @@ script:pre-request {
 
 assert {
   res.status: eq 201
+  res.body.username: isDefined
+  res.body.email: isDefined
 }
