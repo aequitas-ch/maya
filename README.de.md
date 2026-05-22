@@ -17,6 +17,8 @@ Aequitas verwendet GitHub Actions für das kontinuierliche Deployment auf Google
 1. **Test-Umgebung (`test`)**: Wird automatisch deployt, wenn ein Pull Request geöffnet wird oder ein Push auf den `main` Branch erfolgt.
 2. **Produktions-Umgebung (`production`)**: Wird nur bei Pushes auf den `main` Branch deployt, nachdem das Test-Deployment erfolgreich war.
 
+Aus Sicherheitsgründen werden Test-Deployments für Pull Requests aus Forks übersprungen, da Repository-Deployment-Secrets in solchen Workflow-Runs nicht verfügbar sind.
+
 ### Setup GitHub Secrets & Environments
 
 Damit das Deployment funktioniert, müssen die folgenden Einstellungen in den GitHub Repository Settings konfiguriert werden:
