@@ -24,6 +24,7 @@ services:
       - DATABASE_URL=postgres://aequitas_user:aequitas_password@db:5432/aequitas
       - SECRET_KEY=django-insecure-test-key-for-local-dev
       - DEBUG=True
+      - CORS_ALLOW_ALL_ORIGINS=True
     depends_on:
       - db
 
