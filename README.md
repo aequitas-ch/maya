@@ -22,7 +22,6 @@ Aequitas uses GitHub Actions for continuous deployment to Google Cloud Run. The 
 To make the deployment work, configure the following in your GitHub Repository settings:
 
 1. **Secrets (`Settings` -> `Secrets and variables` -> `Actions`)**:
-   - `GCP_PROJECT_ID`: Your Google Cloud Project ID.
    - `GCP_CREDENTIALS`: The JSON key of a Google Cloud Service Account with permissions to push images to Container Registry (GCR) or Artifact Registry and deploy to Cloud Run.
 
 2. **Environments (`Settings` -> `Environments`)**:
