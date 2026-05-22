@@ -10,8 +10,15 @@ export const Profile = () => {
     last_name: '',
     display_name: ''
   });
+  const [passwordData, setPasswordData] = useState({
+    old_password: '',
+    new_password: '',
+    confirm_password: ''
+  });
   const [loading, setLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
     if (user) {
@@ -27,6 +34,13 @@ export const Profile = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordData({
+      ...passwordData,
       [e.target.name]: e.target.value
     });
   };
@@ -47,8 +61,37 @@ export const Profile = () => {
     }
   };
 
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordMessage({ type: '', text: '' });
+
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      setPasswordMessage({ type: 'error', text: 'New passwords do not match.' });
+      return;
+    }
+
+    setPasswordLoading(true);
+
+    try {
+      await api.post('/users/change-password/', {
+        old_password: passwordData.old_password,
+        new_password: passwordData.new_password
+      });
+      setPasswordMessage({ type: 'success', text: 'Password updated successfully!' });
+      setPasswordData({ old_password: '', new_password: '', confirm_password: '' });
+    } catch (err: any) {
+      if (err.response?.data?.old_password) {
+         setPasswordMessage({ type: 'error', text: err.response.data.old_password[0] });
+      } else {
+         setPasswordMessage({ type: 'error', text: 'Failed to update password. Please try again.' });
+      }
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
   return (
-    <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
       <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">
@@ -126,7 +169,77 @@ export const Profile = () => {
                   disabled={loading}
                   className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
                 >
-                  {loading ? 'Saving...' : 'Save'}
+                  {loading ? 'Saving...' : 'Save Profile'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+        <div className="md:grid md:grid-cols-3 md:gap-6">
+          <div className="md:col-span-1">
+            <h3 className="text-lg font-medium leading-6 text-gray-900">Change Password</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Update your account password.
+            </p>
+          </div>
+          <div className="mt-5 md:mt-0 md:col-span-2">
+            <form onSubmit={handlePasswordSubmit}>
+              {passwordMessage.text && (
+                <div className={`mb-4 p-4 rounded-md ${passwordMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                  {passwordMessage.text}
+                </div>
+              )}
+              <div className="grid grid-cols-6 gap-6">
+                <div className="col-span-6">
+                  <label htmlFor="old_password" className="block text-sm font-medium text-gray-700">Current Password</label>
+                  <input
+                    type="password"
+                    name="old_password"
+                    id="old_password"
+                    required
+                    value={passwordData.old_password}
+                    onChange={handlePasswordChange}
+                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                  />
+                </div>
+
+                <div className="col-span-6 sm:col-span-3">
+                  <label htmlFor="new_password" className="block text-sm font-medium text-gray-700">New Password</label>
+                  <input
+                    type="password"
+                    name="new_password"
+                    id="new_password"
+                    required
+                    value={passwordData.new_password}
+                    onChange={handlePasswordChange}
+                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                  />
+                </div>
+
+                <div className="col-span-6 sm:col-span-3">
+                  <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                  <input
+                    type="password"
+                    name="confirm_password"
+                    id="confirm_password"
+                    required
+                    value={passwordData.confirm_password}
+                    onChange={handlePasswordChange}
+                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={passwordLoading}
+                  className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+                >
+                  {passwordLoading ? 'Updating...' : 'Update Password'}
                 </button>
               </div>
             </form>

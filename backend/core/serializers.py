@@ -27,6 +27,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             user.profile.save()
         return user
 
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
 class ProfileSerializer(serializers.ModelSerializer):
     display_name = serializers.CharField(source='profile.display_name', allow_blank=True, required=False)
 
