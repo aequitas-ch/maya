@@ -24,6 +24,7 @@ Damit das Deployment funktioniert, müssen die folgenden Einstellungen in den Gi
 1. **Secrets (`Settings` -> `Secrets and variables` -> `Actions`)**:
    - `GCP_PROJECT_ID`: Deine Google Cloud Project ID.
    - `GCP_CREDENTIALS`: Der JSON-Schlüssel eines Google Cloud Service Accounts mit Berechtigungen für Push in die Container Registry (GCR) und Deploy auf Cloud Run.
+   - `CYPRESS_RECORD_KEY`: `951f80ba-9b5a-4984-ba4c-c1b42388b5ab`
 
 2. **Environments (`Settings` -> `Environments`)**:
    - Erstelle ein Environment mit dem Namen `production`.
