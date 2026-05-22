@@ -113,10 +113,12 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           working-directory: tests/e2e
+          record: true
         env:
           CYPRESS_BASE_URL: ${{ needs.deploy-test.outputs.frontend_url }}
-
           CYPRESS_API_URL: ${{ needs.deploy-test.outputs.backend_url }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
   bruno-test:
