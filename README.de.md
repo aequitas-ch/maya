@@ -14,8 +14,8 @@ Weitere, detaillierte Informationen zu den Problemen, Lösungen und administrati
 
 Aequitas verwendet GitHub Actions für das kontinuierliche Deployment auf Google Cloud Run. Der Workflow konfiguriert zwei Umgebungen:
 
-1. **Test-Umgebung (`test`)**: Wird automatisch deployt, wenn ein Pull Request geöffnet wird oder ein Push auf den `main` Branch erfolgt.
-2. **Produktions-Umgebung (`production`)**: Wird nur bei Pushes auf den `main` Branch deployt, nachdem das Test-Deployment erfolgreich war.
+1. **Test-Umgebung (`test`)**: Wird automatisch deployt, wenn ein Push (Merge) auf den `main` Branch erfolgt.
+2. **Produktions-Umgebung (`production`)**: Wird bei Pushes auf den `main` Branch deployt, nachdem das Test-Deployment erfolgreich war.
 
 ### Setup GitHub Secrets & Environments
 
