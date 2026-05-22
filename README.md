@@ -24,7 +24,7 @@ To make the deployment work, configure the following in your GitHub Repository s
 1. **Secrets (`Settings` -> `Secrets and variables` -> `Actions`)**:
    - `GCP_PROJECT_ID`: Your Google Cloud Project ID.
    - `GCP_CREDENTIALS`: The JSON key of a Google Cloud Service Account with permissions to push images to Container Registry (GCR) or Artifact Registry and deploy to Cloud Run.
-   - `DJANGO_SECRET_KEY` (recommended): A dedicated Django secret used for Cloud Run deployments. If omitted, the workflow generates a fresh cryptographically secure key during each deployment.
+   - `DJANGO_SECRET_KEY` (recommended): A dedicated Django secret used for Cloud Run deployments. If omitted, the workflow generates a fresh cryptographically secure key during each deployment, which invalidates existing sessions, signed cookies, and token-based flows after every deploy. Configure this secret for stable production deployments.
 
 2. **Environments (`Settings` -> `Environments`)**:
    - Create an environment named `production`.
