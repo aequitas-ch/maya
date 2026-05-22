@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, Dependent
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -56,3 +56,14 @@ class ProfileSerializer(serializers.ModelSerializer):
             profile.save()
 
         return instance
+
+class DependentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dependent
+        fields = ['id', 'first_name', 'last_name', 'address', 'city', 'postal_code', 'main_diagnosis', 'ahv_number']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        dependent = Dependent.objects.create(**validated_data)
+        dependent.users.add(user)
+        return dependent

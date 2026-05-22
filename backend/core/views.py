@@ -1,8 +1,9 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from .serializers import RegisterSerializer, ProfileSerializer, ChangePasswordSerializer
+from .models import Dependent
+from .serializers import RegisterSerializer, ProfileSerializer, ChangePasswordSerializer, DependentSerializer
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -30,3 +31,10 @@ class ChangePasswordView(APIView):
             user.save()
             return Response({'status': 'password set'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DependentViewSet(viewsets.ModelViewSet):
+    serializer_class = DependentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return self.request.user.dependents.all()
