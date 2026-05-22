@@ -45,6 +45,7 @@ describe('Registration Flow', () => {
     cy.get('input[name="email"]').type(`another_${email}`);
     cy.get('input[name="first_name"]').type('John');
     cy.get('input[name="last_name"]').type('Doe');
+    cy.get('input[name="display_name"]').type('John Doe Jr.');
     cy.get('input[name="password"]').type('StrongPassword123!');
 
     cy.get('button[type="submit"]').click();
