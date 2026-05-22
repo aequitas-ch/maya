@@ -24,7 +24,7 @@ To make the deployment work, configure the following in your GitHub Repository s
 1. **Secrets (`Settings` -> `Secrets and variables` -> `Actions`)**:
    - `GCP_PROJECT_ID`: Your Google Cloud Project ID.
    - `GCP_CREDENTIALS`: The JSON key of a Google Cloud Service Account with permissions to push images to Container Registry (GCR) or Artifact Registry and deploy to Cloud Run.
-   - `CYPRESS_RECORD_KEY`: `951f80ba-9b5a-4984-ba4c-c1b42388b5ab`
+   - `CYPRESS_RECORD_KEY`: Your Cypress Dashboard record key for this project.
 
 2. **Environments (`Settings` -> `Environments`)**:
    - Create an environment named `production`.
