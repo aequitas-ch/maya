@@ -97,6 +97,7 @@ jobs:
         id: get-frontend-url
         run: |
           FRONTEND_URL=$(gcloud run services describe aequitas-frontend-test --region europe-west6 --format 'value(status.url)')
+          echo "frontend_url=$FRONTEND_URL" >> $GITHUB_OUTPUT
 
 
   cypress-test:
