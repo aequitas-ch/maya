@@ -26,7 +26,13 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Resolve Google Cloud Project ID
-        run: echo "GCP_PROJECT_ID=$(gcloud config get-value project 2>/dev/null)" >> "$GITHUB_ENV"
+        run: |
+          PROJECT_ID="$(gcloud config get-value project 2>/dev/null)"
+          if [ -z "$PROJECT_ID" ]; then
+            echo "Failed to resolve GCP project ID from authenticated gcloud context."
+            exit 1
+          fi
+          echo "GCP_PROJECT_ID=$PROJECT_ID" >> "$GITHUB_ENV"
 
       - name: Configure Docker
         run: gcloud auth configure-docker gcr.io --quiet
@@ -78,7 +84,13 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Resolve Google Cloud Project ID
-        run: echo "GCP_PROJECT_ID=$(gcloud config get-value project 2>/dev/null)" >> "$GITHUB_ENV"
+        run: |
+          PROJECT_ID="$(gcloud config get-value project 2>/dev/null)"
+          if [ -z "$PROJECT_ID" ]; then
+            echo "Failed to resolve GCP project ID from authenticated gcloud context."
+            exit 1
+          fi
+          echo "GCP_PROJECT_ID=$PROJECT_ID" >> "$GITHUB_ENV"
 
       - name: Configure Docker
         run: gcloud auth configure-docker gcr.io --quiet
