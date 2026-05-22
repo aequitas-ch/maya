@@ -1,12 +1,15 @@
 describe('Registration Flow', () => {
+
   const apiUrl = `${Cypress.env('apiUrl')}/api/users/register/`;
 
   it('successfully registers a new user', () => {
     cy.visit('/register');
 
+
     const randomString = Math.random().toString(36).substring(2, 10);
     const username = `testuser_${randomString}`;
     const email = `testuser_${randomString}@example.com`;
+
 
     cy.get('input[name="username"]').type(username);
     cy.get('input[name="email"]').type(email);
@@ -24,12 +27,14 @@ describe('Registration Flow', () => {
   it('shows error on duplicate username', () => {
     cy.visit('/register');
 
+
     const randomString = Math.random().toString(36).substring(2, 10);
     const username = `testuser_${randomString}`;
     const email = `testuser_${randomString}@example.com`;
 
     cy.request({
       method: 'POST',
+
       url: apiUrl,
       body: {
         username,
@@ -53,3 +58,4 @@ describe('Registration Flow', () => {
     cy.contains('A user with that username already exists.').should('be.visible');
   });
 });
+
