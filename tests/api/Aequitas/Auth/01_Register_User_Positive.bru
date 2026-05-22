@@ -1,5 +1,5 @@
 meta {
-  name: Register User
+  name: Register User Positive
   type: http
   seq: 1
 }
@@ -24,6 +24,15 @@ body:json {
 script:pre-request {
   const timestamp = Math.floor(Date.now() / 1000);
   bru.setVar("timestamp", timestamp);
+}
+
+script:post-response {
+  if (res.status === 201) {
+    const timestamp = bru.getVar("timestamp");
+    bru.setVar("test_username", "api_testuser_" + timestamp);
+    bru.setVar("test_email", "api_testuser_" + timestamp + "@example.com");
+    bru.setVar("test_password", "StrongPassword123!");
+  }
 }
 
 assert {

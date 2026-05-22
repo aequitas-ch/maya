@@ -1,0 +1,21 @@
+meta {
+  name: Token Refresh Negative
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/token/refresh/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refresh": "invalid_refresh_token_string_here"
+  }
+}
+
+assert {
+  res.status: eq 401
+}

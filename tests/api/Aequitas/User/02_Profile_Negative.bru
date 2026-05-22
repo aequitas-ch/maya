@@ -1,0 +1,15 @@
+meta {
+  name: Profile Negative
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/api/users/profile/
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 401
+}
