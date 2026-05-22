@@ -24,7 +24,7 @@ Damit das Deployment funktioniert, müssen die folgenden Einstellungen in den Gi
 1. **Secrets (`Settings` -> `Secrets and variables` -> `Actions`)**:
    - `GCP_PROJECT_ID`: Deine Google Cloud Project ID.
    - `GCP_CREDENTIALS`: Der JSON-Schlüssel eines Google Cloud Service Accounts mit Berechtigungen für Push in die Container Registry (GCR) und Deploy auf Cloud Run.
-   - `DJANGO_SECRET_KEY` (empfohlen): Ein dedizierter Django-Secret-Key für Cloud-Run-Deployments. Falls er fehlt, leitet der Workflow einen stabilen Schlüssel aus `GCP_CREDENTIALS` ab.
+   - `DJANGO_SECRET_KEY` (empfohlen): Ein dedizierter Django-Secret-Key für Cloud-Run-Deployments. Falls er fehlt, erzeugt der Workflow bei jedem Deployment einen neuen kryptographisch sicheren Schlüssel.
 
 2. **Environments (`Settings` -> `Environments`)**:
    - Erstelle ein Environment mit dem Namen `production`.

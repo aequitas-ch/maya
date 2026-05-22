@@ -36,12 +36,16 @@ jobs:
       - name: Push Backend Image
         run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }}
 
-      - name: Derive Backend Secret Key
+      - name: Resolve Backend Secret Key
         id: backend-secret-test
         env:
-          SECRET_SOURCE: ${{ secrets.DJANGO_SECRET_KEY || secrets.GCP_CREDENTIALS }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
-          BACKEND_SECRET_KEY=$(printf '%s' "$SECRET_SOURCE" | sha256sum | cut -d' ' -f1)
+          if [ -n "$DJANGO_SECRET_KEY" ]; then
+            BACKEND_SECRET_KEY="$DJANGO_SECRET_KEY"
+          else
+            BACKEND_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(50))")
+          fi
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
 
@@ -96,12 +100,16 @@ jobs:
       - name: Push Backend Image
         run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }}
 
-      - name: Derive Backend Secret Key
+      - name: Resolve Backend Secret Key
         id: backend-secret-prod
         env:
-          SECRET_SOURCE: ${{ secrets.DJANGO_SECRET_KEY || secrets.GCP_CREDENTIALS }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
-          BACKEND_SECRET_KEY=$(printf '%s' "$SECRET_SOURCE" | sha256sum | cut -d' ' -f1)
+          if [ -n "$DJANGO_SECRET_KEY" ]; then
+            BACKEND_SECRET_KEY="$DJANGO_SECRET_KEY"
+          else
+            BACKEND_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(50))")
+          fi
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
 
