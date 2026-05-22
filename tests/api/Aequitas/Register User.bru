@@ -1,0 +1,33 @@
+meta {
+  name: Register User
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/api/users/register/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "api_testuser_{{timestamp}}",
+    "email": "api_testuser_{{timestamp}}@example.com",
+    "first_name": "API",
+    "last_name": "Tester",
+    "password": "StrongPassword123!",
+    "display_name": "API Tester Display"
+  }
+}
+
+script:pre-request {
+  const timestamp = Math.floor(Date.now() / 1000);
+  bru.setVar("timestamp", timestamp);
+}
+
+assert {
+  res.status: eq 201
+  res.body.username: isDefined
+  res.body.email: isDefined
+}
