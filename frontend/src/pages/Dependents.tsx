@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
 interface Dependent {
@@ -254,6 +255,14 @@ export const Dependents = () => {
                         <p>
                           Diagnosis: {dependent.main_diagnosis}
                         </p>
+                      </div>
+                      <div className="mt-2 flex items-center text-sm sm:mt-0">
+                        <Link
+                          to={`/dependents/${dependent.id}/health`}
+                          className="ml-4 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                          Health Data
+                        </Link>
                       </div>
                     </div>
                   </li>

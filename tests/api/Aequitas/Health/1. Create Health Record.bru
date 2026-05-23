@@ -1,0 +1,38 @@
+meta {
+  name: 1. Create Health Record
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/health/records/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "dependent_id": 1,
+    "metric_name": "Weight",
+    "metric_unit": "kg",
+    "date": "2023-01-01",
+    "value": "45.5",
+    "comment": "Initial measurement"
+  }
+}
+
+tests {
+  test("Should create health record", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("Response should contain correct data", function() {
+    const data = res.getBody();
+    expect(data.metric.name).to.equal("Weight");
+    expect(data.metric.unit).to.equal("kg");
+    expect(data.value).to.equal("45.5");
+  });
+}

@@ -1,0 +1,36 @@
+meta {
+  name: 4. Create Text Health Record
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/api/health/records/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "dependent_id": 1,
+    "metric_name": "GMFC Score",
+    "date": "2023-01-02",
+    "value": "Level III",
+    "comment": "Assessment by Dr. Smith"
+  }
+}
+
+tests {
+  test("Should create text health record", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("Response should contain text value", function() {
+    const data = res.getBody();
+    expect(data.metric.name).to.equal("GMFC Score");
+    expect(data.value).to.equal("Level III");
+  });
+}
