@@ -29,7 +29,8 @@ describe('Health Data Management', () => {
     cy.get('input[name="password"]').type(testUser.password);
     cy.get('button[type="submit"]').click();
 
-    // Verify successful login
+    // Wait for redirect to complete, then verify successful login
+    cy.location('pathname', { timeout: 10000 }).should('not.eq', '/login');
     cy.url().should('eq', `${Cypress.config().baseUrl}/`);
   });
 
