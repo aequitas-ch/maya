@@ -1,8 +1,6 @@
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
+from rest_framework import viewsets, permissions
 from .models import HealthMetric, HealthRecord
 from .serializers import HealthMetricSerializer, HealthRecordSerializer
-from core.models import Dependent
 
 class HealthMetricViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = HealthMetric.objects.all()
