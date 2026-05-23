@@ -10,10 +10,13 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = RegisterSerializer
 
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
 class ProfileView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ProfileSerializer
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def get_object(self):
         return self.request.user

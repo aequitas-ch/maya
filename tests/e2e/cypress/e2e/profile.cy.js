@@ -22,7 +22,7 @@ describe('Profile Flow', () => {
     });
   });
 
-  it('successfully logins and changes the display name', () => {
+  it('successfully logins and changes the display name and profile picture', () => {
     // Login
     cy.visit('/login');
     cy.get('input[name="username"]').type(user.username);
@@ -32,11 +32,17 @@ describe('Profile Flow', () => {
     // Verify logged in
     cy.url().should('eq', Cypress.config().baseUrl + '/');
 
-    // Go to profile
-    cy.visit('/profile');
+    // Go to profile via the new avatar icon
+    cy.get('nav a[href="/profile"]').click();
 
     // Change display name
     cy.get('input[name="display_name"]').clear().type('Jane Updated');
+
+    // Upload a profile picture
+    // We must use a valid image file to pass Django's ImageField validation.
+    // Using a valid JPG generated for the test
+    cy.get('input[name="profile_picture"]').selectFile('cypress/fixtures/test_image.jpg');
+
     cy.contains('button', 'Save Profile').click();
 
     // Verify success message
@@ -44,6 +50,9 @@ describe('Profile Flow', () => {
 
     // Verify nav bar is updated
     cy.contains('Welcome, Jane Updated').should('be.visible');
+
+    // Verify the image was updated in the avatar icon
+    cy.get('nav a[href="/profile"] img').should('have.attr', 'src').and('include', 'test_image');
   });
 
   it('successfully registers, logins, changes password, logouts, and logins with new password', () => {
@@ -82,7 +91,8 @@ describe('Profile Flow', () => {
     cy.url().should('eq', Cypress.config().baseUrl + '/');
 
     // 3. Change Password
-    cy.visit('/profile');
+    // Go to profile via the new avatar icon
+    cy.get('nav a[href="/profile"]').click();
     cy.get('input[name="old_password"]').type(flowUser.password);
     cy.get('input[name="new_password"]').type(flowUser.newPassword);
     cy.get('input[name="confirm_password"]').type(flowUser.newPassword);

@@ -29,12 +29,6 @@ export const Navbar = () => {
                   Dashboard
                 </Link>
                 <Link
-                  to="/profile"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Profile
-                </Link>
-                <Link
                   to="/dependents"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
@@ -49,6 +43,21 @@ export const Navbar = () => {
                 <span className="text-sm text-gray-700">
                   Welcome, {user.display_name || user.first_name || user.username}
                 </span>
+                <Link to="/profile" className="flex items-center">
+                  {user.profile_picture ? (
+                    <img
+                      src={user.profile_picture}
+                      alt={`${user.username}'s profile`}
+                      className="h-8 w-8 rounded-full object-cover border border-gray-300"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300 text-gray-500">
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  )}
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

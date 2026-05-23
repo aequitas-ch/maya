@@ -6,6 +6,7 @@ from django.core.validators import RegexValidator
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     display_name = models.CharField(max_length=150, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"

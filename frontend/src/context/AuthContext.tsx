@@ -8,6 +8,7 @@ interface UserProfile {
   first_name: string;
   last_name: string;
   display_name: string;
+  profile_picture?: string | null;
 }
 
 interface AuthContextType {

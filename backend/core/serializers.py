@@ -33,10 +33,11 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     display_name = serializers.CharField(source='profile.display_name', allow_blank=True, required=False)
+    profile_picture = serializers.ImageField(source='profile.profile_picture', required=False, allow_null=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'display_name')
+        fields = ('username', 'email', 'first_name', 'last_name', 'display_name', 'profile_picture')
         read_only_fields = ('username',)
 
     def update(self, instance, validated_data):
@@ -53,6 +54,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         if hasattr(instance, 'profile'):
             profile = instance.profile
             profile.display_name = profile_data.get('display_name', profile.display_name)
+            if 'profile_picture' in profile_data:
+                profile.profile_picture = profile_data['profile_picture']
             profile.save()
 
         return instance
