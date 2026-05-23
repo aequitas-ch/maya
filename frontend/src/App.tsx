@@ -23,6 +23,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/dependents" element={<Dependents />} />
+              <Route path="/health" element={<Health />} />
               <Route path="/dependents/:id/health" element={<Health />} />
             </Route>
           </Routes>
