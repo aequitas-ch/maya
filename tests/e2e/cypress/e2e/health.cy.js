@@ -79,7 +79,7 @@ describe('Health Data Management', () => {
     cy.contains('Level III').should('exist')
 
     // Check autocomplete (select should have options now)
-    cy.get('select').select('1') // Select the first existing metric
+    cy.get('select').select('Weight (kg)')
     cy.get('input[placeholder="e.g. Weight, Height"]').should('have.value', 'Weight')
   })
 })
