@@ -1,0 +1,26 @@
+meta {
+  name: Update User
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{base_url}}/admin/users/1/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "is_staff": true
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.is_staff: eq true
+}

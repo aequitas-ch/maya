@@ -28,3 +28,11 @@ class Dependent(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+class Translation(models.Model):
+    key = models.CharField(max_length=255, unique=True)
+    en = models.TextField(blank=True, null=True)
+    de = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.key
