@@ -8,6 +8,7 @@ import { Profile } from './pages/Profile';
 import { Dashboard } from './pages/Dashboard';
 import { Dependents } from './pages/Dependents';
 import { Health } from './pages/Health/Health';
+import { CostApprovals } from './pages/Settlement/CostApprovals';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="/dependents" element={<Dependents />} />
               <Route path="/health" element={<Health />} />
               <Route path="/dependents/:id/health" element={<Health />} />
+              <Route path="/cost-approvals" element={<CostApprovals />} />
             </Route>
           </Routes>
         </div>
