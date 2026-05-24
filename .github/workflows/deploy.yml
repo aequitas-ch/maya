@@ -140,7 +140,13 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }}
+        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --reporter-junit results.xml
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: "tests/api/Aequitas/results.xml"
 
 
   deploy-prod:
