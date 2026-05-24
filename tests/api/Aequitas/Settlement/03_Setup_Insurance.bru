@@ -1,0 +1,29 @@
+meta {
+  name: 2. Setup Insurance
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/api/settlement/insurances/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Krankenkasse"
+  }
+}
+
+vars:post-response {
+  ins_id: res.body.id
+}
+
+assert {
+  res.status: eq 201
+}
