@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -66,13 +66,7 @@ export const Health = () => {
     fetchDependents();
   }, [id]);
 
-  useEffect(() => {
-    if (selectedDependentId !== null) {
-      fetchData(selectedDependentId);
-    }
-  }, [selectedDependentId]);
-
-  const fetchData = async (dependentId: number) => {
+  const fetchData = useCallback(async (dependentId: number) => {
     setLoading(true);
     try {
       const [recordsRes, metricsRes] = await Promise.all([
@@ -88,7 +82,13 @@ export const Health = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (selectedDependentId !== null) {
+      fetchData(selectedDependentId);
+    }
+  }, [selectedDependentId, fetchData]);
 
   const handleMetricSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = parseInt(e.target.value);
