@@ -31,10 +31,6 @@ export const Dependents = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchDependents();
-  }, []);
-
   const fetchDependents = async () => {
     try {
       const response = await api.get('/dependents/');
@@ -47,6 +43,10 @@ export const Dependents = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDependents();
+  }, []);
 
   const validateAhv = (ahv: string) => {
     const regex = /^756\.\d{4}\.\d{4}\.\d{2}$/;

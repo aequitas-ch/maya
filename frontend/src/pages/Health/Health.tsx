@@ -66,12 +66,6 @@ export const Health = () => {
     fetchDependents();
   }, [id]);
 
-  useEffect(() => {
-    if (selectedDependentId !== null) {
-      fetchData(selectedDependentId);
-    }
-  }, [selectedDependentId]);
-
   const fetchData = async (dependentId: number) => {
     setLoading(true);
     try {
@@ -89,6 +83,12 @@ export const Health = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedDependentId !== null) {
+      fetchData(selectedDependentId);
+    }
+  }, [selectedDependentId]);
 
   const handleMetricSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = parseInt(e.target.value);
