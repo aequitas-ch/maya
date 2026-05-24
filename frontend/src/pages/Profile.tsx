@@ -10,6 +10,8 @@ export const Profile = () => {
     last_name: '',
     display_name: ''
   });
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [passwordData, setPasswordData] = useState({
     old_password: '',
     new_password: '',
@@ -28,6 +30,9 @@ export const Profile = () => {
         last_name: user.last_name || '',
         display_name: user.display_name || ''
       });
+      if (user.profile_picture) {
+        setPreviewUrl(user.profile_picture);
+      }
     }
   }, [user]);
 
@@ -36,6 +41,15 @@ export const Profile = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProfilePicture(file);
+      const fileUrl = URL.createObjectURL(file);
+      setPreviewUrl(fileUrl);
+    }
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,8 +64,21 @@ export const Profile = () => {
     setLoading(true);
     setMessage({ type: '', text: '' });
 
+    const submitData = new FormData();
+    submitData.append('email', formData.email);
+    submitData.append('first_name', formData.first_name);
+    submitData.append('last_name', formData.last_name);
+    submitData.append('display_name', formData.display_name);
+    if (profilePicture) {
+      submitData.append('profile_picture', profilePicture);
+    }
+
     try {
-      const response = await api.put('/users/profile/', formData);
+      const response = await api.put('/users/profile/', submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       updateUserProfile(response.data);
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
     } catch (err) {
@@ -108,6 +135,33 @@ export const Profile = () => {
                 </div>
               )}
               <div className="grid grid-cols-6 gap-6">
+                <div className="col-span-6">
+                  <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
+                  <div className="mt-1 flex items-center space-x-5">
+                    {previewUrl ? (
+                      <img
+                        src={previewUrl}
+                        alt="Profile preview"
+                        className="h-24 w-24 rounded-full object-cover border border-gray-300"
+                      />
+                    ) : (
+                      <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300 text-gray-500">
+                        <svg className="h-12 w-12" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      name="profile_picture"
+                      id="profile_picture"
+                      onChange={handleFileChange}
+                      className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                    />
+                  </div>
+                </div>
+
                 <div className="col-span-6 sm:col-span-3">
                   <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">First name</label>
                   <input

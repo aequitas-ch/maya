@@ -1,0 +1,27 @@
+meta {
+  name: Profile Upload Picture Positive
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{base_url}}/api/users/profile/
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:multipart-form {
+  first_name: "Test"
+  last_name: "User"
+  profile_picture: @file(../../e2e/cypress/fixtures/test_image.jpg)
+}
+
+assert {
+  res.status: eq 200
+  res.body.profile_picture: isDefined
+  res.body.profile_picture: contains test_image
+}
