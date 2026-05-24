@@ -67,7 +67,33 @@ jobs:
             --region europe-west6 \
             --platform managed \
             --set-env-vars SECRET_KEY=${BACKEND_SECRET_KEY} \
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }} \
             --allow-unauthenticated
+
+      - name: Seed Database
+        env:
+          BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
+        run: |
+          # Seed the newly deployed test database
+          # The database is managed entirely through the deployed instance.
+          # To seed the data, we execute the command via a Cloud Run job.
+          gcloud run jobs create aequitas-seed-test \
+            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
+            --command python \
+            --args manage.py,seed_test_user \
+            --region europe-west6 \
+            --set-env-vars SECRET_KEY=${BACKEND_SECRET_KEY} \
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }} || true
+
+          gcloud run jobs update aequitas-seed-test \
+            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
+            --command python \
+            --args manage.py,seed_test_user \
+            --region europe-west6 \
+            --set-env-vars SECRET_KEY=${BACKEND_SECRET_KEY} \
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }} || true
+
+          gcloud run jobs execute aequitas-seed-test --region europe-west6 --wait || true
 
       - name: Get Backend URL
         id: get-backend-url
