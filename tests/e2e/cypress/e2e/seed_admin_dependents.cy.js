@@ -7,7 +7,7 @@ describe('Seed Admin Dependents', () => {
     cy.get('button[type="submit"]').click();
 
     // Verify successful login
-    cy.url().should('not.include', '/login', { timeout: 10000 });
+    cy.url({ timeout: 10000 }).should('not.include', '/login');
     cy.url().should('eq', `${Cypress.config().baseUrl}/`);
 
     // Navigate to Dependents page
