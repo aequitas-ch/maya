@@ -3,7 +3,7 @@ describe('Test User Dependents Flow', () => {
     // Navigate to Login page
     cy.visit('/login');
 
-    // Login as the seeded test user
+    // Login as the seeded test user (created via migration 0005_create_test_user)
     cy.get('input[name="username"]').type('test');
     cy.get('input[name="password"]').type('Secure123$');
     cy.get('button[type="submit"]').click();
@@ -19,10 +19,18 @@ describe('Test User Dependents Flow', () => {
     cy.contains('Dependents').click();
     cy.url().should('include', '/dependents');
 
-    // Verify the linked dependents exist
-    // The seed script links all dependents with the last name "Muster"
-    // Since seed_admin_dependents.cy.js creates Peter and Franziska Muster,
-    // we assume they are present in the environment
+    // Create a Muster dependent for the test user directly in the test
+    // so this spec is self-contained and does not depend on the seed job timing.
+    cy.get('input[id="firstName"]').type('Peter');
+    cy.get('input[id="lastName"]').type('Muster');
+    cy.get('input[id="address"]').type('Musterstrasse');
+    cy.get('input[id="postalCode"]').type('9999');
+    cy.get('input[id="city"]').type('Musterstadt');
+    cy.get('input[id="mainDiagnosis"]').type('Krankheit');
+    cy.get('input[id="ahvNumber"]').type('756.2222.2222.11');
+    cy.get('button[type="submit"]').click();
+
+    // Verify the dependent is visible in the list
     cy.contains('Muster').should('be.visible');
   });
 });
