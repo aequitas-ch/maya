@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -31,11 +31,7 @@ export const Dependents = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchDependents();
-  }, []);
-
-  const fetchDependents = async () => {
+  const fetchDependents = useCallback(async () => {
     try {
       const response = await api.get('/dependents/');
       setDependents(response.data);
@@ -46,7 +42,11 @@ export const Dependents = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDependents();
+  }, [fetchDependents]);
 
   const validateAhv = (ahv: string) => {
     const regex = /^756\.\d{4}\.\d{4}\.\d{2}$/;

@@ -21,3 +21,4 @@ tests/api/node_modules/
 backend/db.sqlite3
 frontend_output.log
 backend_output.log
+backend/.venv/
