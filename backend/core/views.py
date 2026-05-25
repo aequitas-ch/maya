@@ -2,8 +2,8 @@ from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from .models import Dependent
-from .serializers import RegisterSerializer, ProfileSerializer, ChangePasswordSerializer, DependentSerializer
+from .models import Dependent, Translation
+from .serializers import RegisterSerializer, ProfileSerializer, ChangePasswordSerializer, DependentSerializer, AdminUserSerializer, TranslationSerializer
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -41,3 +41,25 @@ class DependentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.request.user.dependents.all()
+
+class AdminUserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = AdminUserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+class TranslationViewSet(viewsets.ModelViewSet):
+    queryset = Translation.objects.all()
+    serializer_class = TranslationSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
+
+    def get_queryset(self):
+        keys = self.request.query_params.getlist('keys')
+        if keys:
+            if keys == ['']:
+                return Translation.objects.none()
+            return Translation.objects.filter(key__in=keys)
+        return Translation.objects.all()

@@ -17,3 +17,8 @@ tests/e2e/cypress/downloads/
 # Build
 frontend/dist/
 tests/api/node_modules/
+.gitignore
+backend/db.sqlite3
+frontend_output.log
+backend_output.log
+backend/.venv/

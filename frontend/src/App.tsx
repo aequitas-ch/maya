@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { TranslationProvider } from './context/TranslationContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { Login } from './pages/Login';
@@ -8,13 +9,15 @@ import { Profile } from './pages/Profile';
 import { Dashboard } from './pages/Dashboard';
 import { Dependents } from './pages/Dependents';
 import { Health } from './pages/Health/Health';
+import { AdminDashboard } from './pages/Admin/AdminDashboard';
 import { CostApprovals } from './pages/Settlement/CostApprovals';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-100">
+      <TranslationProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-100">
           <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -28,9 +31,14 @@ function App() {
               <Route path="/dependents/:id/health" element={<Health />} />
               <Route path="/cost-approvals" element={<CostApprovals />} />
             </Route>
+
+            <Route element={<ProtectedRoute adminOnly={true} />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
           </Routes>
-        </div>
-      </Router>
+          </div>
+        </Router>
+      </TranslationProvider>
     </AuthProvider>
   );
 }

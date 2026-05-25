@@ -1,0 +1,16 @@
+meta {
+  name: List Translations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/translations/
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+}

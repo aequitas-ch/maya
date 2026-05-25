@@ -1,0 +1,28 @@
+meta {
+  name: Update Translation
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{base_url}}/translations/{{translation_id}}/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "key": "welcome_message",
+    "en": "Welcome back!",
+    "de": "Willkommen zurück!"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.en: eq "Welcome back!"
+}

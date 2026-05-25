@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Profile, Dependent
+from .models import Profile, Dependent, Translation
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -37,8 +37,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'display_name', 'profile_picture')
-        read_only_fields = ('username',)
+        fields = ('username', 'email', 'first_name', 'last_name', 'display_name', 'profile_picture', 'is_staff')
+        read_only_fields = ('username', 'is_staff')
 
     def update(self, instance, validated_data):
         # Extract profile data
@@ -70,3 +70,13 @@ class DependentSerializer(serializers.ModelSerializer):
         dependent = Dependent.objects.create(**validated_data)
         dependent.users.add(user)
         return dependent
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
+
+class TranslationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Translation
+        fields = '__all__'

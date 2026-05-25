@@ -1,0 +1,19 @@
+meta {
+  name: Delete Translation
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{base_url}}/translations/{{translation_id}}/
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+assert {
+  res.status: eq 204
+}
