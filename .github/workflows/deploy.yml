@@ -11,7 +11,6 @@ env:
 
 permissions:
   contents: read
-  checks: write
 
 jobs:
   deploy-test:
@@ -61,48 +60,13 @@ jobs:
       - name: Deploy Backend to Cloud Run
         env:
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
-          if [ -n "${DATABASE_URL:-}" ]; then
-            ENV_VARS="${ENV_VARS},DATABASE_URL=${DATABASE_URL}"
-          fi
-
           gcloud run deploy aequitas-backend-test \
             --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
             --region europe-west6 \
             --platform managed \
-            --set-env-vars "${ENV_VARS}" \
+            --set-env-vars SECRET_KEY=${BACKEND_SECRET_KEY} \
             --allow-unauthenticated
-
-      - name: Seed Database
-        env:
-          BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
-          if [ -n "${DATABASE_URL:-}" ]; then
-            ENV_VARS="${ENV_VARS},DATABASE_URL=${DATABASE_URL}"
-          fi
-
-          # Seed the newly deployed test database
-          # The database is managed entirely through the deployed instance.
-          # To seed the data, we execute the command via a Cloud Run job.
-          gcloud run jobs create aequitas-seed-test \
-            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
-            --command python \
-            --args manage.py,seed_test_user \
-            --region europe-west6 \
-            --set-env-vars "${ENV_VARS}" || true
-
-          gcloud run jobs update aequitas-seed-test \
-            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
-            --command python \
-            --args manage.py,seed_test_user \
-            --region europe-west6 \
-            --set-env-vars "${ENV_VARS}" || true
-
-          gcloud run jobs execute aequitas-seed-test --region europe-west6 --wait || true
 
       - name: Get Backend URL
         id: get-backend-url
@@ -176,13 +140,7 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --reporter-junit results.xml
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: "tests/api/Aequitas/results.xml"
+        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }}
 
 
   deploy-prod:
