@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
+import { generateKey, exportKey } from '../utils/crypto';
+import { useEncryption } from '../context/EncryptionContext';
 
 export const Register = () => {
   const [formData, setFormData] = useState({
@@ -13,8 +15,32 @@ export const Register = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [keyGenerated, setKeyGenerated] = useState(false);
+
+  const { setEncryptionKey } = useEncryption();
 
   const navigate = useNavigate();
+
+  const handleGenerateKey = async () => {
+    try {
+      const key = await generateKey();
+      setEncryptionKey(key);
+      const base64Key = await exportKey(key);
+
+      // Trigger download
+      const element = document.createElement("a");
+      const file = new Blob([base64Key], {type: 'text/plain'});
+      element.href = URL.createObjectURL(file);
+      element.download = "aequitas-encryption-key.txt";
+      document.body.appendChild(element); // Required for this to work in FireFox
+      element.click();
+      document.body.removeChild(element);
+
+      setKeyGenerated(true);
+    } catch (err) {
+      setError('Failed to generate encryption key.');
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -126,6 +152,21 @@ export const Register = () => {
                 onChange={handleChange}
               />
             </div>
+          </div>
+
+          <div className="bg-white p-4 rounded border shadow-sm text-sm text-gray-700">
+            <h3 className="font-bold mb-2">Privacy by Design</h3>
+            <p className="mb-4">
+              To keep your most sensitive data secure, Aequitas uses end-to-end encryption. Generate an encryption key now.
+              <strong> You must save this key file securely. If you lose it, your encrypted data cannot be recovered.</strong>
+            </p>
+            <button
+              type="button"
+              onClick={handleGenerateKey}
+              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {keyGenerated ? 'Key Generated & Downloaded ✓' : 'Generate & Download Encryption Key'}
+            </button>
           </div>
 
           <div>

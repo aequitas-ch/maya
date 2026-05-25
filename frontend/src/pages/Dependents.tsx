@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import { useEncryption } from '../context/EncryptionContext';
+import { encryptData, decryptData } from '../utils/crypto';
 
 interface Dependent {
   id: number;
@@ -11,12 +13,15 @@ interface Dependent {
   postal_code: string;
   main_diagnosis: string;
   ahv_number: string;
+  is_encrypted: boolean;
 }
 
 export const Dependents = () => {
   const [dependents, setDependents] = useState<Dependent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const { encryptionKey, hasKey } = useEncryption();
 
   // Form states
   const [firstName, setFirstName] = useState('');
@@ -26,6 +31,7 @@ export const Dependents = () => {
   const [postalCode, setPostalCode] = useState('');
   const [mainDiagnosis, setMainDiagnosis] = useState('');
   const [ahvNumber, setAhvNumber] = useState('');
+  const [isEncrypted, setIsEncrypted] = useState(false);
 
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,12 +39,42 @@ export const Dependents = () => {
 
   useEffect(() => {
     fetchDependents();
-  }, []);
+  }, [hasKey]);
 
   const fetchDependents = async () => {
     try {
       const response = await api.get('/dependents/');
-      setDependents(response.data);
+      let loadedDependents = response.data as Dependent[];
+
+      // Decrypt if necessary
+      if (hasKey && encryptionKey) {
+          loadedDependents = await Promise.all(loadedDependents.map(async (dep) => {
+              if (dep.is_encrypted) {
+                  return {
+                      ...dep,
+                      first_name: await decryptData(dep.first_name, encryptionKey),
+                      last_name: await decryptData(dep.last_name, encryptionKey),
+                      ahv_number: await decryptData(dep.ahv_number, encryptionKey),
+                  };
+              }
+              return dep;
+          }));
+      } else {
+          // If no key, show placeholders for encrypted fields
+          loadedDependents = loadedDependents.map(dep => {
+             if (dep.is_encrypted) {
+                 return {
+                     ...dep,
+                     first_name: "*** (Encrypted)",
+                     last_name: "*** (Encrypted)",
+                     ahv_number: "*** (Encrypted)",
+                 };
+             }
+             return dep;
+          });
+      }
+
+      setDependents(loadedDependents);
       setError('');
     } catch (err: any) {
       setError('Failed to load dependents');
@@ -49,6 +85,7 @@ export const Dependents = () => {
   };
 
   const validateAhv = (ahv: string) => {
+    if (isEncrypted) return true; // Can't validate format if it's going to be encrypted
     const regex = /^756\.\d{4}\.\d{4}\.\d{2}$/;
     return regex.test(ahv);
   };
@@ -62,6 +99,7 @@ export const Dependents = () => {
     setPostalCode(dependent.postal_code);
     setMainDiagnosis(dependent.main_diagnosis);
     setAhvNumber(dependent.ahv_number);
+    setIsEncrypted(dependent.is_encrypted || false);
     setFormError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -75,6 +113,7 @@ export const Dependents = () => {
     setPostalCode('');
     setMainDiagnosis('');
     setAhvNumber('');
+    setIsEncrypted(false);
     setFormError('');
   };
 
@@ -89,17 +128,33 @@ export const Dependents = () => {
 
     setIsSubmitting(true);
 
-    const payload = {
-      first_name: firstName,
-      last_name: lastName,
-      address,
-      city,
-      postal_code: postalCode,
-      main_diagnosis: mainDiagnosis,
-      ahv_number: ahvNumber
-    };
-
     try {
+      let finalFirstName = firstName;
+      let finalLastName = lastName;
+      let finalAhvNumber = ahvNumber;
+
+      if (isEncrypted) {
+        if (!hasKey || !encryptionKey) {
+            setFormError("You must unlock your session by generating or uploading your encryption key to encrypt data.");
+            setIsSubmitting(false);
+            return;
+        }
+        finalFirstName = await encryptData(firstName, encryptionKey);
+        finalLastName = await encryptData(lastName, encryptionKey);
+        finalAhvNumber = await encryptData(ahvNumber, encryptionKey);
+      }
+
+      const payload = {
+        first_name: finalFirstName,
+        last_name: finalLastName,
+        address,
+        city,
+        postal_code: postalCode,
+        main_diagnosis: mainDiagnosis,
+        ahv_number: finalAhvNumber,
+        is_encrypted: isEncrypted
+      };
+
       if (editingId) {
         await api.put(`/dependents/${editingId}/`, payload);
       } else {
@@ -237,6 +292,19 @@ export const Dependents = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
                 <p className="mt-1 text-xs text-gray-500">Format: 756.xxxx.xxxx.xx</p>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  id="isEncrypted"
+                  type="checkbox"
+                  checked={isEncrypted}
+                  onChange={(e) => setIsEncrypted(e.target.checked)}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label htmlFor="isEncrypted" className="ml-2 block text-sm text-gray-900">
+                  Encrypt sensitive data (First Name, Last Name, AHV Number) before saving.
+                </label>
               </div>
 
               <div className="flex gap-4">
