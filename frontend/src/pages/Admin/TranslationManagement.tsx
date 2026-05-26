@@ -61,7 +61,7 @@ export const TranslationManagement = () => {
     }
   };
 
-  if (loading) return <div>{t('loading')}</div>;
+  if (loading) return <div>{t('loading_data') || 'Loading...'}</div>;
 
   return (
     <div>
@@ -82,8 +82,8 @@ export const TranslationManagement = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('key')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">English (en)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deutsch (de)</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('english_en') || 'English (en)'}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('deutsch_de') || 'Deutsch (de)'}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('actions')}</th>
             </tr>
           </thead>

@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface ProtectedRouteProps {
   adminOnly?: boolean;
@@ -7,9 +8,10 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ adminOnly = false }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
+  const { t } = useTranslation();
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+    return <div className="flex h-screen items-center justify-center">{t('loading_data') || 'Loading...'}</div>;
   }
 
   if (!user) {

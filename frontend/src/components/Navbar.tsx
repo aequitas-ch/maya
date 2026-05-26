@@ -28,13 +28,13 @@ export const Navbar = () => {
                   to="/"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Dashboard
+                  {t('dashboard')}
                 </Link>
                 <Link
                   to="/dependents"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Dependents
+                  {t('dependents')}
                 </Link>
                 <Link
                   to="/health"
@@ -54,7 +54,7 @@ export const Navbar = () => {
                   to="/cost-approvals"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Kostengutsprachen
+                  {t('cost_approvals')}
                 </Link>
               </div>
             )}

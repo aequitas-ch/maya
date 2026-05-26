@@ -42,7 +42,7 @@ export const UserManagement = () => {
     }
   };
 
-  if (loading) return <div>{t('loading')}</div>;
+  if (loading) return <div>{t('loading_data') || 'Loading...'}</div>;
   if (error) return <div className="text-red-600">{error}</div>;
 
   return (
