@@ -3,7 +3,7 @@ describe('Admin Dashboard', () => {
     // Seed an admin user
     cy.request({
       method: 'POST',
-      url: `${Cypress.env('apiUrl')}/users/register/`,
+      url: `${Cypress.env('apiUrl')}/api/users/register/`,
       body: {
         username: 'adminuser',
         password: 'adminpassword123',
@@ -17,7 +17,7 @@ describe('Admin Dashboard', () => {
     // Login to get token to upgrade user
     cy.request({
       method: 'POST',
-      url: `${Cypress.env('apiUrl')}/token/`,
+      url: `${Cypress.env('apiUrl')}/api/token/`,
       body: {
         username: 'adminuser',
         password: 'adminpassword123'
