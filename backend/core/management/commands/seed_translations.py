@@ -118,6 +118,8 @@ class Command(BaseCommand):
             'english_en': {'en': 'English (en)', 'de': 'Englisch (en)'},
             'deutsch_de': {'en': 'Deutsch (de)', 'de': 'Deutsch (de)'},
             'loading_data': {'en': 'Loading data...', 'de': 'Daten werden geladen...'},
+            'add': {'en': 'Add', 'de': 'Hinzufügen'},
+            'dependent': {'en': 'Dependent', 'de': 'Angehörige/r'},
         }
 
         for key, val in translations.items():
