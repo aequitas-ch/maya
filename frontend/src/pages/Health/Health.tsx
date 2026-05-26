@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface Metric {
   id: number;
@@ -25,6 +26,7 @@ interface Dependent {
 }
 
 export const Health = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [dependents, setDependents] = useState<Dependent[]>([]);
   const [selectedDependentId, setSelectedDependentId] = useState<number | null>(null);
@@ -169,20 +171,19 @@ export const Health = () => {
   }, [records]);
 
   if (loading && selectedDependentId === null && dependents.length === 0) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return <div className="flex justify-center items-center h-64">{t('loading_data') || 'Loading...'}</div>;
   }
 
   if (!loading && dependents.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Health Data</h1>
-          <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800">
-            &larr; Back to Dependents
+          <h1 className="text-3xl font-bold text-gray-900">{t('health_data_title') || 'Health Data'}</h1>
+          <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800" dangerouslySetInnerHTML={{ __html: t('back_to_dependents') || '&larr; Back to Dependents' }}>
           </Link>
         </div>
         <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6 text-center text-gray-500">
-          Keine Werte vorhanden. Bitte erstellen Sie zuerst einen Dependent (Abhängigen).
+          {t('no_dependents_create_first') || 'Keine Werte vorhanden. Bitte erstellen Sie zuerst einen Dependent (Abhängigen).'}
         </div>
       </div>
     );
@@ -191,16 +192,15 @@ export const Health = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Health Data</h1>
-        <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800">
-          &larr; Back to Dependents
+        <h1 className="text-3xl font-bold text-gray-900">{t('health_data_title') || 'Health Data'}</h1>
+        <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800" dangerouslySetInnerHTML={{ __html: t('back_to_dependents') || '&larr; Back to Dependents' }}>
         </Link>
       </div>
 
       {dependents.length > 1 && (
         <div className="mb-6">
           <label htmlFor="dependent-select" className="block text-sm font-medium text-gray-700">
-            Select Dependent
+            {t('select_dependent') || 'Select Dependent'}
           </label>
           <select
             id="dependent-select"
@@ -224,13 +224,13 @@ export const Health = () => {
       )}
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">Loading data...</div>
+        <div className="flex justify-center items-center h-64">{t('loading_data') || 'Loading data...'}</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Form Column */}
         <div className="md:col-span-1">
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Add New Record</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('add_new_record') || 'Add New Record'}</h2>
             {formError && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
                 {formError}
@@ -238,7 +238,7 @@ export const Health = () => {
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Date</label>
+                <label className="block text-sm font-medium text-gray-700">{t('date_label') || 'Date'}</label>
                 <input
                   type="date"
                   required
@@ -249,14 +249,14 @@ export const Health = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Metric (Select or Type New)</label>
+                <label className="block text-sm font-medium text-gray-700">{t('metric_label') || 'Metric (Select or Type New)'}</label>
                 <div className="flex gap-2 mb-2">
                   <select
                     onChange={handleMetricSelect}
                     className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     defaultValue=""
                   >
-                    <option value="" disabled>Select existing...</option>
+                    <option value="" disabled>{t('select_existing') || 'Select existing...'}</option>
                     {metrics.map(m => (
                       <option key={m.id} value={m.id}>{m.name} {m.unit ? `(${m.unit})` : ''}</option>
                     ))}
@@ -265,7 +265,7 @@ export const Health = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Weight, Height"
+                  placeholder={t('metric_placeholder') || 'e.g. Weight, Height'}
                   value={metricName}
                   onChange={(e) => setMetricName(e.target.value)}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -273,10 +273,10 @@ export const Health = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Unit (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700">{t('unit_label') || 'Unit (Optional)'}</label>
                 <input
                   type="text"
-                  placeholder="e.g. kg, cm"
+                  placeholder={t('unit_placeholder') || 'e.g. kg, cm'}
                   value={metricUnit}
                   onChange={(e) => setMetricUnit(e.target.value)}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -284,7 +284,7 @@ export const Health = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Value</label>
+                <label className="block text-sm font-medium text-gray-700">{t('value_label') || 'Value'}</label>
                 <input
                   type="text"
                   required
@@ -295,7 +295,7 @@ export const Health = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Comment (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700">{t('comment_label') || 'Comment (Optional)'}</label>
                 <textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
@@ -311,7 +311,7 @@ export const Health = () => {
                   isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {isSubmitting ? 'Adding...' : 'Add Record'}
+                {isSubmitting ? t('loading_data') : t('add_new_record') || 'Add Record'}
               </button>
             </form>
           </div>
@@ -341,13 +341,13 @@ export const Health = () => {
               ))
             ) : (
               <div className="bg-white shadow rounded-lg p-6 text-center text-gray-500">
-                No numerical data available to display charts.
+                {t('no_numerical_data') || 'No numerical data available to display charts.'}
               </div>
             )}
 
             <div className="bg-white shadow rounded-lg overflow-hidden">
               <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">Recent Records</h3>
+                <h3 className="text-lg leading-6 font-medium text-gray-900">{t('recent_records') || 'Recent Records'}</h3>
               </div>
               <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
                 {records.length > 0 ? (
@@ -374,7 +374,7 @@ export const Health = () => {
                     ))}
                   </ul>
                 ) : (
-                  <p className="p-4 text-gray-500 text-center">No records found. Add one above.</p>
+                  <p className="p-4 text-gray-500 text-center">{t('no_records_found') || 'No records found. Add one above.'}</p>
                 )}
               </div>
             </div>

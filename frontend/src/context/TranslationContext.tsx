@@ -56,9 +56,9 @@ export const TranslationProvider = ({ children }: { children: ReactNode }) => {
   const t = (key: string): string => {
     const translation = translations[key];
     if (!translation) {
-      return key; // Fallback to the key itself if missing
+      return ''; // Return empty string so OR fallbacks in components work correctly
     }
-    return translation[language] || key;
+    return translation[language] || '';
   };
 
   return (
