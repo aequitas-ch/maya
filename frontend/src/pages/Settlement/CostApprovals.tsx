@@ -155,31 +155,31 @@ export const CostApprovals = () => {
           <h1 className="text-3xl font-bold text-gray-900">{t('cost_approvals_title') || 'Kostengutsprachen (Cost Approvals)'}</h1>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700"
+            className="bg-teal-600 text-white px-4 py-2 rounded-xl shadow hover:bg-teal-700"
           >
             {showForm ? t('cancel') || 'Cancel' : t('create_new_cost_approval') || 'New Approval'}
           </button>
         </div>
 
-        {error && <div className="bg-red-100 text-red-700 p-4 rounded mb-4">{error}</div>}
+        {error && <div className="bg-red-100 text-red-700 p-4 rounded-xl mb-4">{error}</div>}
 
         {showForm && (
-          <div className="bg-white p-6 rounded shadow mb-6 border">
+          <div className="bg-white p-6 rounded-xl shadow mb-6 border">
             <h2 className="text-xl mb-4 font-semibold">{t('create_new_cost_approval') || 'Create New Cost Approval'}</h2>
 
             <div className="mb-4 grid grid-cols-2 gap-4">
                <div>
                   <label className="block text-sm font-medium mb-1">{t('add_missing_institution') || 'Add missing Institution'}</label>
                   <div className="flex">
-                    <input type="text" value={newInstName} onChange={e => setNewInstName(e.target.value)} className="border p-2 rounded-l w-full" placeholder={t('name_placeholder') || 'Name...'} />
-                    <button type="button" onClick={handleAddInst} className="bg-green-600 text-white px-4 rounded-r">{t('add') || 'Add'}</button>
+                    <input type="text" value={newInstName} onChange={e => setNewInstName(e.target.value)} className="border p-2 rounded-xl-l w-full" placeholder={t('name_placeholder') || 'Name...'} />
+                    <button type="button" onClick={handleAddInst} className="bg-green-600 text-white px-4 rounded-xl-r">{t('add') || 'Add'}</button>
                   </div>
                </div>
                <div>
                   <label className="block text-sm font-medium mb-1">{t('add_missing_insurance') || 'Add missing Insurance'}</label>
                   <div className="flex">
-                    <input type="text" value={newInsName} onChange={e => setNewInsName(e.target.value)} className="border p-2 rounded-l w-full" placeholder={t('name_placeholder') || 'Name...'} />
-                    <button type="button" onClick={handleAddIns} className="bg-green-600 text-white px-4 rounded-r">{t('add') || 'Add'}</button>
+                    <input type="text" value={newInsName} onChange={e => setNewInsName(e.target.value)} className="border p-2 rounded-xl-l w-full" placeholder={t('name_placeholder') || 'Name...'} />
+                    <button type="button" onClick={handleAddIns} className="bg-green-600 text-white px-4 rounded-xl-r">{t('add') || 'Add'}</button>
                   </div>
                </div>
             </div>
@@ -187,7 +187,7 @@ export const CostApprovals = () => {
             <form onSubmit={handleCreateApproval} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium">{t('dependent') || 'Dependent'}</label>
-                <select className="mt-1 w-full border p-2 rounded" value={dependentId} onChange={e => setDependentId(Number(e.target.value))} required>
+                <select className="mt-1 w-full border p-2 rounded-xl" value={dependentId} onChange={e => setDependentId(Number(e.target.value))} required>
                   <option value="">{t('select_dependent') || 'Select Dependent'}</option>
                   {dependents.map(d => <option key={d.id} value={d.id}>{d.first_name} {d.last_name}</option>)}
                 </select>
@@ -196,14 +196,14 @@ export const CostApprovals = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium">{t('ordering_institution') || 'Ordering Institution (Verfügt)'}</label>
-                  <select className="mt-1 w-full border p-2 rounded" value={orderingId} onChange={e => setOrderingId(Number(e.target.value))} required>
+                  <select className="mt-1 w-full border p-2 rounded-xl" value={orderingId} onChange={e => setOrderingId(Number(e.target.value))} required>
                     <option value="">{t('select_institution') || 'Select Institution'}</option>
                     {institutions.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium">{t('executing_institution') || 'Executing Institution (Führt aus)'}</label>
-                  <select className="mt-1 w-full border p-2 rounded" value={executingId} onChange={e => setExecutingId(Number(e.target.value))} required>
+                  <select className="mt-1 w-full border p-2 rounded-xl" value={executingId} onChange={e => setExecutingId(Number(e.target.value))} required>
                     <option value="">{t('select_institution') || 'Select Institution'}</option>
                     {institutions.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                   </select>
@@ -212,7 +212,7 @@ export const CostApprovals = () => {
 
               <div>
                 <label className="block text-sm font-medium">{t('insurance_label') || 'Insurance (Zahlt)'}</label>
-                <select className="mt-1 w-full border p-2 rounded" value={insuranceId} onChange={e => setInsuranceId(Number(e.target.value))} required>
+                <select className="mt-1 w-full border p-2 rounded-xl" value={insuranceId} onChange={e => setInsuranceId(Number(e.target.value))} required>
                   <option value="">{t('select_insurance') || 'Select Insurance'}</option>
                   {insurances.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                 </select>
@@ -221,19 +221,19 @@ export const CostApprovals = () => {
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium">{t('approved_amount') || 'Approved Amount'}</label>
-                  <input type="number" step="0.01" className="mt-1 w-full border p-2 rounded" value={approvedAmount} onChange={e => setApprovedAmount(e.target.value)} required />
+                  <input type="number" step="0.01" className="mt-1 w-full border p-2 rounded-xl" value={approvedAmount} onChange={e => setApprovedAmount(e.target.value)} required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium">{t('settled_amount') || 'Settled Amount'}</label>
-                  <input type="number" step="0.01" className="mt-1 w-full border p-2 rounded" value={settledAmount} onChange={e => setSettledAmount(e.target.value)} required />
+                  <input type="number" step="0.01" className="mt-1 w-full border p-2 rounded-xl" value={settledAmount} onChange={e => setSettledAmount(e.target.value)} required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium">{t('next_reminder') || 'Next Reminder'}</label>
-                  <input type="date" className="mt-1 w-full border p-2 rounded" value={nextReminder} onChange={e => setNextReminder(e.target.value)} />
+                  <input type="date" className="mt-1 w-full border p-2 rounded-xl" value={nextReminder} onChange={e => setNextReminder(e.target.value)} />
                 </div>
               </div>
 
-              <button disabled={isSubmitting} type="submit" className="w-full bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700 disabled:opacity-50">
+              <button disabled={isSubmitting} type="submit" className="w-full bg-teal-600 text-white p-2 rounded-xl hover:bg-teal-700 disabled:opacity-50">
                 {isSubmitting ? t('loading_data') : t('save') || 'Save'}
               </button>
             </form>
@@ -242,7 +242,7 @@ export const CostApprovals = () => {
 
         <div className="space-y-6">
           {sortedApprovals.map(approval => (
-            <div key={approval.id} className="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div key={approval.id} className="bg-white shadow overflow-hidden sm:rounded-2xl">
               <div className="px-4 py-5 sm:px-6 flex justify-between items-center bg-gray-50 border-b">
                 <div>
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -271,8 +271,8 @@ export const CostApprovals = () => {
               </div>
 
               <div className="px-4 py-3 bg-gray-50 border-t flex gap-4">
-                <button onClick={() => handleAddStatus(approval.id)} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200">{t('add_status') || '+ Status'}</button>
-                <button onClick={() => handleAddLog(approval.id)} className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded hover:bg-green-200">{t('add_log') || '+ Log'}</button>
+                <button onClick={() => handleAddStatus(approval.id)} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-xl hover:bg-blue-200">{t('add_status') || '+ Status'}</button>
+                <button onClick={() => handleAddLog(approval.id)} className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-xl hover:bg-green-200">{t('add_log') || '+ Log'}</button>
               </div>
 
               {(approval.statuses.length > 0 || approval.logs.length > 0) && (

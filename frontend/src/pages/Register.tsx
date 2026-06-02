@@ -62,13 +62,13 @@ export const Register = () => {
           {error && (
             <div className="text-red-500 text-sm text-center">{error}</div>
           )}
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="rounded-xl shadow-md -space-y-px">
             <div>
               <input
                 name="username"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-xl focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('username_placeholder') || 'Username'}
                 value={formData.username}
                 onChange={handleChange}
@@ -79,7 +79,7 @@ export const Register = () => {
                 name="email"
                 type="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('email_address') || 'Email address'}
                 value={formData.email}
                 onChange={handleChange}
@@ -90,7 +90,7 @@ export const Register = () => {
                 name="first_name"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('first_name') || 'First Name'}
                 value={formData.first_name}
                 onChange={handleChange}
@@ -101,7 +101,7 @@ export const Register = () => {
                 name="last_name"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('last_name') || 'Last Name'}
                 value={formData.last_name}
                 onChange={handleChange}
@@ -111,7 +111,7 @@ export const Register = () => {
               <input
                 name="display_name"
                 type="text"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('display_name_placeholder') || 'Display Name (Optional)'}
                 value={formData.display_name}
                 onChange={handleChange}
@@ -122,7 +122,7 @@ export const Register = () => {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-xl focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('password_placeholder') || 'Password'}
                 value={formData.password}
                 onChange={handleChange}
@@ -134,13 +134,13 @@ export const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
             >
               {loading ? t('loading_data') : t('register') || 'Register'}
             </button>
           </div>
           <div className="text-sm text-center">
-            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link to="/login" className="font-medium text-teal-600 hover:text-teal-500">
               {t('already_have_account') || 'Already have an account? Sign in'}
             </Link>
           </div>

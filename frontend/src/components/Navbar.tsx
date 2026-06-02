@@ -13,12 +13,12 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white border-b border-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="text-xl font-bold text-indigo-600">
+              <Link to="/" className="text-xl font-bold text-teal-600">
                 Aequitas
               </Link>
             </div>
@@ -65,7 +65,7 @@ export const Navbar = () => {
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as 'en' | 'de')}
-                  className="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  className="text-sm border-gray-300 rounded-xl shadow-sm focus:border-teal-300 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
                 >
                   <option value="en">EN</option>
                   <option value="de">DE</option>
@@ -90,7 +90,7 @@ export const Navbar = () => {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="bg-teal-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                 >
                   {t('logout')}
                 </button>
@@ -100,7 +100,7 @@ export const Navbar = () => {
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as 'en' | 'de')}
-                  className="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  className="text-sm border-gray-300 rounded-xl shadow-sm focus:border-teal-300 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
                 >
                   <option value="en">EN</option>
                   <option value="de">DE</option>
@@ -113,7 +113,7 @@ export const Navbar = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
+                  className="bg-teal-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-700"
                 >
                   {t('register')}
                 </Link>
