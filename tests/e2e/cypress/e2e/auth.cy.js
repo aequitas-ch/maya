@@ -17,7 +17,7 @@ describe('Authentication Flow', () => {
 
     // Verify redirect to login
     cy.url().should('include', '/login');
-    cy.contains('Sign in to your account').should('be.visible');
+    cy.contains('button', 'Login').should('be.visible');
 
     // 2. Login
     cy.get('input[name="username"]').type(username);
@@ -33,7 +33,7 @@ describe('Authentication Flow', () => {
 
     // Verify logout
     cy.url().should('include', '/login');
-    cy.contains('Login').should('be.visible');
+    cy.contains('button', 'Login').should('be.visible');
   });
 });
 

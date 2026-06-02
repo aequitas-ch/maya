@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
+import { useTranslation } from '../hooks/useTranslation';
 
 export const Profile = () => {
   const { user, updateUserProfile } = useAuth();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     first_name: '',
@@ -122,9 +124,9 @@ export const Profile = () => {
       <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Profile</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('profile_title') || 'Profile'}</h3>
             <p className="mt-1 text-sm text-gray-500">
-              Update your personal information and how others see you on the platform.
+              {t('update_personal_info') || 'Update your personal information and how others see you on the platform.'}
             </p>
           </div>
           <div className="mt-5 md:mt-0 md:col-span-2">
@@ -136,7 +138,7 @@ export const Profile = () => {
               )}
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6">
-                  <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
+                  <label className="block text-sm font-medium text-gray-700">{t('profile_picture') || 'Profile Picture'}</label>
                   <div className="mt-1 flex items-center space-x-5">
                     {previewUrl ? (
                       <img
@@ -163,7 +165,7 @@ export const Profile = () => {
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
-                  <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">First name</label>
+                  <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">{t('first_name') || 'First name'}</label>
                   <input
                     type="text"
                     name="first_name"
@@ -176,7 +178,7 @@ export const Profile = () => {
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
-                  <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">Last name</label>
+                  <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">{t('last_name') || 'Last name'}</label>
                   <input
                     type="text"
                     name="last_name"
@@ -189,7 +191,7 @@ export const Profile = () => {
                 </div>
 
                 <div className="col-span-6">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">{t('email_address') || 'Email address'}</label>
                   <input
                     type="email"
                     name="email"
@@ -202,7 +204,7 @@ export const Profile = () => {
                 </div>
 
                 <div className="col-span-6">
-                  <label htmlFor="display_name" className="block text-sm font-medium text-gray-700">Display name</label>
+                  <label htmlFor="display_name" className="block text-sm font-medium text-gray-700">{t('display_name') || 'Display name'}</label>
                   <input
                     type="text"
                     name="display_name"
@@ -212,7 +214,7 @@ export const Profile = () => {
                     className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
                   />
                   <p className="mt-2 text-sm text-gray-500">
-                    This is the name that will be displayed to other users.
+                    {t('display_name_desc') || 'This is the name that will be displayed to other users.'}
                   </p>
                 </div>
               </div>
@@ -223,7 +225,7 @@ export const Profile = () => {
                   disabled={loading}
                   className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
                 >
-                  {loading ? 'Saving...' : 'Save Profile'}
+                  {loading ? t('loading_data') : t('save') || 'Save'}
                 </button>
               </div>
             </form>
@@ -234,9 +236,9 @@ export const Profile = () => {
       <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Change Password</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('change_password') || 'Change Password'}</h3>
             <p className="mt-1 text-sm text-gray-500">
-              Update your account password.
+              {t('update_account_password') || 'Update your account password.'}
             </p>
           </div>
           <div className="mt-5 md:mt-0 md:col-span-2">
@@ -248,7 +250,7 @@ export const Profile = () => {
               )}
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6">
-                  <label htmlFor="old_password" className="block text-sm font-medium text-gray-700">Current Password</label>
+                  <label htmlFor="old_password" className="block text-sm font-medium text-gray-700">{t('current_password') || 'Current Password'}</label>
                   <input
                     type="password"
                     name="old_password"
@@ -261,7 +263,7 @@ export const Profile = () => {
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
-                  <label htmlFor="new_password" className="block text-sm font-medium text-gray-700">New Password</label>
+                  <label htmlFor="new_password" className="block text-sm font-medium text-gray-700">{t('new_password') || 'New Password'}</label>
                   <input
                     type="password"
                     name="new_password"
@@ -274,7 +276,7 @@ export const Profile = () => {
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
-                  <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                  <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700">{t('confirm_new_password') || 'Confirm New Password'}</label>
                   <input
                     type="password"
                     name="confirm_password"
@@ -293,7 +295,7 @@ export const Profile = () => {
                   disabled={passwordLoading}
                   className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
                 >
-                  {passwordLoading ? 'Updating...' : 'Update Password'}
+                  {passwordLoading ? t('loading_data') : t('save') || 'Save'}
                 </button>
               </div>
             </form>

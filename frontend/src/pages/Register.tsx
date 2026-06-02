@@ -3,8 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
 import { generateKey, exportKey } from '../utils/crypto';
 import { useEncryption } from '../context/EncryptionContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 export const Register = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -79,7 +81,7 @@ export const Register = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create an account
+            {t('create_account') || 'Create an account'}
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -93,7 +95,7 @@ export const Register = () => {
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
+                placeholder={t('username_placeholder') || 'Username'}
                 value={formData.username}
                 onChange={handleChange}
               />
@@ -104,7 +106,7 @@ export const Register = () => {
                 type="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                placeholder={t('email_address') || 'Email address'}
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -115,7 +117,7 @@ export const Register = () => {
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="First Name"
+                placeholder={t('first_name') || 'First Name'}
                 value={formData.first_name}
                 onChange={handleChange}
               />
@@ -126,7 +128,7 @@ export const Register = () => {
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Last Name"
+                placeholder={t('last_name') || 'Last Name'}
                 value={formData.last_name}
                 onChange={handleChange}
               />
@@ -136,7 +138,7 @@ export const Register = () => {
                 name="display_name"
                 type="text"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Display Name (Optional)"
+                placeholder={t('display_name_placeholder') || 'Display Name (Optional)'}
                 value={formData.display_name}
                 onChange={handleChange}
               />
@@ -147,7 +149,7 @@ export const Register = () => {
                 type="password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
+                placeholder={t('password_placeholder') || 'Password'}
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -175,12 +177,12 @@ export const Register = () => {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
             >
-              {loading ? 'Registering...' : 'Register'}
+              {loading ? t('loading_data') : t('register') || 'Register'}
             </button>
           </div>
           <div className="text-sm text-center">
             <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Already have an account? Sign in
+              {t('already_have_account') || 'Already have an account? Sign in'}
             </Link>
           </div>
         </form>

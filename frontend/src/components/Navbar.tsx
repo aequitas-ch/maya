@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useEncryption } from '../context/EncryptionContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
   const { hasKey } = useEncryption();
+  const { t, language, setLanguage } = useTranslation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -28,19 +30,33 @@ export const Navbar = () => {
                   to="/"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Dashboard
+                  {t('dashboard')}
                 </Link>
                 <Link
                   to="/dependents"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Dependents
+                  {t('dependents')}
                 </Link>
                 <Link
                   to="/health"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Health
+                  {t('health')}
+                </Link>
+                {user.is_staff && (
+                  <Link
+                    to="/admin"
+                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  >
+                    {t('admin')}
+                  </Link>
+                )}
+                <Link
+                  to="/cost-approvals"
+                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                >
+                  {t('cost_approvals')}
                 </Link>
               </div>
             )}
@@ -48,6 +64,14 @@ export const Navbar = () => {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             {user ? (
               <div className="flex items-center space-x-4">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as 'en' | 'de')}
+                  className="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="en">EN</option>
+                  <option value="de">DE</option>
+                </select>
                 {hasKey ? (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     <svg className="-ml-0.5 mr-1.5 h-2 w-2 text-green-400" fill="currentColor" viewBox="0 0 8 8">
@@ -64,7 +88,7 @@ export const Navbar = () => {
                   </span>
                 )}
                 <span className="text-sm text-gray-700">
-                  Welcome, {user.display_name || user.first_name || user.username}
+                  {t('welcome')}, {user.display_name || user.first_name || user.username}
                 </span>
                 <Link to="/profile" className="flex items-center">
                   {user.profile_picture ? (
@@ -85,22 +109,30 @@ export const Navbar = () => {
                   onClick={handleLogout}
                   className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  Logout
+                  {t('logout')}
                 </button>
               </div>
             ) : (
               <div className="flex items-center space-x-4">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as 'en' | 'de')}
+                  className="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="en">EN</option>
+                  <option value="de">DE</option>
+                </select>
                 <Link
                   to="/login"
                   className="text-gray-500 hover:text-gray-700 text-sm font-medium"
                 >
-                  Login
+                  {t('login')}
                 </Link>
                 <Link
                   to="/register"
                   className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
                 >
-                  Register
+                  {t('register')}
                 </Link>
               </div>
             )}

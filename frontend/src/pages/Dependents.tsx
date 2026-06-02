@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { useEncryption } from '../context/EncryptionContext';
 import { encryptData, decryptData } from '../utils/crypto';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface Dependent {
   id: number;
@@ -17,6 +18,7 @@ interface Dependent {
 }
 
 export const Dependents = () => {
+  const { t } = useTranslation();
   const [dependents, setDependents] = useState<Dependent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -37,11 +39,7 @@ export const Dependents = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchDependents();
-  }, [hasKey]);
-
-  const fetchDependents = async () => {
+  const fetchDependents = useCallback(async () => {
     try {
       const response = await api.get('/dependents/');
       let loadedDependents = response.data as Dependent[];
@@ -82,7 +80,11 @@ export const Dependents = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [hasKey, encryptionKey]);
+
+  useEffect(() => {
+    fetchDependents();
+  }, [fetchDependents]);
 
   const validateAhv = (ahv: string) => {
     if (isEncrypted) return true; // Can't validate format if it's going to be encrypted
@@ -175,13 +177,13 @@ export const Dependents = () => {
   };
 
   if (loading) {
-    return <div className="text-center mt-8">Loading...</div>;
+    return <div className="text-center mt-8">{t('loading_data') || 'Loading...'}</div>;
   }
 
   return (
     <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Dependents</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">{t('dependents_title') || 'Dependents'}</h1>
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -192,9 +194,10 @@ export const Dependents = () => {
         <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              {editingId ? 'Edit Dependent' : 'Add New Dependent'}
+              {editingId ? t('edit') : t('add_dependent') || 'Add New Dependent'}
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
+              {/* Note: Descriptions intentionally not translated as they weren't matched in seed, or map manually if needed */}
               {editingId ? 'Update the details of the dependent person.' : 'Enter the details of the dependent person.'}
             </p>
           </div>
@@ -208,7 +211,7 @@ export const Dependents = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">{t('first_name') || 'First Name'}</label>
                   <input
                     type="text"
                     id="firstName"
@@ -219,7 +222,7 @@ export const Dependents = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">{t('last_name') || 'Last Name'}</label>
                   <input
                     type="text"
                     id="lastName"
@@ -232,7 +235,7 @@ export const Dependents = () => {
               </div>
 
               <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700">{t('address') || 'Address'}</label>
                 <input
                   type="text"
                   id="address"
@@ -245,7 +248,7 @@ export const Dependents = () => {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">Postal Code (PLZ)</label>
+                  <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">{t('postal_code') || 'Postal Code (PLZ)'}</label>
                   <input
                     type="text"
                     id="postalCode"
@@ -256,7 +259,7 @@ export const Dependents = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700">City (Wohnort)</label>
+                  <label htmlFor="city" className="block text-sm font-medium text-gray-700">{t('city') || 'City (Wohnort)'}</label>
                   <input
                     type="text"
                     id="city"
@@ -269,7 +272,7 @@ export const Dependents = () => {
               </div>
 
               <div>
-                <label htmlFor="mainDiagnosis" className="block text-sm font-medium text-gray-700">Main Diagnosis (Hauptdiagnose)</label>
+                <label htmlFor="mainDiagnosis" className="block text-sm font-medium text-gray-700">{t('main_diagnosis') || 'Main Diagnosis (Hauptdiagnose)'}</label>
                 <input
                   type="text"
                   id="mainDiagnosis"
@@ -281,7 +284,7 @@ export const Dependents = () => {
               </div>
 
               <div>
-                <label htmlFor="ahvNumber" className="block text-sm font-medium text-gray-700">AHV Number</label>
+                <label htmlFor="ahvNumber" className="block text-sm font-medium text-gray-700">{t('ahv_number') || 'AHV Number'}</label>
                 <input
                   type="text"
                   id="ahvNumber"
@@ -291,7 +294,7 @@ export const Dependents = () => {
                   required
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
-                <p className="mt-1 text-xs text-gray-500">Format: 756.xxxx.xxxx.xx</p>
+                <p className="mt-1 text-xs text-gray-500">{t('format_ahv') || 'Format: 756.xxxx.xxxx.xx'}</p>
               </div>
 
               <div className="flex items-center">
@@ -313,7 +316,7 @@ export const Dependents = () => {
                   disabled={isSubmitting}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
                 >
-                  {isSubmitting ? 'Saving...' : (editingId ? 'Update Dependent' : 'Add Dependent')}
+                  {isSubmitting ? t('loading_data') || 'Saving...' : (editingId ? t('edit') : t('add') || 'Add Dependent')}
                 </button>
                 {editingId && (
                   <button
@@ -322,7 +325,7 @@ export const Dependents = () => {
                     disabled={isSubmitting}
                     className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200"
                   >
-                    Cancel
+                    {t('cancel') || 'Cancel'}
                   </button>
                 )}
               </div>
@@ -332,12 +335,12 @@ export const Dependents = () => {
 
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Your Dependents</h3>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">{t('your_dependents') || 'Your Dependents'}</h3>
           </div>
           <div className="border-t border-gray-200">
             {dependents.length === 0 ? (
               <div className="px-4 py-5 sm:px-6 text-gray-500 text-sm">
-                No dependents found. Add one above.
+                {t('no_dependents_found') || 'No dependents found. Add one above.'}
               </div>
             ) : (
               <ul className="divide-y divide-gray-200">
@@ -357,7 +360,7 @@ export const Dependents = () => {
                           onClick={() => handleEditClick(dependent)}
                           className="text-sm text-indigo-600 hover:text-indigo-900 font-medium"
                         >
-                          Edit
+                          {t('edit') || 'Edit'}
                         </button>
                       </div>
                     </div>
@@ -369,7 +372,7 @@ export const Dependents = () => {
                       </div>
                       <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                         <p>
-                          Diagnosis: {dependent.main_diagnosis}
+                          {t('main_diagnosis') || 'Diagnosis'}: {dependent.main_diagnosis}
                         </p>
                       </div>
                       <div className="mt-2 flex items-center text-sm sm:mt-0">
@@ -377,7 +380,7 @@ export const Dependents = () => {
                           to={`/dependents/${dependent.id}/health`}
                           className="ml-4 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
-                          Health Data
+                          {t('health_data_title') || 'Health Data'}
                         </Link>
                       </div>
                     </div>

@@ -1,0 +1,27 @@
+meta {
+  name: Login User
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/api/token/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "dependent_tester_{{timestamp}}",
+    "password": "StrongPassword123!"
+  }
+}
+
+vars:post-response {
+  access_token: res.body.access
+}
+
+assert {
+  res.status: eq 200
+  res.body.access: isDefined
+}

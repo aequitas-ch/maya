@@ -1,0 +1,27 @@
+meta {
+  name: 5. Add Log
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{base_url}}/api/settlement/cost-approvals/{{ca_id}}/add_log/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "text": "Angerufen bei der IV-Stelle"
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.logs.length: gt 0
+  res.body.logs[0].text: eq "Angerufen bei der IV-Stelle"
+}

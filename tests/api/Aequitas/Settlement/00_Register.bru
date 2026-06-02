@@ -1,0 +1,31 @@
+meta {
+  name: Register User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/users/register/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "dependent_tester_{{timestamp}}",
+    "email": "dependent_tester_{{timestamp}}@example.com",
+    "first_name": "API",
+    "last_name": "Tester",
+    "password": "StrongPassword123!",
+    "display_name": "API Tester Display"
+  }
+}
+
+script:pre-request {
+  const timestamp = Math.floor(Date.now() / 1000);
+  bru.setVar("timestamp", timestamp);
+}
+
+assert {
+  res.status: eq 201
+}
