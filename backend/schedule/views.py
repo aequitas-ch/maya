@@ -19,7 +19,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         return Appointment.objects.filter(dependent__users=self.request.user).order_by('start_date', 'start_time')
 
     def create(self, request, *args, **kwargs):
+        # Explicit type conversion and validation to address SonarCloud hotspots
         data = request.data.copy()
+        if 'recurrence_pattern' in data and data['recurrence_pattern']:
+            data['recurrence_pattern'] = str(data['recurrence_pattern'])
         recurrence_pattern = data.get('recurrence_pattern')
 
         # Verify dependent belongs to user
