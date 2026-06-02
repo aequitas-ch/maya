@@ -11,7 +11,8 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('Run seed_test_user first.'))
             return
 
-        # Security Hotspot fixed by removing hardcoded sensitive info
+        # This is a mock AHV number for testing/seeding purposes.
+        # Ensure that no real sensitive data is used here.
         dep, created = Dependent.objects.get_or_create(
             ahv_number="756.1234.5678.90",
             defaults={

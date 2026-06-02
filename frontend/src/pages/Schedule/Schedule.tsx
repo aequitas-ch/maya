@@ -94,7 +94,7 @@ export const Schedule = () => {
       if (editingAppointment) {
         await updateAppointment(editingAppointment.id, {
           title: formData.title,
-          dependent: parseInt(formData.dependent, 10),
+          dependent: Number(formData.dependent),
           institutions: formData.institutions,
           start_date: formData.start_date,
           start_time: formData.start_time,
@@ -105,7 +105,7 @@ export const Schedule = () => {
       } else {
         await createAppointment({
           title: formData.title,
-          dependent: parseInt(formData.dependent, 10),
+          dependent: Number(formData.dependent),
           institutions: formData.institutions,
           start_date: formData.start_date,
           start_time: formData.start_time,
@@ -186,7 +186,7 @@ export const Schedule = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700">{t('select_institution') || 'Institution'}</label>
                       <select multiple value={formData.institutions.map(String)} onChange={e => {
-                        const values = Array.from(e.target.selectedOptions, option => parseInt(option.value, 10));
+                        const values = Array.from(e.target.selectedOptions, option => Number(option.value));
                         setFormData({...formData, institutions: values});
                       }} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                         {institutions.map(i => (

@@ -20,10 +20,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        # Explicit type conversion and validation to address SonarCloud hotspots
         data = request.data.copy()
-        if 'recurrence_pattern' in data and data['recurrence_pattern']:
-            data['recurrence_pattern'] = str(data['recurrence_pattern'])
         recurrence_pattern = data.get('recurrence_pattern')
 
         # Verify dependent belongs to user
@@ -43,7 +40,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 # We need a naive datetime for dateutil rrule based on start_date/time
                 dtstart = datetime.strptime(f"{start_date_str} {start_time_str}", "%Y-%m-%d %H:%M:%S" if len(start_time_str) > 5 else "%Y-%m-%d %H:%M")
 
-                rule = rrulestr(recurrence_pattern, dtstart=dtstart)
+                rule = rrulestr(str(recurrence_pattern), dtstart=dtstart)
 
                 # Prevent DoS by limiting the number of occurrences
                 MAX_OCCURRENCES = 100
