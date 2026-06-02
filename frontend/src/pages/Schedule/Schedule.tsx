@@ -220,7 +220,7 @@ export const Schedule = () => {
 
                     {editingAppointment && moment(formData.start_date).isBefore(moment(), 'day') && (
                       <div className="mt-4 p-4 border border-gray-200 rounded-md bg-gray-50">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Past Appointment Details</label>
+                        <div className="block text-sm font-medium text-gray-700 mb-2">Past Appointment Details</div>
                         <div className="flex items-center mb-4">
                           <input type="checkbox" id="attended" checked={formData.attended === true} onChange={e => setFormData({...formData, attended: e.target.checked})} className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
                           <label htmlFor="attended" className="ml-2 block text-sm text-gray-900">{t('attended') || 'Attended'}</label>

@@ -18,6 +18,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         # Users can only see appointments for their dependents
         return Appointment.objects.filter(dependent__users=self.request.user).order_by('start_date', 'start_time')
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
         # Explicit type conversion and validation to address SonarCloud hotspots
         data = request.data.copy()
