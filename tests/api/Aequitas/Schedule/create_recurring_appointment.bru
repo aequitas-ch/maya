@@ -1,0 +1,32 @@
+meta {
+  name: create_recurring_appointment
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/api/schedule/appointments/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "dependent": {{dependent_id}},
+    "title": "Bruno Recurring",
+    "start_date": "2026-06-16",
+    "start_time": "10:00",
+    "end_time": "11:00",
+    "institutions": [],
+    "recurrence_pattern": "FREQ=DAILY;COUNT=3"
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.length: eq 3
+}

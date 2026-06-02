@@ -11,6 +11,7 @@ import { Dependents } from './pages/Dependents';
 import { Health } from './pages/Health/Health';
 import { AdminDashboard } from './pages/Admin/AdminDashboard';
 import { CostApprovals } from './pages/Settlement/CostApprovals';
+import { Schedule } from './pages/Schedule/Schedule';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
               <Route path="/health" element={<Health />} />
               <Route path="/dependents/:id/health" element={<Health />} />
               <Route path="/cost-approvals" element={<CostApprovals />} />
+              <Route path="/schedule" element={<Schedule />} />
             </Route>
 
             <Route element={<ProtectedRoute adminOnly={true} />}>

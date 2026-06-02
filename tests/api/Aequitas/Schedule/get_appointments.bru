@@ -1,0 +1,19 @@
+meta {
+  name: get_appointments
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/schedule/appointments/
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+assert {
+  res.status: eq 200
+}
