@@ -1,4 +1,6 @@
 from django.db import models
+import uuid
+
 class Appointment(models.Model):
     dependent = models.ForeignKey('core.Dependent', on_delete=models.CASCADE, related_name='appointments')
     institutions = models.ManyToManyField('settlement.Institution', related_name='appointments', blank=True)

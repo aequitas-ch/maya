@@ -27,8 +27,9 @@ class Command(BaseCommand):
              Institution.objects.create(name="Test Institution")
              institutions = list(Institution.objects.all())
 
-        # Clear existing appointments for this user's dependents only
-        Appointment.objects.filter(dependent__in=dependents).delete()
+        # Clear existing
+        Appointment.objects.all().delete()
+
         today = date.today()
         created_count = 0
 
