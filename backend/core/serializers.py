@@ -60,10 +60,22 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         return instance
 
+import re
 class DependentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dependent
-        fields = ['id', 'first_name', 'last_name', 'address', 'city', 'postal_code', 'main_diagnosis', 'ahv_number']
+        fields = ['id', 'first_name', 'last_name', 'address', 'city', 'postal_code', 'main_diagnosis', 'ahv_number', 'is_encrypted']
+
+    def validate_ahv_number(self, value):
+        is_encrypted = self.initial_data.get('is_encrypted', False)
+        # Convert to boolean if it's a string from form data
+        if isinstance(is_encrypted, str):
+            is_encrypted = is_encrypted.lower() in ('true', '1', 't')
+
+        if not is_encrypted:
+            if not re.match(r'^756\.\d{4}\.\d{4}\.\d{2}$', value):
+                raise serializers.ValidationError('AHV number must be in the format 756.xxxx.xxxx.xx')
+        return value
 
     def create(self, validated_data):
         user = self.context['request'].user
