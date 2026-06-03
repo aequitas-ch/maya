@@ -178,8 +178,8 @@ export const CostApprovals = () => {
                <div>
                   <label className="block text-sm font-medium mb-1">{t('add_missing_insurance') || 'Add missing Insurance'}</label>
                   <div className="flex">
-                    <input type="text" value={newInsName} onChange={e => setNewInsName(e.target.value)} className="border p-2 rounded-xl-l w-full" placeholder={t('name_placeholder') || 'Name...'} />
-                    <button type="button" onClick={handleAddIns} className="bg-green-600 text-white px-4 rounded-xl-r">{t('add') || 'Add'}</button>
+                    <input type="text" value={newInsName} onChange={e => setNewInsName(e.target.value)} className="border p-2 rounded-l-xl w-full" placeholder={t('name_placeholder') || 'Name...'} />
+                    <button type="button" onClick={handleAddIns} className="bg-green-600 text-white px-4 rounded-r-xl">{t('add') || 'Add'}</button>
                   </div>
                </div>
             </div>
