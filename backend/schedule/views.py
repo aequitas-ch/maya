@@ -70,8 +70,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                         appt.save()
                         if institutions_data:
                             appt.institutions.set(institutions_data)
-                output_serializer = self.get_serializer(appointments, many=True)
-                return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+                        appointments.append(appt)
+
+                return Response(AppointmentSerializer(appointments, many=True).data, status=status.HTTP_201_CREATED)
+
             except Exception as e:
                 return Response({"detail": f"Invalid recurrence pattern: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -84,10 +86,9 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def upcoming(self, request):
         """Returns the next 3 upcoming appointments across all user's dependents."""
-        from django.utils import timezone
-        now = timezone.localtime()
-        today = now.date()
-        current_time = now.time()
+        today = datetime.now().date()
+        current_time = datetime.now().time()
+
         # Appointments today after current time OR appointments in the future
         queryset = self.get_queryset().filter(
             start_date__gte=today

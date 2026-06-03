@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Appointment
 from core.models import Dependent
+from settlement.models import Institution
 from settlement.serializers import InstitutionSerializer
 
 class AppointmentSerializer(serializers.ModelSerializer):
