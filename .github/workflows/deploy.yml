@@ -62,10 +62,18 @@ jobs:
         env:
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
         run: |
           ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
           if [ -n "${DATABASE_URL:-}" ]; then
             ENV_VARS="${ENV_VARS},DATABASE_URL=${DATABASE_URL}"
+          fi
+          if [ -n "${TEST_USER_PASSWORD:-}" ]; then
+            ENV_VARS="${ENV_VARS},TEST_USER_PASSWORD=${TEST_USER_PASSWORD}"
+          fi
+          if [ -n "${ADMIN_USER_PASSWORD:-}" ]; then
+            ENV_VARS="${ENV_VARS},ADMIN_USER_PASSWORD=${ADMIN_USER_PASSWORD}"
           fi
 
           gcloud run deploy aequitas-backend-test \

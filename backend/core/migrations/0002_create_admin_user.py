@@ -4,9 +4,12 @@ import os
 
 def create_admin_user(apps, schema_editor):
     User = apps.get_model('auth', 'User')
-    password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'aequitas-maya123$')
 
     if not User.objects.filter(username='admin').exists():
+        password = os.environ.get('ADMIN_USER_PASSWORD')
+        if not password:
+            raise ValueError("ADMIN_USER_PASSWORD environment variable must be set.")
+
         User.objects.create(
             username='admin',
             email='admin@example.com',

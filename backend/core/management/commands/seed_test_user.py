@@ -1,3 +1,4 @@
+import os
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from core.models import Dependent, Profile
@@ -10,7 +11,9 @@ class Command(BaseCommand):
         email = 'test@test.com'
         first_name = 'Test'
         last_name = 'User'
-        password = 'Secure123$'
+        password = os.environ.get('TEST_USER_PASSWORD')
+        if not password:
+            raise ValueError("TEST_USER_PASSWORD environment variable must be set.")
 
         # Create or update the user
         user, created = User.objects.get_or_create(username=username, defaults={'email': email})

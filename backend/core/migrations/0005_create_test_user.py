@@ -1,3 +1,4 @@
+import os
 from django.db import migrations
 from django.contrib.auth.hashers import make_password
 
@@ -7,10 +8,13 @@ def create_test_user(apps, schema_editor):
     Profile = apps.get_model('core', 'Profile')
 
     if not User.objects.filter(username='test').exists():
+        password = os.environ.get('TEST_USER_PASSWORD')
+        if not password:
+            raise ValueError("TEST_USER_PASSWORD environment variable must be set.")
         user = User.objects.create(
             username='test',
             email='test@test.com',
-            password=make_password('Secure123$'),
+            password=make_password(password),
             first_name='Test',
             last_name='User',
             is_active=True,
