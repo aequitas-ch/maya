@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useEncryption } from '../context/EncryptionContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppointments } from '../hooks/useAppointments';
 import type { Appointment } from '../types/schedule';
 import moment from 'moment';
+import { importKey } from '../utils/crypto';
 
 export const Dashboard = () => {
   const { user } = useAuth();
+  const { hasKey, setEncryptionKey } = useEncryption();
   const { t } = useTranslation();
   const { getUpcomingAppointments } = useAppointments();
 
@@ -19,10 +22,45 @@ export const Dashboard = () => {
     };
     fetchUpcoming();
   }, [getUpcomingAppointments]);
+  const [keyError, setKeyError] = useState('');
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const key = await importKey(text.trim());
+      setEncryptionKey(key);
+      setKeyError('');
+    } catch (err) {
+      console.error(err);
+      setKeyError('Invalid key file format.');
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
+        {!hasKey && (
+          <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
+            <div className="flex">
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800">Your session is currently locked</h3>
+                <div className="mt-2 text-sm text-yellow-700">
+                  <p>Upload your encryption key file to decrypt your sensitive data locally.</p>
+                  {keyError && <p className="text-red-600 mt-1">{keyError}</p>}
+                  <div className="mt-3">
+                    <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                      Upload Key File
+                      <input type="file" className="hidden" accept=".txt" onChange={handleFileUpload} />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mb-8 p-6 bg-white shadow rounded-lg">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('dashboard_title') || 'Dashboard'}</h1>

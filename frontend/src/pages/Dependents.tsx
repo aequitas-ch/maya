@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import { useEncryption } from '../context/EncryptionContext';
+import { encryptData, decryptData } from '../utils/crypto';
 import { useTranslation } from '../hooks/useTranslation';
 
 interface Dependent {
@@ -12,6 +14,7 @@ interface Dependent {
   postal_code: string;
   main_diagnosis: string;
   ahv_number: string;
+  is_encrypted: boolean;
 }
 
 export const Dependents = () => {
@@ -19,6 +22,8 @@ export const Dependents = () => {
   const [dependents, setDependents] = useState<Dependent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const { encryptionKey, hasKey } = useEncryption();
 
   // Form states
   const [firstName, setFirstName] = useState('');
@@ -28,6 +33,7 @@ export const Dependents = () => {
   const [postalCode, setPostalCode] = useState('');
   const [mainDiagnosis, setMainDiagnosis] = useState('');
   const [ahvNumber, setAhvNumber] = useState('');
+  const [isEncrypted, setIsEncrypted] = useState(false);
 
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,7 +42,37 @@ export const Dependents = () => {
   const fetchDependents = useCallback(async () => {
     try {
       const response = await api.get('/dependents/');
-      setDependents(response.data);
+      let loadedDependents = response.data as Dependent[];
+
+      // Decrypt if necessary
+      if (hasKey && encryptionKey) {
+          loadedDependents = await Promise.all(loadedDependents.map(async (dep) => {
+              if (dep.is_encrypted) {
+                  return {
+                      ...dep,
+                      first_name: await decryptData(dep.first_name, encryptionKey),
+                      last_name: await decryptData(dep.last_name, encryptionKey),
+                      ahv_number: await decryptData(dep.ahv_number, encryptionKey),
+                  };
+              }
+              return dep;
+          }));
+      } else {
+          // If no key, show placeholders for encrypted fields
+          loadedDependents = loadedDependents.map(dep => {
+             if (dep.is_encrypted) {
+                 return {
+                     ...dep,
+                     first_name: "*** (Encrypted)",
+                     last_name: "*** (Encrypted)",
+                     ahv_number: "*** (Encrypted)",
+                 };
+             }
+             return dep;
+          });
+      }
+
+      setDependents(loadedDependents);
       setError('');
     } catch (err: any) {
       setError('Failed to load dependents');
@@ -44,13 +80,14 @@ export const Dependents = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [hasKey, encryptionKey]);
 
   useEffect(() => {
     fetchDependents();
   }, [fetchDependents]);
 
   const validateAhv = (ahv: string) => {
+    if (isEncrypted) return true; // Can't validate format if it's going to be encrypted
     const regex = /^756\.\d{4}\.\d{4}\.\d{2}$/;
     return regex.test(ahv);
   };
@@ -64,6 +101,7 @@ export const Dependents = () => {
     setPostalCode(dependent.postal_code);
     setMainDiagnosis(dependent.main_diagnosis);
     setAhvNumber(dependent.ahv_number);
+    setIsEncrypted(dependent.is_encrypted || false);
     setFormError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -77,6 +115,7 @@ export const Dependents = () => {
     setPostalCode('');
     setMainDiagnosis('');
     setAhvNumber('');
+    setIsEncrypted(false);
     setFormError('');
   };
 
@@ -91,17 +130,33 @@ export const Dependents = () => {
 
     setIsSubmitting(true);
 
-    const payload = {
-      first_name: firstName,
-      last_name: lastName,
-      address,
-      city,
-      postal_code: postalCode,
-      main_diagnosis: mainDiagnosis,
-      ahv_number: ahvNumber
-    };
-
     try {
+      let finalFirstName = firstName;
+      let finalLastName = lastName;
+      let finalAhvNumber = ahvNumber;
+
+      if (isEncrypted) {
+        if (!hasKey || !encryptionKey) {
+            setFormError("You must unlock your session by generating or uploading your encryption key to encrypt data.");
+            setIsSubmitting(false);
+            return;
+        }
+        finalFirstName = await encryptData(firstName, encryptionKey);
+        finalLastName = await encryptData(lastName, encryptionKey);
+        finalAhvNumber = await encryptData(ahvNumber, encryptionKey);
+      }
+
+      const payload = {
+        first_name: finalFirstName,
+        last_name: finalLastName,
+        address,
+        city,
+        postal_code: postalCode,
+        main_diagnosis: mainDiagnosis,
+        ahv_number: finalAhvNumber,
+        is_encrypted: isEncrypted
+      };
+
       if (editingId) {
         await api.put(`/dependents/${editingId}/`, payload);
       } else {
@@ -131,12 +186,12 @@ export const Dependents = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-6">{t('dependents_title') || 'Dependents'}</h1>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
             {error}
           </div>
         )}
 
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+        <div className="bg-white shadow overflow-hidden sm:rounded-2xl mb-8">
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
               {editingId ? t('edit') : t('add_dependent') || 'Add New Dependent'}
@@ -147,9 +202,9 @@ export const Dependents = () => {
             </p>
           </div>
 
-          <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
+          <div className="border-t border-gray-300 px-4 py-5 sm:p-6">
             {formError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
                 {formError}
               </div>
             )}
@@ -163,7 +218,7 @@ export const Dependents = () => {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   />
                 </div>
                 <div>
@@ -174,7 +229,7 @@ export const Dependents = () => {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   />
                 </div>
               </div>
@@ -187,7 +242,7 @@ export const Dependents = () => {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
@@ -200,7 +255,7 @@ export const Dependents = () => {
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   />
                 </div>
                 <div>
@@ -211,7 +266,7 @@ export const Dependents = () => {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   />
                 </div>
               </div>
@@ -224,7 +279,7 @@ export const Dependents = () => {
                   value={mainDiagnosis}
                   onChange={(e) => setMainDiagnosis(e.target.value)}
                   required
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
@@ -237,16 +292,29 @@ export const Dependents = () => {
                   onChange={(e) => setAhvNumber(e.target.value)}
                   placeholder="756.xxxx.xxxx.xx"
                   required
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
                 <p className="mt-1 text-xs text-gray-500">{t('format_ahv') || 'Format: 756.xxxx.xxxx.xx'}</p>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  id="isEncrypted"
+                  type="checkbox"
+                  checked={isEncrypted}
+                  onChange={(e) => setIsEncrypted(e.target.checked)}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label htmlFor="isEncrypted" className="ml-2 block text-sm text-gray-900">
+                  Encrypt sensitive data (First Name, Last Name, AHV Number) before saving.
+                </label>
               </div>
 
               <div className="flex gap-4">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-xl shadow-md text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
                   {isSubmitting ? t('loading_data') || 'Saving...' : (editingId ? t('edit') : t('add') || 'Add Dependent')}
                 </button>
@@ -255,7 +323,7 @@ export const Dependents = () => {
                     type="button"
                     onClick={handleCancelEdit}
                     disabled={isSubmitting}
-                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200"
+                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-gray-200"
                   >
                     {t('cancel') || 'Cancel'}
                   </button>
@@ -265,11 +333,11 @@ export const Dependents = () => {
           </div>
         </div>
 
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="bg-white shadow overflow-hidden sm:rounded-2xl">
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">{t('your_dependents') || 'Your Dependents'}</h3>
           </div>
-          <div className="border-t border-gray-200">
+          <div className="border-t border-gray-300">
             {dependents.length === 0 ? (
               <div className="px-4 py-5 sm:px-6 text-gray-500 text-sm">
                 {t('no_dependents_found') || 'No dependents found. Add one above.'}
@@ -280,7 +348,7 @@ export const Dependents = () => {
                   <li key={dependent.id} className="px-4 py-4 sm:px-6 hover:bg-gray-50">
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-indigo-600 truncate">
+                        <div className="text-sm font-medium text-teal-600 truncate">
                           {dependent.first_name} {dependent.last_name}
                         </div>
                       </div>
@@ -290,7 +358,7 @@ export const Dependents = () => {
                         </span>
                         <button
                           onClick={() => handleEditClick(dependent)}
-                          className="text-sm text-indigo-600 hover:text-indigo-900 font-medium"
+                          className="text-sm text-teal-600 hover:text-teal-900 font-medium"
                         >
                           {t('edit') || 'Edit'}
                         </button>
@@ -310,7 +378,7 @@ export const Dependents = () => {
                       <div className="mt-2 flex items-center text-sm sm:mt-0">
                         <Link
                           to={`/dependents/${dependent.id}/health`}
-                          className="ml-4 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          className="ml-4 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-xl shadow-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                         >
                           {t('health_data_title') || 'Health Data'}
                         </Link>
