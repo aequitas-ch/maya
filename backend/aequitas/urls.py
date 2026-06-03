@@ -32,6 +32,7 @@ urlpatterns = [
     path("api/health/", include("health.urls")),
     path("api/settlement/", include("settlement.urls")),
     path("api/", include("core.urls")),
+    path('api/schedule/', include('schedule.urls')),
 ]
 
 if settings.DEBUG:

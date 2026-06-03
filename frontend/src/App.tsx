@@ -12,6 +12,7 @@ import { Dependents } from './pages/Dependents';
 import { Health } from './pages/Health/Health';
 import { AdminDashboard } from './pages/Admin/AdminDashboard';
 import { CostApprovals } from './pages/Settlement/CostApprovals';
+import { Schedule } from './pages/Schedule/Schedule';
 
 function App() {
   return (
@@ -20,24 +21,25 @@ function App() {
         <EncryptionProvider>
           <Router>
             <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+              <Navbar />
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-              <Route element={<ProtectedRoute />}>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/dependents" element={<Dependents />} />
-                <Route path="/health" element={<Health />} />
-                <Route path="/dependents/:id/health" element={<Health />} />
-                <Route path="/cost-approvals" element={<CostApprovals />} />
-              </Route>
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/dependents" element={<Dependents />} />
+                  <Route path="/health" element={<Health />} />
+                  <Route path="/dependents/:id/health" element={<Health />} />
+                  <Route path="/cost-approvals" element={<CostApprovals />} />
+                  <Route path="/schedule" element={<Schedule />} />
+                </Route>
 
               <Route element={<ProtectedRoute adminOnly={true} />}>
                 <Route path="/admin" element={<AdminDashboard />} />
               </Route>
-            </Routes>
+              </Routes>
             </div>
           </Router>
         </EncryptionProvider>
