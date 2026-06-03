@@ -39,11 +39,24 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker europe-west6-docker.pkg.dev --quiet
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+
       - name: Build Backend Image
-        run: docker build -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} ./backend
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          docker buildx build \
+            --cache-from=type=gha,scope=backend-test \
+            --cache-to=type=gha,mode=max,scope=backend-test \
+            --load \
+            -t europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-test:${{ github.sha }} \
+            ./backend
 
       - name: Push Backend Image
-        run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }}
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: docker push europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-test:${{ github.sha }}
 
       - name: Resolve Backend Secret Key
         id: backend-secret-test
@@ -60,6 +73,7 @@ jobs:
 
       - name: Deploy Backend to Cloud Run
         env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
@@ -77,7 +91,7 @@ jobs:
           fi
 
           gcloud run deploy aequitas-backend-test \
-            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-test:${{ github.sha }} \
             --region europe-west6 \
             --platform managed \
             --set-env-vars "${ENV_VARS}" \
@@ -85,6 +99,7 @@ jobs:
 
       - name: Seed Database
         env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -97,14 +112,14 @@ jobs:
           # The database is managed entirely through the deployed instance.
           # To seed the data, we execute the command via a Cloud Run job.
           gcloud run jobs create aequitas-seed-test \
-            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-test:${{ github.sha }} \
             --command python \
             --args manage.py,seed_test_user \
             --region europe-west6 \
             --set-env-vars "${ENV_VARS}" || true
 
           gcloud run jobs update aequitas-seed-test \
-            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-test:${{ github.sha }} \
             --command python \
             --args manage.py,seed_test_user \
             --region europe-west6 \
@@ -119,19 +134,28 @@ jobs:
           echo "backend_url=$BACKEND_URL" >> $GITHUB_OUTPUT
 
       - name: Build Frontend Image
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         run: |
-          docker build \
+          docker buildx build \
+            --cache-from=type=gha,scope=frontend-test \
+            --cache-to=type=gha,mode=max,scope=frontend-test \
+            --load \
             --build-arg VITE_API_URL=${{ steps.get-backend-url.outputs.backend_url }} \
-            -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-test:${{ github.sha }} \
+            -t europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-test:${{ github.sha }} \
             ./frontend
 
       - name: Push Frontend Image
-        run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-test:${{ github.sha }}
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: docker push europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-test:${{ github.sha }}
 
       - name: Deploy Frontend to Cloud Run
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         run: |
           gcloud run deploy aequitas-frontend-test \
-            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-test:${{ github.sha }} \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-test:${{ github.sha }} \
             --region europe-west6 \
             --platform managed \
             --allow-unauthenticated
@@ -186,6 +210,13 @@ jobs:
         working-directory: tests/api/Aequitas
         run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --reporter-junit results.xml
 
+      - name: Upload Test Results Artifact
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: bruno-test-results
+          path: tests/api/Aequitas/results.xml
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
@@ -213,11 +244,24 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker europe-west6-docker.pkg.dev --quiet
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+
       - name: Build Backend Image
-        run: docker build -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }} ./backend
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          docker buildx build \
+            --cache-from=type=gha,scope=backend-prod \
+            --cache-to=type=gha,mode=max,scope=backend-prod \
+            --load \
+            -t europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-prod:${{ github.sha }} \
+            ./backend
 
       - name: Push Backend Image
-        run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }}
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: docker push europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-prod:${{ github.sha }}
 
       - name: Resolve Backend Secret Key
         id: backend-secret-prod
@@ -234,25 +278,38 @@ jobs:
 
       - name: Deploy Backend to Cloud Run
         env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-prod.outputs.secret_key }}
         run: |
           gcloud run deploy aequitas-backend \
-            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }} \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-prod:${{ github.sha }} \
             --region europe-west6 \
             --platform managed \
             --set-env-vars SECRET_KEY=${BACKEND_SECRET_KEY} \
             --allow-unauthenticated
 
       - name: Build Frontend Image
-        run: docker build -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-prod:${{ github.sha }} ./frontend
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          docker buildx build \
+            --cache-from=type=gha,scope=frontend-prod \
+            --cache-to=type=gha,mode=max,scope=frontend-prod \
+            --load \
+            -t europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-prod:${{ github.sha }} \
+            ./frontend
 
       - name: Push Frontend Image
-        run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-prod:${{ github.sha }}
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: docker push europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-prod:${{ github.sha }}
 
       - name: Deploy Frontend to Cloud Run
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         run: |
           gcloud run deploy aequitas-frontend \
-            --image europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-prod:${{ github.sha }} \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-prod:${{ github.sha }} \
             --region europe-west6 \
             --platform managed \
             --allow-unauthenticated
