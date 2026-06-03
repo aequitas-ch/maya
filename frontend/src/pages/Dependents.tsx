@@ -131,12 +131,12 @@ export const Dependents = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-6">{t('dependents_title') || 'Dependents'}</h1>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
             {error}
           </div>
         )}
 
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+        <div className="bg-white shadow overflow-hidden sm:rounded-2xl mb-8">
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
               {editingId ? t('edit') : t('add_dependent') || 'Add New Dependent'}
@@ -147,9 +147,9 @@ export const Dependents = () => {
             </p>
           </div>
 
-          <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
+          <div className="border-t border-gray-300 px-4 py-5 sm:p-6">
             {formError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
                 {formError}
               </div>
             )}
@@ -163,7 +163,7 @@ export const Dependents = () => {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   />
                 </div>
                 <div>
@@ -174,7 +174,7 @@ export const Dependents = () => {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   />
                 </div>
               </div>
@@ -187,7 +187,7 @@ export const Dependents = () => {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
@@ -200,7 +200,7 @@ export const Dependents = () => {
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   />
                 </div>
                 <div>
@@ -211,7 +211,7 @@ export const Dependents = () => {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   />
                 </div>
               </div>
@@ -224,7 +224,7 @@ export const Dependents = () => {
                   value={mainDiagnosis}
                   onChange={(e) => setMainDiagnosis(e.target.value)}
                   required
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
@@ -237,7 +237,7 @@ export const Dependents = () => {
                   onChange={(e) => setAhvNumber(e.target.value)}
                   placeholder="756.xxxx.xxxx.xx"
                   required
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
                 <p className="mt-1 text-xs text-gray-500">{t('format_ahv') || 'Format: 756.xxxx.xxxx.xx'}</p>
               </div>
@@ -246,7 +246,7 @@ export const Dependents = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-xl shadow-md text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
                   {isSubmitting ? t('loading_data') || 'Saving...' : (editingId ? t('edit') : t('add') || 'Add Dependent')}
                 </button>
@@ -255,7 +255,7 @@ export const Dependents = () => {
                     type="button"
                     onClick={handleCancelEdit}
                     disabled={isSubmitting}
-                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200"
+                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-gray-200"
                   >
                     {t('cancel') || 'Cancel'}
                   </button>
@@ -265,11 +265,11 @@ export const Dependents = () => {
           </div>
         </div>
 
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="bg-white shadow overflow-hidden sm:rounded-2xl">
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">{t('your_dependents') || 'Your Dependents'}</h3>
           </div>
-          <div className="border-t border-gray-200">
+          <div className="border-t border-gray-300">
             {dependents.length === 0 ? (
               <div className="px-4 py-5 sm:px-6 text-gray-500 text-sm">
                 {t('no_dependents_found') || 'No dependents found. Add one above.'}
@@ -280,7 +280,7 @@ export const Dependents = () => {
                   <li key={dependent.id} className="px-4 py-4 sm:px-6 hover:bg-gray-50">
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-indigo-600 truncate">
+                        <div className="text-sm font-medium text-teal-600 truncate">
                           {dependent.first_name} {dependent.last_name}
                         </div>
                       </div>
@@ -290,7 +290,7 @@ export const Dependents = () => {
                         </span>
                         <button
                           onClick={() => handleEditClick(dependent)}
-                          className="text-sm text-indigo-600 hover:text-indigo-900 font-medium"
+                          className="text-sm text-teal-600 hover:text-teal-900 font-medium"
                         >
                           {t('edit') || 'Edit'}
                         </button>
@@ -310,7 +310,7 @@ export const Dependents = () => {
                       <div className="mt-2 flex items-center text-sm sm:mt-0">
                         <Link
                           to={`/dependents/${dependent.id}/health`}
-                          className="ml-4 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          className="ml-4 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-xl shadow-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                         >
                           {t('health_data_title') || 'Health Data'}
                         </Link>

@@ -179,10 +179,10 @@ export const Health = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">{t('health_data_title') || 'Health Data'}</h1>
-          <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800" dangerouslySetInnerHTML={{ __html: t('back_to_dependents') || '&larr; Back to Dependents' }}>
+          <Link to="/dependents" className="text-teal-600 hover:text-teal-800" dangerouslySetInnerHTML={{ __html: t('back_to_dependents') || '&larr; Back to Dependents' }}>
           </Link>
         </div>
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6 text-center text-gray-500">
+        <div className="bg-white shadow overflow-hidden sm:rounded-2xl p-6 text-center text-gray-500">
           {t('no_dependents_create_first') || 'Keine Werte vorhanden. Bitte erstellen Sie zuerst einen Dependent (Abhängigen).'}
         </div>
       </div>
@@ -193,7 +193,7 @@ export const Health = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">{t('health_data_title') || 'Health Data'}</h1>
-        <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800" dangerouslySetInnerHTML={{ __html: t('back_to_dependents') || '&larr; Back to Dependents' }}>
+        <Link to="/dependents" className="text-teal-600 hover:text-teal-800" dangerouslySetInnerHTML={{ __html: t('back_to_dependents') || '&larr; Back to Dependents' }}>
         </Link>
       </div>
 
@@ -206,7 +206,7 @@ export const Health = () => {
             id="dependent-select"
             value={selectedDependentId || ''}
             onChange={(e) => setSelectedDependentId(parseInt(e.target.value))}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-xl"
           >
             {dependents.map((dep) => (
               <option key={dep.id} value={dep.id}>
@@ -218,7 +218,7 @@ export const Health = () => {
       )}
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
           {error}
         </div>
       )}
@@ -229,10 +229,10 @@ export const Health = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Form Column */}
         <div className="md:col-span-1">
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white shadow rounded-2xl p-6">
             <h2 className="text-xl font-semibold mb-4">{t('add_new_record') || 'Add New Record'}</h2>
             {formError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">
                 {formError}
               </div>
             )}
@@ -244,7 +244,7 @@ export const Health = () => {
                   required
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export const Health = () => {
                 <div className="flex gap-2 mb-2">
                   <select
                     onChange={handleMetricSelect}
-                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                     defaultValue=""
                   >
                     <option value="" disabled>{t('select_existing') || 'Select existing...'}</option>
@@ -268,7 +268,7 @@ export const Health = () => {
                   placeholder={t('metric_placeholder') || 'e.g. Weight, Height'}
                   value={metricName}
                   onChange={(e) => setMetricName(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
@@ -279,7 +279,7 @@ export const Health = () => {
                   placeholder={t('unit_placeholder') || 'e.g. kg, cm'}
                   value={metricUnit}
                   onChange={(e) => setMetricUnit(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
@@ -290,7 +290,7 @@ export const Health = () => {
                   required
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
@@ -300,14 +300,14 @@ export const Health = () => {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   rows={3}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-xl shadow-md text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 ${
                   isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
@@ -321,7 +321,7 @@ export const Health = () => {
           <div className="md:col-span-2 space-y-6">
             {Object.keys(chartDataByMetric).length > 0 ? (
               Object.values(chartDataByMetric).map((metricData) => (
-                <div key={metricData.name} className="bg-white shadow rounded-lg p-6">
+                <div key={metricData.name} className="bg-white shadow rounded-2xl p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">
                     {metricData.name} {metricData.unit ? `(${metricData.unit})` : ''} - Trend
                   </h3>
@@ -340,13 +340,13 @@ export const Health = () => {
                 </div>
               ))
             ) : (
-              <div className="bg-white shadow rounded-lg p-6 text-center text-gray-500">
+              <div className="bg-white shadow rounded-2xl p-6 text-center text-gray-500">
                 {t('no_numerical_data') || 'No numerical data available to display charts.'}
               </div>
             )}
 
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <div className="bg-white shadow rounded-2xl overflow-hidden">
+              <div className="px-4 py-5 sm:px-6 border-b border-gray-300">
                 <h3 className="text-lg leading-6 font-medium text-gray-900">{t('recent_records') || 'Recent Records'}</h3>
               </div>
               <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
@@ -356,7 +356,7 @@ export const Health = () => {
                       <li key={record.id} className="p-4 hover:bg-gray-50">
                         <div className="flex justify-between items-center">
                           <div>
-                            <p className="text-sm font-medium text-indigo-600 truncate">
+                            <p className="text-sm font-medium text-teal-600 truncate">
                               {record.metric.name} {record.metric.unit ? `(${record.metric.unit})` : ''}
                             </p>
                             <p className="mt-1 text-sm text-gray-500">

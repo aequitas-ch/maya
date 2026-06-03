@@ -121,7 +121,7 @@ export const Profile = () => {
 
   return (
     <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
-      <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+      <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">
             <h3 className="text-lg font-medium leading-6 text-gray-900">{t('profile_title') || 'Profile'}</h3>
@@ -132,7 +132,7 @@ export const Profile = () => {
           <div className="mt-5 md:mt-0 md:col-span-2">
             <form onSubmit={handleSubmit}>
               {message.text && (
-                <div className={`mb-4 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                <div className={`mb-4 p-4 rounded-xl ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                   {message.text}
                 </div>
               )}
@@ -159,7 +159,7 @@ export const Profile = () => {
                       name="profile_picture"
                       id="profile_picture"
                       onChange={handleFileChange}
-                      className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                      className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                     />
                   </div>
                 </div>
@@ -173,7 +173,7 @@ export const Profile = () => {
                     required
                     value={formData.first_name}
                     onChange={handleChange}
-                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
                 </div>
 
@@ -186,7 +186,7 @@ export const Profile = () => {
                     required
                     value={formData.last_name}
                     onChange={handleChange}
-                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
                 </div>
 
@@ -199,7 +199,7 @@ export const Profile = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
                 </div>
 
@@ -211,7 +211,7 @@ export const Profile = () => {
                     id="display_name"
                     value={formData.display_name}
                     onChange={handleChange}
-                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
                   <p className="mt-2 text-sm text-gray-500">
                     {t('display_name_desc') || 'This is the name that will be displayed to other users.'}
@@ -223,7 +223,7 @@ export const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+                  className="bg-teal-600 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
                   {loading ? t('loading_data') : t('save') || 'Save'}
                 </button>
@@ -233,7 +233,7 @@ export const Profile = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+      <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">
             <h3 className="text-lg font-medium leading-6 text-gray-900">{t('change_password') || 'Change Password'}</h3>
@@ -244,7 +244,7 @@ export const Profile = () => {
           <div className="mt-5 md:mt-0 md:col-span-2">
             <form onSubmit={handlePasswordSubmit}>
               {passwordMessage.text && (
-                <div className={`mb-4 p-4 rounded-md ${passwordMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                <div className={`mb-4 p-4 rounded-xl ${passwordMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                   {passwordMessage.text}
                 </div>
               )}
@@ -258,7 +258,7 @@ export const Profile = () => {
                     required
                     value={passwordData.old_password}
                     onChange={handlePasswordChange}
-                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
                 </div>
 
@@ -271,7 +271,7 @@ export const Profile = () => {
                     required
                     value={passwordData.new_password}
                     onChange={handlePasswordChange}
-                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
                 </div>
 
@@ -284,7 +284,7 @@ export const Profile = () => {
                     required
                     value={passwordData.confirm_password}
                     onChange={handlePasswordChange}
-                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border"
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
                 </div>
               </div>
@@ -293,7 +293,7 @@ export const Profile = () => {
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+                  className="bg-teal-600 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
                   {passwordLoading ? t('loading_data') : t('save') || 'Save'}
                 </button>

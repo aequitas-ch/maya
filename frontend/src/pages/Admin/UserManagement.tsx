@@ -71,7 +71,7 @@ export const UserManagement = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button onClick={() => toggleStaffStatus(user)} className="text-indigo-600 hover:text-indigo-900">
+                  <button onClick={() => toggleStaffStatus(user)} className="text-teal-600 hover:text-teal-900">
                     {user.is_staff ? t('remove_admin') : t('make_admin')}
                   </button>
                 </td>
