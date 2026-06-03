@@ -86,9 +86,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def upcoming(self, request):
         """Returns the next 3 upcoming appointments across all user's dependents."""
-        today = datetime.now().date()
-        current_time = datetime.now().time()
-
+        from django.utils import timezone
+        now = timezone.localtime()
+        today = now.date()
+        current_time = now.time()
         # Appointments today after current time OR appointments in the future
         queryset = self.get_queryset().filter(
             start_date__gte=today
