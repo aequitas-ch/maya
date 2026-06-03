@@ -35,6 +35,9 @@ describe('Profile Flow', () => {
     // Go to profile via the new avatar icon
     cy.get('nav a[href="/profile"]').click();
 
+    cy.injectAxe();
+    cy.checkA11y();
+
     // Change display name
     cy.get('input[name="display_name"]').clear().type('Jane Updated');
 

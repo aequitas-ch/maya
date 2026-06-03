@@ -53,6 +53,9 @@ describe('Health Data Management', () => {
     cy.contains('Health Data').click()
     cy.url().should('include', '/health')
 
+    cy.injectAxe();
+    cy.checkA11y();
+
     // Add a numeric health record
     cy.get('input[placeholder="e.g. Weight, Height"]').type('Weight')
     cy.get('input[placeholder="e.g. kg, cm"]').type('kg')

@@ -40,6 +40,9 @@ describe('Dependents Flow', () => {
     cy.contains('Dependents').click();
     cy.url().should('include', '/dependents');
 
+    cy.injectAxe();
+    cy.checkA11y();
+
     // --- Create first dependent ---
     cy.get('input[id="firstName"]').type('Anna');
     cy.get('input[id="lastName"]').type('Müller');

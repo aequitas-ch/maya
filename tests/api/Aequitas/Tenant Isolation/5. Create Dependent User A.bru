@@ -1,0 +1,36 @@
+meta {
+  name: 5. Create Dependent User A
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/api/dependents/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token_a}}
+}
+
+body:json {
+  {
+    "first_name": "Child",
+    "last_name": "A",
+    "address": "Street 1",
+    "city": "City A",
+    "postal_code": "1000",
+    "main_diagnosis": "None",
+    "ahv_number": "756.1234.5678.90"
+  }
+}
+
+vars:post-response {
+  dependent_id_a: res.body.id
+}
+
+assert {
+  res.status: eq 201
+  res.body.first_name: eq Child
+}

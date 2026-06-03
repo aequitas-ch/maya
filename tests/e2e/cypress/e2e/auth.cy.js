@@ -2,6 +2,9 @@ describe('Authentication Flow', () => {
   it('successfully registers, logins, and logouts a new user', () => {
     // 1. Register
     cy.visit('/register');
+    cy.injectAxe();
+    cy.checkA11y();
+
     const randomString = Math.random().toString(36).substring(2, 10);
     const username = `testuser_${randomString}`;
     const email = `testuser_${randomString}@example.com`;
@@ -18,6 +21,9 @@ describe('Authentication Flow', () => {
     // Verify redirect to login
     cy.url().should('include', '/login');
     cy.contains('button', 'Login').should('be.visible');
+
+    cy.injectAxe();
+    cy.checkA11y();
 
     // 2. Login
     cy.get('input[name="username"]').type(username);

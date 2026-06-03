@@ -1,0 +1,32 @@
+meta {
+  name: 1. Register Users
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/users/register/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "tenant_user_a_{{timestamp}}",
+    "email": "tenant_user_a_{{timestamp}}@example.com",
+    "password": "StrongPassword123!",
+    "first_name": "Tenant",
+    "last_name": "A"
+  }
+}
+
+script:pre-request {
+  const timestamp = Date.now();
+  bru.setVar("timestamp", timestamp);
+  bru.setVar("user_a_username", "tenant_user_a_" + timestamp);
+  bru.setVar("user_a_password", "StrongPassword123!");
+}
+
+assert {
+  res.status: eq 201
+}
