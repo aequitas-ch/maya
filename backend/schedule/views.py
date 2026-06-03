@@ -70,10 +70,8 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                         appt.save()
                         if institutions_data:
                             appt.institutions.set(institutions_data)
-                        appointments.append(appt)
-
-                return Response(AppointmentSerializer(appointments, many=True).data, status=status.HTTP_201_CREATED)
-
+                output_serializer = self.get_serializer(appointments, many=True)
+                return Response(output_serializer.data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({"detail": f"Invalid recurrence pattern: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
