@@ -8,12 +8,12 @@ from .serializers import (
     CostApprovalStatusSerializer, CostApprovalLogSerializer
 )
 
-class InstitutionViewSet(viewsets.ModelViewSet):
+class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Institution.objects.all().order_by('name')
     serializer_class = InstitutionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class InsuranceViewSet(viewsets.ModelViewSet):
+class InsuranceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Insurance.objects.all().order_by('name')
     serializer_class = InsuranceSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -27,6 +27,14 @@ class CostApprovalViewSet(viewsets.ModelViewSet):
         return CostApproval.objects.filter(
             dependent__users=self.request.user
         ).order_by('next_reminder')
+
+    def perform_create(self, serializer):
+        # Validate that the requested dependent_id belongs to the current user
+        dependent = serializer.validated_data.get('dependent')
+        if not self.request.user.dependents.filter(id=dependent.id).exists():
+            raise permissions.PermissionDenied("You do not have permission to add cost approvals for this dependent.")
+
+        serializer.save()
 
     @action(detail=True, methods=['post'])
     def add_status(self, request, pk=None):

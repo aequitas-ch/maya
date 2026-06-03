@@ -25,6 +25,8 @@ services:
       - SECRET_KEY=django-insecure-test-key-for-local-dev
       - DEBUG=True
       - CORS_ALLOW_ALL_ORIGINS=True
+      - TEST_USER_PASSWORD=Secure123$
+      - ADMIN_USER_PASSWORD=adminpassword123
     depends_on:
       - db
 
