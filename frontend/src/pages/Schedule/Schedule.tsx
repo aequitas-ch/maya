@@ -45,7 +45,7 @@ export const Schedule = () => {
       setAppointments(appts);
 
       const [depRes, instRes] = await Promise.all([
-        api.get<Dependent[]>('/core/dependents/'),
+        api.get<Dependent[]>('/dependents/'),
         api.get<Institution[]>('/settlement/institutions/')
       ]);
       setDependents(depRes.data);
