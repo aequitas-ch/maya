@@ -1,0 +1,30 @@
+meta {
+  name: Admin Login
+  type: http
+  seq: 0
+}
+
+post {
+  url: {{base_url}}/api/token/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "admin",
+    "password": "aequitas-maya123$"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("access_token", res.body.access);
+    bru.setVar("refresh_token", res.body.refresh);
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.access: isDefined
+}

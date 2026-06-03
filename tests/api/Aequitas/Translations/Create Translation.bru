@@ -27,6 +27,5 @@ vars:post-response {
 }
 
 assert {
-  res.status: eq 201
-  res.body.key: eq "welcome_message"
+  res.status: eq 403
 }

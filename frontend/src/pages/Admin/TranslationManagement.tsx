@@ -69,7 +69,7 @@ export const TranslationManagement = () => {
         <h2 className="text-xl font-semibold">{t('translations')}</h2>
         <button
           onClick={() => { setEditingId(-1); setEditForm({ key: '', en: '', de: '' }); }}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          className="bg-teal-600 text-white px-4 py-2 rounded-xl hover:bg-teal-700"
         >
           {t('add_translation')}
         </button>
@@ -117,7 +117,7 @@ export const TranslationManagement = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{item.en}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item.de}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button onClick={() => { setEditingId(item.id); setEditForm(item); }} className="text-indigo-600 hover:text-indigo-900 mr-4">{t('edit')}</button>
+                      <button onClick={() => { setEditingId(item.id); setEditForm(item); }} className="text-teal-600 hover:text-teal-900 mr-4">{t('edit')}</button>
                       <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900">{t('delete')}</button>
                     </td>
                   </>
