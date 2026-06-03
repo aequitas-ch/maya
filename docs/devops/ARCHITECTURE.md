@@ -24,16 +24,16 @@ The workflow triggers on pushes to the `test` and `prod` branches.
 
 1. **Test Environment (`test` branch)**
    - **Trigger:** Push to the `test` branch.
-   - **Build:** Docker images for Backend and Frontend are built and pushed to Artifact Registry (`aequitas-backend-test`, `aequitas-frontend-test`).
+   - **Build:** Docker images for Backend and Frontend are built using Buildx with GitHub Actions caching (`type=gha`), and pushed to Artifact Registry (`aequitas-backend-test`, `aequitas-frontend-test`).
    - **Deploy:** Images are deployed to Google Cloud Run.
    - **Database Seeding:** A Cloud Run Job (`aequitas-seed-test`) is triggered to run `python manage.py seed_test_user` to prepare data for testing.
    - **Testing:**
      - **Cypress:** End-to-End tests are executed against the newly deployed Test Frontend and Backend URLs. Results are recorded to Cypress Cloud.
-     - **Bruno:** API tests are run against the deployed Backend API. Results are published to the GitHub Actions summary.
+     - **Bruno:** API tests are run against the deployed Backend API. Results are published to the GitHub Actions summary. If they fail, an artifact with the test results is generated to aid debugging.
 
 2. **Production Environment (`prod` branch)**
    - **Trigger:** Push to the `prod` branch.
-   - **Build & Deploy:** Similar to the Test environment, but targets production Artifact Registry images (`aequitas-backend-prod`, `aequitas-frontend-prod`) and Cloud Run services (`aequitas-backend`, `aequitas-frontend`).
+   - **Build & Deploy:** Similar to the Test environment, utilizing Buildx caching, but targets production Artifact Registry images (`aequitas-backend-prod`, `aequitas-frontend-prod`) and Cloud Run services (`aequitas-backend`, `aequitas-frontend`).
 
 ## Local Development Structure
 
@@ -42,7 +42,4 @@ To run the application locally, refer to the `docker-compose.yml` file in the ro
 ## Maintenance
 
 ### Branch Cleanup
-Stale feature branches should be deleted regularly once they are merged into `main` or `test`. See `DevOps.md` for cleanup scripts.
-
-### Continuous Improvement
-Future updates to the CI/CD pipeline should consider implementing Docker Layer Caching (e.g., using `type=gha`) to significantly reduce GitHub Actions execution time.
+Stale feature branches should be deleted regularly once they are merged into `test`. See `DevOps.md` for cleanup scripts.

@@ -39,8 +39,17 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker europe-west6-docker.pkg.dev --quiet
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build Backend Image
-        run: docker build -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} ./backend
+        run: |
+          docker buildx build \
+            --cache-from=type=gha,scope=backend-test \
+            --cache-to=type=gha,mode=max,scope=backend-test \
+            --load \
+            -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }} \
+            ./backend
 
       - name: Push Backend Image
         run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-test:${{ github.sha }}
@@ -112,7 +121,10 @@ jobs:
 
       - name: Build Frontend Image
         run: |
-          docker build \
+          docker buildx build \
+            --cache-from=type=gha,scope=frontend-test \
+            --cache-to=type=gha,mode=max,scope=frontend-test \
+            --load \
             --build-arg VITE_API_URL=${{ steps.get-backend-url.outputs.backend_url }} \
             -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-test:${{ github.sha }} \
             ./frontend
@@ -178,6 +190,13 @@ jobs:
         working-directory: tests/api/Aequitas
         run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --reporter-junit results.xml
 
+      - name: Upload Test Results Artifact
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: bruno-test-results
+          path: tests/api/Aequitas/results.xml
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
@@ -205,8 +224,17 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker europe-west6-docker.pkg.dev --quiet
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build Backend Image
-        run: docker build -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }} ./backend
+        run: |
+          docker buildx build \
+            --cache-from=type=gha,scope=backend-prod \
+            --cache-to=type=gha,mode=max,scope=backend-prod \
+            --load \
+            -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }} \
+            ./backend
 
       - name: Push Backend Image
         run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-backend-prod:${{ github.sha }}
@@ -236,7 +264,13 @@ jobs:
             --allow-unauthenticated
 
       - name: Build Frontend Image
-        run: docker build -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-prod:${{ github.sha }} ./frontend
+        run: |
+          docker buildx build \
+            --cache-from=type=gha,scope=frontend-prod \
+            --cache-to=type=gha,mode=max,scope=frontend-prod \
+            --load \
+            -t europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-prod:${{ github.sha }} \
+            ./frontend
 
       - name: Push Frontend Image
         run: docker push europe-west6-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/aequitas/aequitas-frontend-prod:${{ github.sha }}
