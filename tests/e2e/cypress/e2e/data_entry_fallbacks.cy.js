@@ -9,7 +9,7 @@ describe("Data Entry with Fallbacks", () => {
       email: `fallback_${randomString}@example.com`,
       first_name: "Test",
       last_name: "Parent",
-      password: "StrongPassword123!",
+      password: `TestPass123!${randomString}`,
     };
 
     const apiUrl = `${Cypress.env("apiUrl") || "http://127.0.0.1:8000"}/api/users/register/`;

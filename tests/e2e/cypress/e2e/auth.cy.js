@@ -8,7 +8,7 @@ describe("Authentication Flow", () => {
     const randomString = Math.random().toString(36).substring(2, 10);
     const username = `testuser_${randomString}`;
     const email = `testuser_${randomString}@example.com`;
-    const password = "StrongPassword123!";
+    const password = `TestPass123!${randomString}`;
 
     cy.get('input[name="username"]').type(username);
     cy.get('input[name="email"]').type(email);
@@ -58,7 +58,7 @@ describe("Authentication Flow", () => {
         email,
         first_name: "John",
         last_name: "Doe",
-        password: "StrongPassword123!",
+        password: `TestPass123!${randomString}`,
       },
       failOnStatusCode: false,
     });
@@ -68,7 +68,7 @@ describe("Authentication Flow", () => {
     cy.get('input[name="first_name"]').type("John");
     cy.get('input[name="last_name"]').type("Doe");
     cy.get('input[name="display_name"]').type("John Doe Jr.");
-    cy.get('input[name="password"]').type("StrongPassword123!");
+    cy.get('input[name="password"]').type(`TestPass123!${randomString}`);
 
     cy.get('button[type="submit"]').click();
 
