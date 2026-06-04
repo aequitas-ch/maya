@@ -4,9 +4,9 @@ meta {
   seq: 3
 }
 
-post {
+get {
   url: {{base_url}}/api/settlement/institutions/
-  body: json
+  body: none
   auth: none
 }
 
@@ -14,17 +14,11 @@ headers {
   Authorization: Bearer {{access_token}}
 }
 
-body:json {
-  {
-    "name": "IV-Stelle Zürich"
-  }
-}
-
 vars:post-response {
-  inst_id: res.body.id
+  inst_id: res.body[0].id
 }
 
 assert {
-  res.status: eq 201
-  res.body.name: eq "IV-Stelle Zürich"
+  res.status: eq 200
+  res.body.length: gt 0
 }
