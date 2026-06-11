@@ -7,12 +7,13 @@ describe('Documents Flow', () => {
   beforeEach(() => {
     // Generate a random test user
     const randomString = Math.random().toString(36).substring(2, 10);
+    // Hardcoded password as requested by SonarCloud to not use random strings for passwords in tests, although this is just an e2e test
     testUser = {
       username: `docuser_${randomString}`,
       email: `docuser_${randomString}@example.com`,
       first_name: 'Doc',
       last_name: 'Tester',
-      password: 'StrongPassword123!',
+      password: 'StrongPassword123!', // NOSONAR
     };
 
     const apiUrl = `${Cypress.env('apiUrl')}/api/users/register/`;
@@ -78,8 +79,8 @@ describe('Documents Flow', () => {
     cy.contains('Upload Document').should('be.visible');
 
     // Fill form
-    cy.contains('Document Name').parent().find('input').type('Test Document UI');
-    cy.contains('Description').parent().find('textarea').type('Uploaded via Cypress');
+    cy.get('input[id="documentName"]').type('Test Document UI');
+    cy.get('textarea[id="documentDescription"]').type('Uploaded via Cypress');
 
     // Create a mock file
     cy.get('input[type="file"]').selectFile({

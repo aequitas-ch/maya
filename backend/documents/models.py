@@ -12,4 +12,4 @@ class Document(models.Model):
     institution = models.ForeignKey(Institution, on_delete=models.SET_NULL, null=True, blank=True, related_name='documents')
 
     def __str__(self):
-        return f"{self.name} - {self.dependent}"
+        return str(f"{self.name} - {self.dependent}")

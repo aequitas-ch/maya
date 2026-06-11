@@ -82,7 +82,7 @@ export const DependentDocuments: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !name) return;
+    if (!file || !name || !id) return;
 
     setIsLoading(true);
     setError(null);
@@ -92,7 +92,7 @@ export const DependentDocuments: React.FC = () => {
     formData.append('name', name);
     formData.append('description', description);
     formData.append('file', file);
-    formData.append('dependent', id!);
+    formData.append('dependent', id);
     if (institutionId) {
       formData.append('institution', institutionId);
     }
@@ -123,8 +123,12 @@ export const DependentDocuments: React.FC = () => {
       if (fileInput) fileInput.value = '';
 
       fetchDocuments();
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during upload.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An error occurred during upload.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -189,8 +193,9 @@ export const DependentDocuments: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Document Name *</label>
+                  <label htmlFor="documentName" className="block text-sm font-medium text-gray-700">Document Name *</label>
                   <input
+                    id="documentName"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -199,8 +204,9 @@ export const DependentDocuments: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Institution (Optional)</label>
+                  <label htmlFor="institutionSelect" className="block text-sm font-medium text-gray-700">Institution (Optional)</label>
                   <select
+                    id="institutionSelect"
                     value={institutionId}
                     onChange={(e) => setInstitutionId(e.target.value)}
                     className="mt-1 block w-full bg-white border border-gray-300 rounded-xl shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
@@ -214,8 +220,9 @@ export const DependentDocuments: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label htmlFor="documentDescription" className="block text-sm font-medium text-gray-700">Description</label>
                 <textarea
+                  id="documentDescription"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={2}
@@ -224,7 +231,7 @@ export const DependentDocuments: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">File *</label>
+                <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">File *</label>
                 <input
                   id="file-upload"
                   type="file"
