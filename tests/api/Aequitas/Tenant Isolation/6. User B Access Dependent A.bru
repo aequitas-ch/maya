@@ -1,0 +1,19 @@
+meta {
+  name: 6. User B Access Dependent A
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{base_url}}/api/dependents/{{dependent_id_a}}/
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token_b}}
+}
+
+assert {
+  res.status: eq 404
+}

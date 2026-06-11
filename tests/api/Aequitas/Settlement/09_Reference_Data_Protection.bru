@@ -1,0 +1,25 @@
+meta {
+  name: 08_Reference_Data_Protection
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{base_url}}/api/settlement/institutions/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "name": "New Institution Hack"
+  }
+}
+
+assert {
+  res.status: eq 405
+}

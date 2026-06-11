@@ -1,0 +1,27 @@
+meta {
+  name: 3. Login User A
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/api/users/login/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{user_a_username}}",
+    "password": "{{user_a_password}}"
+  }
+}
+
+vars:post-response {
+  access_token_a: res.body.access
+}
+
+assert {
+  res.status: eq 200
+  res.body.access: isDefined
+}
