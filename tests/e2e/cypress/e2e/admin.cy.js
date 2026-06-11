@@ -47,11 +47,11 @@ describe('Admin Dashboard', () => {
     cy.visit('/admin');
     cy.wait('@getProfile');
 
-    cy.contains('admin_dashboard').should('be.visible');
+    cy.contains('Admin Dashboard').should('be.visible');
 
     // Switch to translations tab
-    cy.contains('manage_translations').click();
-    cy.contains('translations').should('be.visible');
+    cy.contains('Manage Translations').click();
+    cy.contains('Translations').should('be.visible');
 
     // Mock getting translations
     cy.intercept('GET', '**/translations/', [{
@@ -62,7 +62,7 @@ describe('Admin Dashboard', () => {
     cy.wait('@getProfile');
     cy.wait('@getTranslations');
 
-    cy.contains('manage_translations').click();
+    cy.contains('Manage Translations').click();
     cy.contains('Test English').should('be.visible');
   });
 });

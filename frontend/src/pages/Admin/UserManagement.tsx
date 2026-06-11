@@ -47,16 +47,16 @@ export const UserManagement = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">{t('users')}</h2>
+      <h2 className="text-xl font-semibold mb-4">{t('users') || 'Users'}</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('username')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('email')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('name')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('is_admin')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('actions')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('username') || 'Username'}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('email') || 'Email'}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('name') || 'Name'}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('is_admin') || 'Is Admin'}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('actions') || 'Actions'}</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -67,12 +67,12 @@ export const UserManagement = () => {
                 <td className="px-6 py-4 whitespace-nowrap">{user.first_name} {user.last_name}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_staff ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                    {user.is_staff ? t('yes') : t('no')}
+                    {user.is_staff ? (t('yes') || 'Yes') : (t('no') || 'No')}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button onClick={() => toggleStaffStatus(user)} className="text-indigo-600 hover:text-indigo-900">
-                    {user.is_staff ? t('remove_admin') : t('make_admin')}
+                    {user.is_staff ? (t('remove_admin') || 'Remove Admin') : (t('make_admin') || 'Make Admin')}
                   </button>
                 </td>
               </tr>

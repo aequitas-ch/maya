@@ -28,33 +28,33 @@ export const Navbar = () => {
                   to="/"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  {t('dashboard')}
+                  {t('dashboard') || 'Dashboard'}
                 </Link>
                 <Link
                   to="/dependents"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  {t('dependents')}
+                  {t('dependents') || 'Dependents'}
                 </Link>
                 <Link
                   to="/health"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  {t('health')}
+                  {t('health') || 'Health'}
                 </Link>
                 {user.is_staff && (
                   <Link
                     to="/admin"
                     className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                   >
-                    {t('admin')}
+                    {t('admin') || 'Admin'}
                   </Link>
                 )}
                 <Link
                   to="/cost-approvals"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  {t('cost_approvals')}
+                  {t('cost_approvals') || 'Cost Approvals'}
                 </Link>
               </div>
             )}
@@ -71,7 +71,7 @@ export const Navbar = () => {
                   <option value="de">DE</option>
                 </select>
                 <span className="text-sm text-gray-700">
-                  {t('welcome')}, {user.display_name || user.first_name || user.username}
+                  {t('welcome') || 'Welcome'}, {user.display_name || user.first_name || user.username}
                 </span>
                 <Link to="/profile" className="flex items-center">
                   {user.profile_picture ? (
@@ -92,7 +92,7 @@ export const Navbar = () => {
                   onClick={handleLogout}
                   className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  {t('logout')}
+                  {t('logout') || 'Logout'}
                 </button>
               </div>
             ) : (
@@ -109,13 +109,13 @@ export const Navbar = () => {
                   to="/login"
                   className="text-gray-500 hover:text-gray-700 text-sm font-medium"
                 >
-                  {t('login')}
+                  {t('login') || 'Login'}
                 </Link>
                 <Link
                   to="/register"
                   className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
                 >
-                  {t('register')}
+                  {t('register') || 'Register'}
                 </Link>
               </div>
             )}
