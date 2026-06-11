@@ -2,6 +2,7 @@ import os
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from core.models import Dependent, Profile
+from settlement.models import Institution, Insurance
 
 class Command(BaseCommand):
     help = 'Seeds a test user and links them to dependents with the last name "Muster"'
@@ -41,3 +42,10 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'Successfully linked dependent "{dependent.first_name} {dependent.last_name}" to user "{username}".'))
         else:
             self.stdout.write(self.style.WARNING('No dependents with last name "Muster" found. None were linked.'))
+
+        # Seed initial Institution and Insurance
+        Institution.objects.get_or_create(name="IV-Stelle Zürich")
+        self.stdout.write(self.style.SUCCESS('Successfully seeded Institution "IV-Stelle Zürich".'))
+
+        Insurance.objects.get_or_create(name="Krankenkasse")
+        self.stdout.write(self.style.SUCCESS('Successfully seeded Insurance "Krankenkasse".'))

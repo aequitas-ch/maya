@@ -4,9 +4,9 @@ meta {
   seq: 4
 }
 
-post {
+get {
   url: {{base_url}}/api/settlement/insurances/
-  body: json
+  body: none
   auth: none
 }
 
@@ -14,16 +14,11 @@ headers {
   Authorization: Bearer {{access_token}}
 }
 
-body:json {
-  {
-    "name": "Krankenkasse"
-  }
-}
-
 vars:post-response {
-  ins_id: res.body.id
+  ins_id: res.body[0].id
 }
 
 assert {
-  res.status: eq 201
+  res.status: eq 200
+  res.body.length: gt 0
 }
