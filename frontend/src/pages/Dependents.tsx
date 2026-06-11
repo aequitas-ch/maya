@@ -375,12 +375,18 @@ export const Dependents = () => {
                           {t('main_diagnosis') || 'Diagnosis'}: {dependent.main_diagnosis}
                         </p>
                       </div>
-                      <div className="mt-2 flex items-center text-sm sm:mt-0">
+                      <div className="mt-2 flex items-center text-sm sm:mt-0 space-x-2">
                         <Link
                           to={`/dependents/${dependent.id}/health`}
                           className="ml-4 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-xl shadow-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                         >
                           {t('health_data_title') || 'Health Data'}
+                        </Link>
+                        <Link
+                          to={`/dependents/${dependent.id}/documents`}
+                          className="inline-flex items-center px-3 py-1.5 border border-teal-600 text-xs font-medium rounded-xl shadow-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                        >
+                          {t('documents_title') || 'Documents'}
                         </Link>
                       </div>
                     </div>

@@ -1,0 +1,35 @@
+meta {
+  name: Create Dependent
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/api/dependents/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "first_name": "DocChild",
+    "last_name": "Tester",
+    "address": "Mustergasse 1",
+    "city": "Zürich",
+    "postal_code": "8000",
+    "main_diagnosis": "Testing",
+    "ahv_number": "756.1234.5678.90"
+  }
+}
+
+vars:post-response {
+  doc_dependent_id: res.body.id
+}
+
+assert {
+  res.status: eq 201
+}

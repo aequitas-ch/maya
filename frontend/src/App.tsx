@@ -13,6 +13,7 @@ import { Health } from './pages/Health/Health';
 import { AdminDashboard } from './pages/Admin/AdminDashboard';
 import { CostApprovals } from './pages/Settlement/CostApprovals';
 import { Schedule } from './pages/Schedule/Schedule';
+import { DependentDocuments } from './pages/Documents/DependentDocuments';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
                   <Route path="/dependents" element={<Dependents />} />
                   <Route path="/health" element={<Health />} />
                   <Route path="/dependents/:id/health" element={<Health />} />
+                  <Route path="/dependents/:id/documents" element={<DependentDocuments />} />
                   <Route path="/cost-approvals" element={<CostApprovals />} />
                   <Route path="/schedule" element={<Schedule />} />
                 </Route>
