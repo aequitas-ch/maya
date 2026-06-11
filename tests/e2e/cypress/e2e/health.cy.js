@@ -9,7 +9,7 @@ describe('Health Data Management', () => {
       email: `healthuser_${randomString}@example.com`,
       first_name: 'Test',
       last_name: 'Parent',
-      password: 'StrongPassword123!',
+      password: 'Str0ngP@ssw0rd!23',
     };
 
     const apiUrl = `${Cypress.env('apiUrl') || 'http://127.0.0.1:8000'}/api/users/register/`;

@@ -179,7 +179,7 @@ export const Health = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">{t('health_data_title') || 'Health Data'}</h1>
-          <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800" dangerouslySetInnerHTML={{ __html: t('back_to_dependents') || '&larr; Back to Dependents' }}>
+          <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800">{t('back_to_dependents') || '← Back to Dependents'}
           </Link>
         </div>
         <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6 text-center text-gray-500">
@@ -193,7 +193,7 @@ export const Health = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">{t('health_data_title') || 'Health Data'}</h1>
-        <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800" dangerouslySetInnerHTML={{ __html: t('back_to_dependents') || '&larr; Back to Dependents' }}>
+        <Link to="/dependents" className="text-indigo-600 hover:text-indigo-800">{t('back_to_dependents') || '← Back to Dependents'}
         </Link>
       </div>
 
