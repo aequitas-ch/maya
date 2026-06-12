@@ -269,10 +269,10 @@ jobs:
       - name: Resolve Backend Secret Key
         id: backend-secret-uat
         env:
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY_UAT }}
+          D_S_K: ${{ secrets.DJANGO_SECRET_KEY_UAT }}
         run: |
-          if [ -n "$DJANGO_SECRET_KEY" ]; then
-            BACKEND_SECRET_KEY="$DJANGO_SECRET_KEY"
+          if [ -n "$D_S_K" ]; then
+            BACKEND_SECRET_KEY="$D_S_K"
           else
             BACKEND_SECRET_KEY=$(openssl rand -base64 48)
           fi
@@ -282,20 +282,20 @@ jobs:
       - name: Deploy Backend to Cloud Run
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          BACKEND_SECRET_KEY: ${{ steps.backend-secret-uat.outputs.secret_key }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL_UAT }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_UAT }}
-          ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD_UAT }}
+          B_S_K: ${{ steps.backend-secret-uat.outputs.secret_key }}
+          D_U: ${{ secrets.DATABASE_URL_UAT }}
+          T_U_P: ${{ secrets.TEST_USER_PASSWORD_UAT }}
+          A_U_P: ${{ secrets.ADMIN_USER_PASSWORD_UAT }}
         run: |
-          ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
-          if [ -n "${DATABASE_URL:-}" ]; then
-            ENV_VARS="${ENV_VARS},DATABASE_URL=${DATABASE_URL}"
+          ENV_VARS="SECRET_KEY=${B_S_K}"
+          if [ -n "${D_U:-}" ]; then
+            ENV_VARS="${ENV_VARS},DATABASE_URL=${D_U}"
           fi
-          if [ -n "${TEST_USER_PASSWORD:-}" ]; then
-            ENV_VARS="${ENV_VARS},TEST_USER_PASSWORD=${TEST_USER_PASSWORD}"
+          if [ -n "${T_U_P:-}" ]; then
+            ENV_VARS="${ENV_VARS},TEST_USER_PASSWORD=${T_U_P}"
           fi
-          if [ -n "${ADMIN_USER_PASSWORD:-}" ]; then
-            ENV_VARS="${ENV_VARS},ADMIN_USER_PASSWORD=${ADMIN_USER_PASSWORD}"
+          if [ -n "${A_U_P:-}" ]; then
+            ENV_VARS="${ENV_VARS},ADMIN_USER_PASSWORD=${A_U_P}"
           fi
 
           gcloud run deploy aequitas-backend-uat \
@@ -308,12 +308,12 @@ jobs:
       - name: Seed Database
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          BACKEND_SECRET_KEY: ${{ steps.backend-secret-uat.outputs.secret_key }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL_UAT }}
+          B_S_K: ${{ steps.backend-secret-uat.outputs.secret_key }}
+          D_U: ${{ secrets.DATABASE_URL_UAT }}
         run: |
-          ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
-          if [ -n "${DATABASE_URL:-}" ]; then
-            ENV_VARS="${ENV_VARS},DATABASE_URL=${DATABASE_URL}"
+          ENV_VARS="SECRET_KEY=${B_S_K}"
+          if [ -n "${D_U:-}" ]; then
+            ENV_VARS="${ENV_VARS},DATABASE_URL=${D_U}"
           fi
 
           # Seed the newly deployed test database
