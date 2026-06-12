@@ -64,7 +64,7 @@ jobs:
           if [ -n "$DJANGO_SECRET_KEY" ]; then
             BACKEND_SECRET_KEY="$DJANGO_SECRET_KEY"
           else
-            BACKEND_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(50))")
+            BACKEND_SECRET_KEY=$(openssl rand -base64 48)
           fi
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
@@ -274,7 +274,7 @@ jobs:
           if [ -n "$DJANGO_SECRET_KEY" ]; then
             BACKEND_SECRET_KEY="$DJANGO_SECRET_KEY"
           else
-            BACKEND_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(50))")
+            BACKEND_SECRET_KEY=$(openssl rand -base64 48)
           fi
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
@@ -479,7 +479,7 @@ jobs:
           if [ -n "$DJANGO_SECRET_KEY" ]; then
             BACKEND_SECRET_KEY="$DJANGO_SECRET_KEY"
           else
-            BACKEND_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(50))")
+            BACKEND_SECRET_KEY=$(openssl rand -base64 48)
           fi
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
