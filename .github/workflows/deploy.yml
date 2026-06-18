@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - test
+      - uat
       - prod
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   contents: read
@@ -26,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
@@ -66,7 +64,7 @@ jobs:
           if [ -n "$DJANGO_SECRET_KEY" ]; then
             BACKEND_SECRET_KEY="$DJANGO_SECRET_KEY"
           else
-            BACKEND_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(50))")
+            BACKEND_SECRET_KEY=$(openssl rand -base64 48)
           fi
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
@@ -175,10 +173,10 @@ jobs:
     if: github.ref == 'refs/heads/test'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Run Cypress tests
-        uses: cypress-io/github-action@v7
+        uses: cypress-io/github-action@v6
         with:
           working-directory: tests/e2e
           record: true
@@ -196,12 +194,12 @@ jobs:
     if: github.ref == 'refs/heads/test'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version: '20'
 
       - name: Install Bruno CLI
         run: npm install -g @usebruno/cli
@@ -224,6 +222,216 @@ jobs:
           files: "tests/api/Aequitas/results.xml"
 
 
+  deploy-uat:
+    name: Deploy to UAT
+    runs-on: ubuntu-latest
+    environment: uat
+    if: github.ref == 'refs/heads/uat'
+    outputs:
+
+      backend_url: ${{ steps.get-backend-url.outputs.backend_url }}
+      frontend_url: ${{ steps.get-frontend-url.outputs.frontend_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }} # NOSONAR
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker europe-west6-docker.pkg.dev --quiet
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+
+      - name: Build Backend Image
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} # NOSONAR
+        run: |
+          docker buildx build \
+            --cache-from=type=gha,scope=backend-uat \
+            --cache-to=type=gha,mode=max,scope=backend-uat \
+            --load \
+            -t europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }} \
+            ./backend
+
+      - name: Push Backend Image
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} # NOSONAR
+        run: docker push europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }}
+
+      - name: Resolve Backend Secret Key
+        id: backend-secret-uat
+        env:
+          D_S_K: ${{ secrets.DJANGO_SECRET_KEY_UAT }} # NOSONAR
+        run: |
+          if [ -n "$D_S_K" ]; then
+            BACKEND_SECRET_KEY="$D_S_K" # NOSONAR
+          else
+            BACKEND_SECRET_KEY=$(openssl rand -base64 48) # NOSONAR
+          fi
+          echo "::add-mask::$BACKEND_SECRET_KEY"
+          echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy Backend to Cloud Run
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} # NOSONAR
+          B_S_K: ${{ steps.backend-secret-uat.outputs.secret_key }}
+          D_U: ${{ secrets.DATABASE_URL_UAT }} # NOSONAR
+          T_U_P: ${{ secrets.TEST_USER_PASSWORD_UAT }} # NOSONAR
+          A_U_P: ${{ secrets.ADMIN_USER_PASSWORD_UAT }} # NOSONAR
+        run: |
+          ENV_VARS="SECRET_KEY=${B_S_K}" # NOSONAR
+          if [ -n "${D_U:-}" ]; then
+            ENV_VARS="${ENV_VARS},DATABASE_URL=${D_U}" # NOSONAR
+          fi
+          if [ -n "${T_U_P:-}" ]; then
+            ENV_VARS="${ENV_VARS},TEST_USER_PASSWORD=${T_U_P}" # NOSONAR
+          fi
+          if [ -n "${A_U_P:-}" ]; then
+            ENV_VARS="${ENV_VARS},ADMIN_USER_PASSWORD=${A_U_P}" # NOSONAR
+          fi
+
+          gcloud run deploy aequitas-backend-uat \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }} \
+            --region europe-west6 \
+            --platform managed \
+            --set-env-vars "${ENV_VARS}" \
+            --allow-unauthenticated # NOSONAR
+
+      - name: Seed Database
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} # NOSONAR
+          B_S_K: ${{ steps.backend-secret-uat.outputs.secret_key }}
+          D_U: ${{ secrets.DATABASE_URL_UAT }} # NOSONAR
+        run: |
+          ENV_VARS="SECRET_KEY=${B_S_K}" # NOSONAR
+          if [ -n "${D_U:-}" ]; then
+            ENV_VARS="${ENV_VARS},DATABASE_URL=${D_U}" # NOSONAR
+          fi
+
+          # Seed the newly deployed test database
+          # The database is managed entirely through the deployed instance.
+          # To seed the data, we execute the command via a Cloud Run job.
+          gcloud run jobs create aequitas-seed-uat \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }} \
+            --command python \
+            --args manage.py,seed_test_user \
+            --region europe-west6 \
+            --set-env-vars "${ENV_VARS}" || true
+
+          gcloud run jobs update aequitas-seed-uat \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }} \
+            --command python \
+            --args manage.py,seed_test_user \
+            --region europe-west6 \
+            --set-env-vars "${ENV_VARS}" || true
+
+          gcloud run jobs execute aequitas-seed-uat --region europe-west6 --wait || true # NOSONAR
+
+      - name: Get Backend URL
+        id: get-backend-url
+        run: |
+          BACKEND_URL=$(gcloud run services describe aequitas-backend-uat --region europe-west6 --format 'value(status.url)')
+          echo "backend_url=$BACKEND_URL" >> $GITHUB_OUTPUT
+
+      - name: Build Frontend Image
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} # NOSONAR
+        run: |
+          docker buildx build \
+            --cache-from=type=gha,scope=frontend-uat \
+            --cache-to=type=gha,mode=max,scope=frontend-uat \
+            --load \
+            --build-arg VITE_API_URL=${{ steps.get-backend-url.outputs.backend_url }} \
+            -t europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-uat:${{ github.sha }} \
+            ./frontend
+
+      - name: Push Frontend Image
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} # NOSONAR
+        run: docker push europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-uat:${{ github.sha }}
+
+      - name: Deploy Frontend to Cloud Run
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} # NOSONAR
+        run: |
+          gcloud run deploy aequitas-frontend-uat \
+            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-frontend-uat:${{ github.sha }} \
+            --region europe-west6 \
+            --platform managed \
+            --allow-unauthenticated # NOSONAR
+
+
+      - name: Get Frontend URL
+        id: get-frontend-url
+        run: |
+          FRONTEND_URL=$(gcloud run services describe aequitas-frontend-uat --region europe-west6 --format 'value(status.url)')
+          echo "frontend_url=$FRONTEND_URL" >> $GITHUB_OUTPUT
+
+
+  cypress-uat:
+    name: Run Cypress E2E Tests
+    runs-on: ubuntu-latest
+    needs: deploy-uat
+    if: github.ref == 'refs/heads/uat'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: tests/e2e
+          record: true
+        env:
+          CYPRESS_BASE_URL: ${{ needs.deploy-uat.outputs.frontend_url }} # NOSONAR
+          CYPRESS_API_URL: ${{ needs.deploy-uat.outputs.backend_url }} # NOSONAR
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }} # NOSONAR
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # NOSONAR
+
+
+  bruno-uat:
+    name: Run Bruno API Tests
+    runs-on: ubuntu-latest
+    needs: deploy-uat
+    if: github.ref == 'refs/heads/uat'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Install Bruno CLI
+        run: npm install -g @usebruno/cli # NOSONAR
+
+      - name: Run Bruno tests
+        working-directory: tests/api/Aequitas
+        run: bru run --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --reporter-junit results.xml
+
+      - name: Upload Test Results Artifact
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: bruno-uat-results
+          path: tests/api/Aequitas/results.xml
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: "tests/api/Aequitas/results.xml"
+
+
   deploy-prod:
     name: Deploy to Production
     runs-on: ubuntu-latest
@@ -231,7 +439,7 @@ jobs:
     if: github.ref == 'refs/heads/prod'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
@@ -271,7 +479,7 @@ jobs:
           if [ -n "$DJANGO_SECRET_KEY" ]; then
             BACKEND_SECRET_KEY="$DJANGO_SECRET_KEY"
           else
-            BACKEND_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(50))")
+            BACKEND_SECRET_KEY=$(openssl rand -base64 48)
           fi
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
