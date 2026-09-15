@@ -78,8 +78,8 @@ jobs:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-          ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_TEST || secrets.TEST_USER_PASSWORD }}
+          ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }}
         run: |
           ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
           if [ -n "${DATABASE_URL:-}" ]; then
@@ -104,10 +104,14 @@ jobs:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_TEST || secrets.TEST_USER_PASSWORD }}
         run: |
           ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
           if [ -n "${DATABASE_URL:-}" ]; then
             ENV_VARS="${ENV_VARS},DATABASE_URL=${DATABASE_URL}"
+          fi
+          if [ -n "${TEST_USER_PASSWORD:-}" ]; then
+            ENV_VARS="${ENV_VARS},TEST_USER_PASSWORD=${TEST_USER_PASSWORD}"
           fi
 
           # Seed the newly deployed test database
@@ -187,8 +191,8 @@ jobs:
         env:
           CYPRESS_BASE_URL: ${{ needs.deploy-test.outputs.frontend_url }}
           CYPRESS_API_URL: ${{ needs.deploy-test.outputs.backend_url }}
-          CYPRESS_TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }} # NOSONAR
-          CYPRESS_ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }} # NOSONAR
+          CYPRESS_TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_TEST || secrets.TEST_USER_PASSWORD }} # NOSONAR
+          CYPRESS_ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }} # NOSONAR
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }} # NOSONAR
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # NOSONAR
 
@@ -212,7 +216,7 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
+        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
