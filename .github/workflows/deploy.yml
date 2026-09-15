@@ -177,6 +177,7 @@ jobs:
   cypress-test:
     name: Run Cypress E2E Tests
     runs-on: ubuntu-latest
+    environment: test
     needs: deploy-test
     if: github.ref == 'refs/heads/test'
     steps:
