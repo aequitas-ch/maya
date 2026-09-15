@@ -35,7 +35,7 @@ export const Dashboard = () => {
       setKeyError('');
     } catch (err) {
       console.error(err);
-      setKeyError('Invalid key file format.');
+      setKeyError(t('invalid_key_format') || 'Invalid key file format.');
     }
   };
 
@@ -46,13 +46,13 @@ export const Dashboard = () => {
           <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">Your session is currently locked</h3>
+                <h3 className="text-sm font-medium text-yellow-800">{t('session_locked') || 'Your session is currently locked'}</h3>
                 <div className="mt-2 text-sm text-yellow-700">
-                  <p>Upload your encryption key file to decrypt your sensitive data locally.</p>
+                  <p>{t('upload_key_desc') || 'Upload your encryption key file to decrypt your sensitive data locally.'}</p>
                   {keyError && <p className="text-red-600 mt-1">{keyError}</p>}
                   <div className="mt-3">
                     <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
-                      Upload Key File
+                      {t('upload_key_btn') || 'Upload Key File'}
                       <input type="file" className="hidden" accept=".txt" onChange={handleFileUpload} />
                     </label>
                   </div>
