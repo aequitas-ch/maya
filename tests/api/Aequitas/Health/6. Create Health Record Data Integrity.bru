@@ -1,0 +1,26 @@
+meta {
+  name: 6. Create Health Record Data Integrity
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/health/records/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "dependent_id": {{dependent_id}},
+    "value": "120"
+  }
+}
+
+assert {
+  res.status: eq 400
+}

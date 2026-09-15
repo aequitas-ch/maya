@@ -1,0 +1,25 @@
+meta {
+  name: 7. User B Update Dependent A
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{base_url}}/api/dependents/{{dependent_id_a}}/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token_b}}
+}
+
+body:json {
+  {
+    "first_name": "Hacked"
+  }
+}
+
+assert {
+  res.status: eq 404
+}

@@ -1,0 +1,25 @@
+meta {
+  name: 09_Reference_Data_Protection_Insurance
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{base_url}}/api/settlement/insurances/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "name": "New Insurance Hack"
+  }
+}
+
+assert {
+  res.status: eq 405
+}
