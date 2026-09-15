@@ -73,15 +73,29 @@ jobs:
           echo "::add-mask::$BACKEND_SECRET_KEY"
           echo "secret_key=$BACKEND_SECRET_KEY" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve Document Encryption Key
+        id: backend-document-key-test
+        env:
+          DOCUMENT_ENCRYPTION_KEY: ${{ secrets.DOCUMENT_ENCRYPTION_KEY_TEST || secrets.DOCUMENT_ENCRYPTION_KEY }}
+        run: |
+          if [ -n "$DOCUMENT_ENCRYPTION_KEY" ]; then
+            BACKEND_DOCUMENT_ENCRYPTION_KEY="$DOCUMENT_ENCRYPTION_KEY"
+          else
+            BACKEND_DOCUMENT_ENCRYPTION_KEY=$(python -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())")
+          fi
+          echo "::add-mask::$BACKEND_DOCUMENT_ENCRYPTION_KEY"
+          echo "document_encryption_key=$BACKEND_DOCUMENT_ENCRYPTION_KEY" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Backend to Cloud Run
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
+          BACKEND_DOCUMENT_ENCRYPTION_KEY: ${{ steps.backend-document-key-test.outputs.document_encryption_key }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_TEST || secrets.TEST_USER_PASSWORD }}
           ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }}
         run: |
-          ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
+          ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY},DOCUMENT_ENCRYPTION_KEY=${BACKEND_DOCUMENT_ENCRYPTION_KEY}"
           if [ -n "${DATABASE_URL:-}" ]; then
             ENV_VARS="${ENV_VARS},DATABASE_URL=${DATABASE_URL}"
           fi
@@ -103,10 +117,11 @@ jobs:
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           BACKEND_SECRET_KEY: ${{ steps.backend-secret-test.outputs.secret_key }}
+          BACKEND_DOCUMENT_ENCRYPTION_KEY: ${{ steps.backend-document-key-test.outputs.document_encryption_key }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_TEST || secrets.TEST_USER_PASSWORD }}
         run: |
-          ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY}"
+          ENV_VARS="SECRET_KEY=${BACKEND_SECRET_KEY},DOCUMENT_ENCRYPTION_KEY=${BACKEND_DOCUMENT_ENCRYPTION_KEY}"
           if [ -n "${DATABASE_URL:-}" ]; then
             ENV_VARS="${ENV_VARS},DATABASE_URL=${DATABASE_URL}"
           fi
