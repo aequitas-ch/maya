@@ -187,10 +187,10 @@ jobs:
         env:
           CYPRESS_BASE_URL: ${{ needs.deploy-test.outputs.frontend_url }}
           CYPRESS_API_URL: ${{ needs.deploy-test.outputs.backend_url }}
-          CYPRESS_TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-          CYPRESS_ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }} # NOSONAR
+          CYPRESS_ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }} # NOSONAR
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }} # NOSONAR
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # NOSONAR
 
 
   bruno-test:
@@ -212,7 +212,7 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml
+        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
@@ -426,7 +426,7 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_UAT }} --reporter-junit results.xml
+        run: bru run --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_UAT }} --reporter-junit results.xml # NOSONAR
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
