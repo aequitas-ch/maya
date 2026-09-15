@@ -9,7 +9,7 @@ Das Modul soll den kompletten Lifecycle abdecken: Einstellung, Vertrag, monatlic
 
 ## Erstellte User Stories
 
-### MAYA-6: Verwaltung von Angestellten-Stammdaten (Einstellung & Entlassung)
+### MAYA-8: Verwaltung von Angestellten-Stammdaten (Einstellung & Entlassung)
 **Beschreibung:**
 Als Nutzer möchte ich die Stammdaten meiner Angestellten (Assistenten, Hausangestellte, Babysitter) in einer übersichtlichen Liste verwalten können, um jederzeit einen Überblick über mein Personal und deren Status (aktiv/entlassen) zu haben.
 
@@ -21,7 +21,7 @@ Als Nutzer möchte ich die Stammdaten meiner Angestellten (Assistenten, Hausange
 
 ---
 
-### MAYA-7: Vertragsmanagement und Musterverträge
+### MAYA-9: Vertragsmanagement und Musterverträge
 **Beschreibung:**
 Als Nutzer möchte ich für meine Angestellten Arbeitsverträge basierend auf Vorlagen (z.B. Musterarbeitsvertrag LU/OW/NW) generieren oder hochladen können, um die rechtlichen Rahmenbedingungen der Anstellung formal korrekt abzuwickeln.
 
@@ -33,7 +33,7 @@ Als Nutzer möchte ich für meine Angestellten Arbeitsverträge basierend auf Vo
 
 ---
 
-### MAYA-8: Monatliche Lohnabrechnung und Stundenerfassung
+### MAYA-10: Monatliche Lohnabrechnung und Stundenerfassung
 **Beschreibung:**
 Als Nutzer möchte ich monatlich die geleisteten Arbeitsstunden, Spesen und Zulagen meiner Angestellten erfassen können, damit das System automatisch eine korrekte Lohnabrechnung (inkl. Sozialabzügen) berechnet, vergleichbar mit den bereitgestellten Excel-Vorlagen.
 
@@ -45,7 +45,7 @@ Als Nutzer möchte ich monatlich die geleisteten Arbeitsstunden, Spesen und Zula
 
 ---
 
-### MAYA-9: Quartalsweise IV Abrechnung
+### MAYA-11: Quartalsweise IV Abrechnung
 **Beschreibung:**
 Als Nutzer mit dem Anstellungstyp "IV Assistenz" möchte ich am Ende jedes Quartals eine aggregierte IV-Abrechnung generieren können, um die angefallenen Kosten gesammelt bei der Invalidenversicherung (IV) rückzufordern.
 
@@ -56,7 +56,7 @@ Als Nutzer mit dem Anstellungstyp "IV Assistenz" möchte ich am Ende jedes Quart
 
 ---
 
-### MAYA-10: Jährlicher Lohnausweis
+### MAYA-12: Jährlicher Lohnausweis
 **Beschreibung:**
 Als Nutzer möchte ich am Ende des Jahres (oder bei Austritt) automatisch den offiziellen Lohnausweis für meine Angestellten generieren lassen, damit diese ihn für ihre Steuererklärung verwenden können.
 
@@ -68,7 +68,7 @@ Als Nutzer möchte ich am Ende des Jahres (oder bei Austritt) automatisch den of
 
 ---
 
-### MAYA-11: Dashboard und Kostenübersicht
+### MAYA-13: Dashboard und Kostenübersicht
 **Beschreibung:**
 Als Nutzer möchte ich ein Dashboard haben, das mir auf einen Blick die aggregierten monatlichen und jährlichen Kosten meiner gesamten Angestellten anzeigt, um mein Budget zu kontrollieren.
 
