@@ -11,6 +11,10 @@ permissions:
   contents: read
   checks: write
 
+concurrency:
+  group: ${{ github.ref == 'refs/heads/uat' && 'deploy-uat' || github.run_id }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/uat' }}
+
 jobs:
   deploy-test:
     name: Deploy to Test
@@ -183,6 +187,8 @@ jobs:
         env:
           CYPRESS_BASE_URL: ${{ needs.deploy-test.outputs.frontend_url }}
           CYPRESS_API_URL: ${{ needs.deploy-test.outputs.backend_url }}
+          CYPRESS_TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          CYPRESS_ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -206,7 +212,7 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --reporter-junit results.xml
+        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
@@ -319,21 +325,23 @@ jobs:
           # Seed the newly deployed test database
           # The database is managed entirely through the deployed instance.
           # To seed the data, we execute the command via a Cloud Run job.
-          gcloud run jobs create aequitas-seed-uat \
-            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }} \
-            --command python \
-            --args manage.py,seed_test_user \
-            --region europe-west6 \
-            --set-env-vars "${ENV_VARS}" || true
+          if gcloud run jobs describe aequitas-seed-uat --region europe-west6 >/dev/null 2>&1; then
+            gcloud run jobs update aequitas-seed-uat \
+              --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }} \
+              --command python \
+              --args manage.py,seed_test_user \
+              --region europe-west6 \
+              --set-env-vars "${ENV_VARS}"
+          else
+            gcloud run jobs create aequitas-seed-uat \
+              --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }} \
+              --command python \
+              --args manage.py,seed_test_user \
+              --region europe-west6 \
+              --set-env-vars "${ENV_VARS}"
+          fi
 
-          gcloud run jobs update aequitas-seed-uat \
-            --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-uat:${{ github.sha }} \
-            --command python \
-            --args manage.py,seed_test_user \
-            --region europe-west6 \
-            --set-env-vars "${ENV_VARS}" || true
-
-          gcloud run jobs execute aequitas-seed-uat --region europe-west6 --wait || true # NOSONAR
+          gcloud run jobs execute aequitas-seed-uat --region europe-west6 --wait # NOSONAR
 
       - name: Get Backend URL
         id: get-backend-url
@@ -393,6 +401,8 @@ jobs:
         env:
           CYPRESS_BASE_URL: ${{ needs.deploy-uat.outputs.frontend_url }} # NOSONAR
           CYPRESS_API_URL: ${{ needs.deploy-uat.outputs.backend_url }} # NOSONAR
+          CYPRESS_TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_UAT }} # NOSONAR
+          CYPRESS_ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD_UAT }} # NOSONAR
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }} # NOSONAR
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # NOSONAR
 
@@ -416,7 +426,7 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --reporter-junit results.xml
+        run: bru run --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_UAT }} --reporter-junit results.xml
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
