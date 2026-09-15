@@ -138,6 +138,11 @@ class Command(BaseCommand):
             'loading_data': {'en': 'Loading data...', 'de': 'Daten werden geladen...'},
             'add': {'en': 'Add', 'de': 'Hinzufügen'},
             'dependent': {'en': 'Dependent', 'de': 'Angehörige/r'},
+            'session_locked': {'en': 'Session Locked', 'de': 'Sitzung gesperrt'},
+            'session_unlocked': {'en': 'Session Unlocked', 'de': 'Sitzung entsperrt'},
+            'upload_key_desc': {'en': 'Upload your encryption key file to decrypt your sensitive data locally.', 'de': 'Laden Sie Ihre Verschlüsselungsschlüsseldatei hoch, um Ihre sensiblen Daten lokal zu entschlüsseln.'},
+            'upload_key_btn': {'en': 'Upload Key File', 'de': 'Schlüsseldatei hochladen'},
+            'invalid_key_format': {'en': 'Invalid key file format.', 'de': 'Ungültiges Dateiformat für Schlüssel.'},
         }
 
         for key, val in translations.items():
