@@ -1,0 +1,38 @@
+meta {
+  name: Log Working Hours
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/api/assistants/working-hours/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "contract": "{{contract_id}}",
+    "year": 2023,
+    "month": 10,
+    "basic_hours": "40.5",
+    "overtime_hours": "2.0",
+    "sick_hours": "0",
+    "holiday_hours": "0",
+    "expenses": "15.00"
+  }
+}
+
+vars:post-response {
+  working_hours_id: res.body.id
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+}

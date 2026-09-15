@@ -14,6 +14,13 @@ import { AdminDashboard } from './pages/Admin/AdminDashboard';
 import { CostApprovals } from './pages/Settlement/CostApprovals';
 import { Schedule } from './pages/Schedule/Schedule';
 import { DependentDocuments } from './pages/Documents/DependentDocuments';
+import {
+  AssistantDashboard,
+  EmployeeList,
+  EmployeeForm,
+  EmployeeDetail,
+  WorkingHoursForm
+} from './pages/Assistants';
 
 function App() {
   return (
@@ -36,6 +43,13 @@ function App() {
                   <Route path="/dependents/:id/documents" element={<DependentDocuments />} />
                   <Route path="/cost-approvals" element={<CostApprovals />} />
                   <Route path="/schedule" element={<Schedule />} />
+
+                  {/* Assistants Module */}
+                  <Route path="/assistants/dashboard" element={<AssistantDashboard />} />
+                  <Route path="/assistants" element={<EmployeeList />} />
+                  <Route path="/assistants/new" element={<EmployeeForm />} />
+                  <Route path="/assistants/:id" element={<EmployeeDetail />} />
+                  <Route path="/assistants/:id/hours" element={<WorkingHoursForm />} />
                 </Route>
 
               <Route element={<ProtectedRoute adminOnly={true} />}>
