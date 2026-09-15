@@ -15,10 +15,10 @@ headers {
 }
 
 vars:post-response {
-  ins_id: res.body[0].id
+  ins_id: res.body.results[0].id
 }
 
 assert {
   res.status: eq 200
-  res.body.length: gt 0
+  res.body.results.length: gt 0
 }
