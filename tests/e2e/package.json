@@ -5,8 +5,10 @@
     "test": "cypress run"
   },
   "devDependencies": {
-    "cypress": "^13.0.0",
+    "cypress": "^15.15.0",
+    "cypress-file-upload": "^5.0.8"
     "cypress-axe": "^1.5.0",
     "axe-core": "^4.8.0"
+
   }
 }

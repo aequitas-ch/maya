@@ -27,6 +27,7 @@ services:
       - CORS_ALLOW_ALL_ORIGINS=True
       - TEST_USER_PASSWORD=Secure123$
       - ADMIN_USER_PASSWORD=adminpassword123
+      - DOCUMENT_ENCRYPTION_KEY=S7L8bQO8_l7zR-71W9kK7k1h1K-eU3GzY2h5vO-L0t0=
     depends_on:
       - db
 
