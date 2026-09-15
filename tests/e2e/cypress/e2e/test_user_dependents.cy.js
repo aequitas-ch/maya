@@ -1,11 +1,14 @@
 describe("Test User Dependents Flow", () => {
   it("logs in as the test user and verifies dependents", () => {
+    const testUserPassword = Cypress.env("testUserPassword");
+    expect(testUserPassword, "Cypress test user password").to.be.a("string").and.not.be.empty;
+
     // Navigate to Login page
     cy.visit("/login");
 
     // Login as the seeded test user (created via migration 0005_create_test_user)
     cy.get('input[name="username"]').type("test");
-    cy.get('input[name="password"]').type("Secure123$");
+    cy.get('input[name="password"]').type(testUserPassword);
     cy.get('button[type="submit"]').click();
 
     // Verify successful login

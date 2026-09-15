@@ -1,9 +1,12 @@
 describe("Seed Admin Dependents", () => {
   it("creates Peter and Franziska Muster for the admin user", () => {
+    const adminUserPassword = Cypress.env("adminUserPassword");
+    expect(adminUserPassword, "Cypress admin user password").to.be.a("string").and.not.be.empty;
+
     // Login as admin
     cy.visit("/login");
     cy.get('input[name="username"]').type("admin");
-    cy.get('input[name="password"]').type("aequitas-maya123$");
+    cy.get('input[name="password"]').type(adminUserPassword);
     cy.get('button[type="submit"]').click();
 
     // Verify successful login
