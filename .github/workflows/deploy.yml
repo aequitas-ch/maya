@@ -232,7 +232,7 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
+        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_TEST }} --reporter-junit results.xml # NOSONAR
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
