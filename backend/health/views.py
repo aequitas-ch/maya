@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, exceptions
 from .models import HealthMetric, HealthRecord
 from .serializers import HealthMetricSerializer, HealthRecordSerializer
 
@@ -27,6 +27,6 @@ class HealthRecordViewSet(viewsets.ModelViewSet):
         # Validate that the requested dependent_id belongs to the current user
         dependent = serializer.validated_data.get('dependent')
         if not self.request.user.dependents.filter(id=dependent.id).exists():
-            raise permissions.PermissionDenied("You do not have permission to add health records for this dependent.")
+            raise exceptions.PermissionDenied("You do not have permission to add health records for this dependent.")
 
         serializer.save()
