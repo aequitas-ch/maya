@@ -65,7 +65,7 @@ export const Dashboard = () => {
         <div className="mb-8 p-6 bg-white shadow rounded-lg">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('dashboard_title') || 'Dashboard'}</h1>
           <p className="text-lg text-gray-600">
-            {t('welcome')} {user?.display_name || user?.first_name || user?.username}!
+            {t('welcome') || 'Welcome'} {user?.display_name || user?.first_name || user?.username}!
           </p>
         </div>
 

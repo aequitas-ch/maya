@@ -225,7 +225,7 @@ export const Profile = () => {
                   disabled={loading}
                   className="bg-teal-600 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
-                  {loading ? t('loading_data') : t('save') || 'Save'}
+                  {loading ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
                 </button>
               </div>
             </form>
@@ -295,7 +295,7 @@ export const Profile = () => {
                   disabled={passwordLoading}
                   className="bg-teal-600 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
-                  {passwordLoading ? t('loading_data') : t('save') || 'Save'}
+                  {passwordLoading ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
                 </button>
               </div>
             </form>
