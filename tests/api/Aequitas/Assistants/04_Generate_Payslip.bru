@@ -1,0 +1,25 @@
+meta {
+  name: Generate Payslip
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/api/assistants/working-hours/{{working_hours_id}}/generate_payslip/
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("Calculated gross pay correctly", function() {
+    // 42.5 hours * 35.50 + 15 = 1523.75
+    expect(Number(res.getBody().gross_pay)).to.equal(1523.75);
+  });
+}

@@ -34,6 +34,7 @@ urlpatterns = [
     path("api/", include("core.urls")),
     path('api/schedule/', include('schedule.urls')),
     path('api/documents/', include('documents.urls')),
+    path('api/assistants/', include('assistants.urls')),
 ]
 
 if settings.DEBUG:
