@@ -20,7 +20,17 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        data = request.data.copy()
+        if hasattr(request.data, "_mutable"):
+            request.data._mutable = True
+
+        if hasattr(request.data, "dict"):
+            data = request.data.dict()
+        else:
+            try:
+                data = dict(request.data)
+            except ValueError:
+                data = request.data
+
         recurrence_pattern = data.get('recurrence_pattern')
 
         # Verify dependent belongs to user

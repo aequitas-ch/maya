@@ -1,7 +1,7 @@
 meta {
   name: Login User
   type: http
-  seq: 2
+  seq: 1
 }
 
 post {
@@ -12,7 +12,7 @@ post {
 
 body:json {
   {
-    "username": "doc_test_user",
+    "username": "doc_tester_{{timestamp}}",
     "password": "StrongPassword123!"
   }
 }

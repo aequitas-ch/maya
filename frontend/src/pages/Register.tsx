@@ -177,7 +177,7 @@ export const Register = () => {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
             >
-              {loading ? t('loading_data') : t('register') || 'Register'}
+              {loading ? t('loading_data') || 'Loading...' : t('register') || 'Register'}
             </button>
           </div>
           <div className="text-sm text-center">

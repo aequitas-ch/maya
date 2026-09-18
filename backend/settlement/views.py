@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -32,7 +32,7 @@ class CostApprovalViewSet(viewsets.ModelViewSet):
         # Validate that the requested dependent_id belongs to the current user
         dependent = serializer.validated_data.get('dependent')
         if not self.request.user.dependents.filter(id=dependent.id).exists():
-            raise permissions.PermissionDenied("You do not have permission to add cost approvals for this dependent.")
+            raise exceptions.PermissionDenied("You do not have permission to add cost approvals for this dependent.")
 
         serializer.save()
 

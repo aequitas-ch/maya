@@ -234,7 +234,7 @@ export const CostApprovals = () => {
               </div>
 
               <button disabled={isSubmitting} type="submit" className="w-full bg-teal-600 text-white p-2 rounded-xl hover:bg-teal-700 disabled:opacity-50">
-                {isSubmitting ? t('loading_data') : t('save') || 'Save'}
+                {isSubmitting ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
               </button>
             </form>
           </div>
