@@ -34,14 +34,6 @@ if not SECRET_KEY:
     else:
         raise ValueError("SECRET_KEY environment variable must be set when DEBUG is False.")
 
-DOCUMENT_ENCRYPTION_KEY = os.environ.get('DOCUMENT_ENCRYPTION_KEY')
-if not DOCUMENT_ENCRYPTION_KEY:
-    if DEBUG:
-        import base64
-        DOCUMENT_ENCRYPTION_KEY = base64.urlsafe_b64encode(os.urandom(32)).decode()
-    else:
-        raise ValueError("DOCUMENT_ENCRYPTION_KEY environment variable must be set when DEBUG is False.")
-
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
@@ -68,9 +60,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100,
+    )
 }
 
 from datetime import timedelta
@@ -159,9 +149,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

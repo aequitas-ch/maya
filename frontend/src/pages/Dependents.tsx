@@ -194,7 +194,7 @@ export const Dependents = () => {
         <div className="bg-white shadow overflow-hidden sm:rounded-2xl mb-8">
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              {editingId ? t('edit') || 'Edit' : t('add_dependent') || 'Add New Dependent'}
+              {editingId ? t('edit') : t('add_dependent') || 'Add New Dependent'}
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
               {/* Note: Descriptions intentionally not translated as they weren't matched in seed, or map manually if needed */}
@@ -316,7 +316,7 @@ export const Dependents = () => {
                   disabled={isSubmitting}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-xl shadow-md text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
-                  {isSubmitting ? t('loading_data') || 'Saving...' : (editingId ? t('edit') || 'Edit' : t('add') || 'Add Dependent')}
+                  {isSubmitting ? t('loading_data') || 'Saving...' : (editingId ? t('edit') : t('add') || 'Add Dependent')}
                 </button>
                 {editingId && (
                   <button

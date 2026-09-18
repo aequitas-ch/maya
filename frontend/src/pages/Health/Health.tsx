@@ -311,7 +311,7 @@ export const Health = () => {
                   isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {isSubmitting ? t('loading_data') || 'Loading...' : t('add_new_record') || 'Add Record'}
+                {isSubmitting ? t('loading_data') : t('add_new_record') || 'Add Record'}
               </button>
             </form>
           </div>

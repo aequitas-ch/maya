@@ -3,7 +3,7 @@ describe("Authentication Flow", () => {
     // 1. Register
     cy.visit("/register");
     cy.injectAxe();
-    cy.checkA11y(null, null, (violations) => { console.log(violations); }, true);
+    cy.checkA11y();
 
     const randomString = Math.random().toString(36).substring(2, 10);
     const username = `testuser_${randomString}`;
@@ -16,37 +16,30 @@ describe("Authentication Flow", () => {
     cy.get('input[name="last_name"]').type("Doe");
     cy.get('input[name="display_name"]').type("John Doe Jr.");
     cy.get('input[name="password"]').type(password);
-
-    cy.intercept('POST', '**/api/users/register/').as('registerRequest');
     cy.get('button[type="submit"]').click();
 
-    cy.wait('@registerRequest').its('response.statusCode').should('eq', 201);
-
     // Verify redirect to login
-    cy.url({ timeout: 10000 }).should("include", "/login");
-    cy.contains(/Login|Sign in/i).should("be.visible");
+    cy.url().should("include", "/login");
+    cy.contains("button", "Login").should("be.visible");
 
     cy.injectAxe();
-    cy.checkA11y(null, null, (violations) => { console.log(violations); }, true);
+    cy.checkA11y();
 
     // 2. Login
-    cy.intercept('POST', '**/api/token/').as('loginRequest');
     cy.get('input[name="username"]').type(username);
     cy.get('input[name="password"]').type(password);
     cy.get('button[type="submit"]').click();
 
-    cy.wait('@loginRequest').its('response.statusCode').should('eq', 200);
-
     // Verify redirect to dashboard/home and user is logged in
     cy.url().should("eq", Cypress.config().baseUrl + "/");
-    cy.contains("John Doe Jr.").should("be.visible");
+    cy.contains("Welcome, John Doe Jr.").should("be.visible");
 
-    // 3. Logout - click the button with the class list that handles logout
-    cy.get('button').last().click();
+    // 3. Logout
+    cy.contains("Logout").click();
 
     // Verify logout
-    cy.url({ timeout: 10000 }).should("include", "/login");
-    cy.contains(/Login|Sign in/i).should("be.visible");
+    cy.url().should("include", "/login");
+    cy.contains("button", "Login").should("be.visible");
   });
 
   it("shows error on duplicate username", () => {
@@ -79,7 +72,7 @@ describe("Authentication Flow", () => {
 
     cy.get('button[type="submit"]').click();
 
-    cy.contains(/already exists/i).should(
+    cy.contains("A user with that username already exists.").should(
       "be.visible",
     );
   });

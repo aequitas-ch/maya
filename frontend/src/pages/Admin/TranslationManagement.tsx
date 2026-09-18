@@ -23,7 +23,7 @@ export const TranslationManagement = () => {
       const response = await api.get('/translations/');
       setTranslations(response.data);
     } catch (err) {
-      setError(t('error_fetching_translations') || 'Error fetching translations');
+      setError(t('error_fetching_translations'));
     } finally {
       setLoading(false);
     }
@@ -45,18 +45,18 @@ export const TranslationManagement = () => {
       await fetchTranslations();
       refreshTranslations();
     } catch (err) {
-      setError(t('error_saving_translation') || 'Error saving translation');
+      setError(t('error_saving_translation'));
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm(t('confirm_delete') || 'Are you sure you want to delete this?')) {
+    if (confirm(t('confirm_delete'))) {
       try {
         await api.delete(`/translations/${id}/`);
         await fetchTranslations();
         refreshTranslations();
       } catch (err) {
-        setError(t('error_deleting_translation') || 'Error deleting translation');
+        setError(t('error_deleting_translation'));
       }
     }
   };
@@ -66,12 +66,12 @@ export const TranslationManagement = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">{t('translations') || 'Translations'}</h2>
+        <h2 className="text-xl font-semibold">{t('translations')}</h2>
         <button
           onClick={() => { setEditingId(-1); setEditForm({ key: '', en: '', de: '' }); }}
           className="bg-teal-600 text-white px-4 py-2 rounded-xl hover:bg-teal-700"
         >
-          {t('add_translation') || 'Add Translation'}
+          {t('add_translation')}
         </button>
       </div>
 
@@ -81,10 +81,10 @@ export const TranslationManagement = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('key') || 'Key'}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('key')}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('english_en') || 'English (en)'}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('deutsch_de') || 'Deutsch (de)'}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('actions') || 'Actions'}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('actions')}</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -94,8 +94,8 @@ export const TranslationManagement = () => {
                 <td className="px-6 py-4"><input className="border p-1 w-full" value={editForm.en} onChange={e => setEditForm({...editForm, en: e.target.value})} placeholder="English" /></td>
                 <td className="px-6 py-4"><input className="border p-1 w-full" value={editForm.de} onChange={e => setEditForm({...editForm, de: e.target.value})} placeholder="Deutsch" /></td>
                 <td className="px-6 py-4">
-                  <button onClick={() => handleSave()} className="text-green-600 mr-2">{t('save') || 'Save'}</button>
-                  <button onClick={() => setEditingId(null)} className="text-gray-600">{t('cancel') || 'Cancel'}</button>
+                  <button onClick={() => handleSave()} className="text-green-600 mr-2">{t('save')}</button>
+                  <button onClick={() => setEditingId(null)} className="text-gray-600">{t('cancel')}</button>
                 </td>
               </tr>
             )}
@@ -107,8 +107,8 @@ export const TranslationManagement = () => {
                     <td className="px-6 py-4"><input className="border p-1 w-full" value={editForm.en} onChange={e => setEditForm({...editForm, en: e.target.value})} /></td>
                     <td className="px-6 py-4"><input className="border p-1 w-full" value={editForm.de} onChange={e => setEditForm({...editForm, de: e.target.value})} /></td>
                     <td className="px-6 py-4">
-                      <button onClick={() => handleSave(item.id)} className="text-green-600 mr-2">{t('save') || 'Save'}</button>
-                      <button onClick={() => setEditingId(null)} className="text-gray-600">{t('cancel') || 'Cancel'}</button>
+                      <button onClick={() => handleSave(item.id)} className="text-green-600 mr-2">{t('save')}</button>
+                      <button onClick={() => setEditingId(null)} className="text-gray-600">{t('cancel')}</button>
                     </td>
                   </>
                 ) : (
@@ -117,8 +117,8 @@ export const TranslationManagement = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{item.en}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item.de}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button onClick={() => { setEditingId(item.id); setEditForm(item); }} className="text-teal-600 hover:text-teal-900 mr-4">{t('edit') || 'Edit'}</button>
-                      <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900">{t('delete') || 'Delete'}</button>
+                      <button onClick={() => { setEditingId(item.id); setEditForm(item); }} className="text-teal-600 hover:text-teal-900 mr-4">{t('edit')}</button>
+                      <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900">{t('delete')}</button>
                     </td>
                   </>
                 )}

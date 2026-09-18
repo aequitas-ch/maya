@@ -20,7 +20,7 @@ tests {
   });
   test("Should contain created metric", function() {
     const data = res.getBody();
-    expect(data.results.length).to.be.greaterThan(0);
-    expect(data.results[0].name).to.equal("Weight");
+    expect(data.length).to.be.greaterThan(0);
+    expect(data[0].name).to.equal("Weight");
   });
 }

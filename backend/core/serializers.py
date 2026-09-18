@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Profile, Dependent, Translation
+from .models import Profile
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -27,18 +27,13 @@ class RegisterSerializer(serializers.ModelSerializer):
             user.profile.save()
         return user
 
-class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True)
-
 class ProfileSerializer(serializers.ModelSerializer):
     display_name = serializers.CharField(source='profile.display_name', allow_blank=True, required=False)
-    profile_picture = serializers.ImageField(source='profile.profile_picture', required=False, allow_null=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'display_name', 'profile_picture', 'is_staff')
-        read_only_fields = ('username', 'is_staff')
+        fields = ('username', 'email', 'first_name', 'last_name', 'display_name')
+        read_only_fields = ('username',)
 
     def update(self, instance, validated_data):
         # Extract profile data
@@ -54,41 +49,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         if hasattr(instance, 'profile'):
             profile = instance.profile
             profile.display_name = profile_data.get('display_name', profile.display_name)
-            if 'profile_picture' in profile_data:
-                profile.profile_picture = profile_data['profile_picture']
             profile.save()
 
         return instance
-
-import re
-class DependentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Dependent
-        fields = ['id', 'first_name', 'last_name', 'address', 'city', 'postal_code', 'main_diagnosis', 'ahv_number', 'is_encrypted']
-
-    def validate_ahv_number(self, value):
-        is_encrypted = self.initial_data.get('is_encrypted', False)
-        # Convert to boolean if it's a string from form data
-        if isinstance(is_encrypted, str):
-            is_encrypted = is_encrypted.lower() in ('true', '1', 't')
-
-        if not is_encrypted:
-            if not re.match(r'^756\.\d{4}\.\d{4}\.\d{2}$', value):
-                raise serializers.ValidationError('AHV number must be in the format 756.xxxx.xxxx.xx')
-        return value
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        dependent = Dependent.objects.create(**validated_data)
-        dependent.users.add(user)
-        return dependent
-
-class AdminUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
-
-class TranslationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Translation
-        fields = '__all__'
