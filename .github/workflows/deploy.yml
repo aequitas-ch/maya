@@ -139,14 +139,14 @@ jobs:
           gcloud run jobs create aequitas-seed-test \
             --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-test:${{ github.sha }} \
             --command sh \
-            --args -c,"python manage.py seed_test_user && python manage.py seed_admin" \
+            --args -c,"python manage.py seed_settlement && python manage.py seed_test_user && python manage.py seed_admin" \
             --region europe-west6 \
             --set-env-vars "${ENV_VARS}" || true
 
           gcloud run jobs update aequitas-seed-test \
             --image europe-west6-docker.pkg.dev/${GCP_PROJECT_ID}/aequitas/aequitas-backend-test:${{ github.sha }} \
             --command sh \
-            --args -c,"python manage.py seed_test_user && python manage.py seed_admin" \
+            --args -c,"python manage.py seed_settlement && python manage.py seed_test_user && python manage.py seed_admin" \
             --region europe-west6 \
             --set-env-vars "${ENV_VARS}" || true
 
