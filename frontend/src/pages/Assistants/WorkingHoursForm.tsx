@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../context/TranslationContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { getEmployee, createWorkingHours, generatePayslip } from '../../api/assistant';
 import type { Employee } from '../../types/assistant';
 

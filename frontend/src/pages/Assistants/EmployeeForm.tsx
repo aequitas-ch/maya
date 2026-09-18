@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../context/TranslationContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { createEmployee } from '../../api/assistant';
 import type { EmploymentType } from '../../types/assistant';
 
