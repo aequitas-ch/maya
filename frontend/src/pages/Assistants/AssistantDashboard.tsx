@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from '../../context/TranslationContext';
+import { useState, useEffect } from 'react';
+import { useTranslation } from '../../hooks/useTranslation';
 import { getDashboardData } from '../../api/assistant';
 import type { AssistantDashboardData } from '../../types/assistant';
 import {
@@ -78,13 +78,13 @@ export const AssistantDashboard = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="cost"
                   nameKey="type"
                 >
-                  {data.type_breakdown.map((entry, index) => (
+                  {data.type_breakdown.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

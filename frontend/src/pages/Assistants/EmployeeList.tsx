@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from '../../context/TranslationContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { getEmployees } from '../../api/assistant';
 import type { Employee } from '../../types/assistant';
 

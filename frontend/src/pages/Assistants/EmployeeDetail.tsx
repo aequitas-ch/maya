@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../context/TranslationContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { getEmployee, updateEmployee, createContract, generateAnnualStatement } from '../../api/assistant';
-import type { Employee, Contract } from '../../types/assistant';
+import type { Employee } from '../../types/assistant';
 
 export const EmployeeDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -62,7 +62,7 @@ export const EmployeeDetail = () => {
   const handleAnnualStatement = async () => {
     if (!id) return;
     try {
-      const result = await generateAnnualStatement(id, new Date().getFullYear());
+      await generateAnnualStatement(id, new Date().getFullYear());
       alert(t('statement_generated') || 'Statement generated successfully');
     } catch (error) {
       console.error('Failed to generate statement', error);
