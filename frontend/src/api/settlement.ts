@@ -1,10 +1,12 @@
 import api from './axios';
 import type { Institution, Insurance, CostApproval, CostApprovalCreateData } from '../types/settlement';
 
+import { extractData } from '../utils/pagination';
+
 export const settlementApi = {
   getInstitutions: async (): Promise<Institution[]> => {
     const response = await api.get('/settlement/institutions/');
-    return response.data;
+    return extractData(response.data);
   },
 
   createInstitution: async (name: string): Promise<Institution> => {
@@ -14,7 +16,7 @@ export const settlementApi = {
 
   getInsurances: async (): Promise<Insurance[]> => {
     const response = await api.get('/settlement/insurances/');
-    return response.data;
+    return extractData(response.data);
   },
 
   createInsurance: async (name: string): Promise<Insurance> => {
@@ -24,7 +26,7 @@ export const settlementApi = {
 
   getCostApprovals: async (): Promise<CostApproval[]> => {
     const response = await api.get('/settlement/cost-approvals/');
-    return response.data;
+    return extractData(response.data);
   },
 
   createCostApproval: async (data: CostApprovalCreateData): Promise<CostApproval> => {

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTranslation } from '../../hooks/useTranslation';
+import { extractData } from '../../utils/pagination';
 
 interface Metric {
   id: number;
@@ -49,12 +50,13 @@ export const Health = () => {
     const fetchDependents = async () => {
       try {
         const res = await api.get('/dependents/');
-        setDependents(res.data);
+        const data = extractData(res.data);
+        setDependents(data);
 
         if (id) {
           setSelectedDependentId(parseInt(id));
-        } else if (res.data.length > 0) {
-          setSelectedDependentId(res.data[0].id);
+        } else if (data.length > 0) {
+          setSelectedDependentId(data[0].id);
         } else {
           setLoading(false); // No dependents
         }
@@ -75,8 +77,8 @@ export const Health = () => {
         api.get(`/health/records/?dependent_id=${dependentId}`),
         api.get('/health/metrics/')
       ]);
-      setRecords(recordsRes.data);
-      setMetrics(metricsRes.data);
+      setRecords(extractData(recordsRes.data));
+      setMetrics(extractData(metricsRes.data));
       setError('');
     } catch (err: any) {
       setError('Failed to load health data');

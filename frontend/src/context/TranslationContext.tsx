@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import api from '../api/axios';
+import { extractData } from '../utils/pagination';
 
 interface TranslationData {
   [key: string]: {
@@ -42,7 +43,8 @@ export const TranslationProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       const response = await api.get('/translations/');
       const newTranslations: TranslationData = {};
-      response.data.forEach((item: { key: string, en: string, de: string }) => {
+      const items = extractData(response.data) as { key: string, en: string, de: string }[];
+      items.forEach(item => {
         newTranslations[item.key] = { en: item.en || '', de: item.de || '' };
       });
       setTranslations(newTranslations);
