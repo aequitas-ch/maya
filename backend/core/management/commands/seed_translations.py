@@ -51,6 +51,7 @@ class Command(BaseCommand):
             'dependents_title': {'en': 'Dependents', 'de': 'Angehörige'},
             'your_dependents': {'en': 'Your Dependents', 'de': 'Ihre Angehörigen'},
             'add_dependent': {'en': 'Add', 'de': 'Hinzufügen'},
+            'update_dependent': {'en': 'Update Dependent', 'de': 'Angehörigen aktualisieren'},
             'first_name': {'en': 'First Name', 'de': 'Vorname'},
             'last_name': {'en': 'Last Name', 'de': 'Nachname'},
             'address': {'en': 'Address', 'de': 'Adresse'},
