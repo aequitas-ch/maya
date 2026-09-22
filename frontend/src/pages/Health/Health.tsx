@@ -240,8 +240,9 @@ export const Health = () => {
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('date_label') || 'Date'}</label>
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700">{t('date_label') || 'Date'}</label>
                 <input
+                  id="date"
                   type="date"
                   required
                   value={date}
@@ -251,9 +252,10 @@ export const Health = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('metric_label') || 'Metric (Select or Type New)'}</label>
+                <label htmlFor="metricName" className="block text-sm font-medium text-gray-700">{t('metric_label') || 'Metric (Select or Type New)'}</label>
                 <div className="flex gap-2 mb-2">
                   <select
+                    aria-label={t('select_existing') || 'Select existing...'}
                     onChange={handleMetricSelect}
                     className="block w-full border border-gray-300 rounded-xl shadow-md py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                     defaultValue=""
@@ -265,6 +267,7 @@ export const Health = () => {
                   </select>
                 </div>
                 <input
+                  id="metricName"
                   type="text"
                   required
                   placeholder={t('metric_placeholder') || 'e.g. Weight, Height'}
@@ -275,8 +278,9 @@ export const Health = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('unit_label') || 'Unit (Optional)'}</label>
+                <label htmlFor="metricUnit" className="block text-sm font-medium text-gray-700">{t('unit_label') || 'Unit (Optional)'}</label>
                 <input
+                  id="metricUnit"
                   type="text"
                   placeholder={t('unit_placeholder') || 'e.g. kg, cm'}
                   value={metricUnit}
@@ -286,8 +290,9 @@ export const Health = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('value_label') || 'Value'}</label>
+                <label htmlFor="value" className="block text-sm font-medium text-gray-700">{t('value_label') || 'Value'}</label>
                 <input
+                  id="value"
                   type="text"
                   required
                   value={value}
@@ -297,8 +302,9 @@ export const Health = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('comment_label') || 'Comment (Optional)'}</label>
+                <label htmlFor="comment" className="block text-sm font-medium text-gray-700">{t('comment_label') || 'Comment (Optional)'}</label>
                 <textarea
+                  id="comment"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   rows={3}
