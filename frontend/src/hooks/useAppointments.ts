@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import api from '../api/axios';
 import type { Appointment, AppointmentCreate } from '../types/schedule';
+import { extractData } from '../utils/pagination';
 
 export const useAppointments = () => {
     const [loading, setLoading] = useState(false);
@@ -10,8 +11,8 @@ export const useAppointments = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.get<Appointment[]>('/schedule/appointments/');
-            return response.data;
+            const response = await api.get('/schedule/appointments/');
+            return extractData(response.data) as Appointment[];
         } catch (err: any) {
             setError(err.message || 'Failed to fetch appointments');
             return [];
@@ -24,8 +25,8 @@ export const useAppointments = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.get<Appointment[]>('/schedule/appointments/upcoming/');
-            return response.data;
+            const response = await api.get('/schedule/appointments/upcoming/');
+            return extractData(response.data) as Appointment[];
         } catch (err: any) {
             setError(err.message || 'Failed to fetch upcoming appointments');
             return [];

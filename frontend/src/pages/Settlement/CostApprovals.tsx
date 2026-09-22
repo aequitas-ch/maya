@@ -3,6 +3,7 @@ import { settlementApi } from '../../api/settlement';
 import api from '../../api/axios';
 import type { CostApproval, Institution, Insurance, CostApprovalCreateData } from '../../types/settlement';
 import { useTranslation } from '../../hooks/useTranslation';
+import { extractData } from '../../utils/pagination';
 
 interface Dependent {
   id: number;
@@ -45,7 +46,7 @@ export const CostApprovals = () => {
         settlementApi.getCostApprovals(),
         settlementApi.getInstitutions(),
         settlementApi.getInsurances(),
-        api.get('/dependents/').then(res => res.data)
+          api.get('/dependents/').then(res => extractData(res.data))
       ]);
       setApprovals(approvalsData);
       setInstitutions(instData);

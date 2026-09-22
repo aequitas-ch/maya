@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { useEncryption } from '../context/EncryptionContext';
 import { encryptData, decryptData } from '../utils/crypto';
 import { useTranslation } from '../hooks/useTranslation';
+import { extractData } from '../utils/pagination';
 
 interface Dependent {
   id: number;
@@ -42,7 +43,7 @@ export const Dependents = () => {
   const fetchDependents = useCallback(async () => {
     try {
       const response = await api.get('/dependents/');
-      let loadedDependents = response.data as Dependent[];
+      let loadedDependents = extractData(response.data) as Dependent[];
 
       // Decrypt if necessary
       if (hasKey && encryptionKey) {

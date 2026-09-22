@@ -1,9 +1,11 @@
 import api from './axios';
 import type { Employee, Contract, WorkingHours, AssistantDashboardData } from '../types/assistant';
 
+import { extractData } from '../utils/pagination';
+
 export const getEmployees = async (): Promise<Employee[]> => {
   const response = await api.get('/assistants/employees/');
-  return response.data;
+  return extractData(response.data);
 };
 
 export const getEmployee = async (id: string): Promise<Employee> => {
@@ -33,7 +35,7 @@ export const updateContract = async (id: string, data: Partial<Contract>): Promi
 
 export const getWorkingHours = async (): Promise<WorkingHours[]> => {
   const response = await api.get('/assistants/working-hours/');
-  return response.data;
+  return extractData(response.data);
 };
 
 export const createWorkingHours = async (data: Partial<WorkingHours>): Promise<WorkingHours> => {

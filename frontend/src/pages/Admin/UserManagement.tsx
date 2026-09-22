@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { useTranslation } from '../../hooks/useTranslation';
+import { extractData } from '../../utils/pagination';
 
 interface AdminUser {
   id: number;
@@ -21,7 +22,7 @@ export const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/admin/users/');
-      setUsers(response.data);
+      setUsers(extractData(response.data));
     } catch (err) {
       setError(t('error_fetching_users') || 'Error fetching users');
     } finally {

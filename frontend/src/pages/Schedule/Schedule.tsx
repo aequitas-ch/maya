@@ -7,6 +7,7 @@ import { useAppointments } from '../../hooks/useAppointments';
 import type { Appointment } from '../../types/schedule';
 import type { Dependent } from '../../types';
 import type { Institution } from '../../types/settlement';
+import { extractData } from '../../utils/pagination';
 import api from '../../api/axios';
 
 const localizer = momentLocalizer(moment);
@@ -45,11 +46,11 @@ export const Schedule = () => {
       setAppointments(appts);
 
       const [depRes, instRes] = await Promise.all([
-        api.get<Dependent[]>('/core/dependents/'),
-        api.get<Institution[]>('/settlement/institutions/')
+        api.get('/core/dependents/'),
+        api.get('/settlement/institutions/')
       ]);
-      setDependents(depRes.data);
-      setInstitutions(instRes.data);
+      setDependents(extractData(depRes.data) as Dependent[]);
+      setInstitutions(extractData(instRes.data) as Institution[]);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

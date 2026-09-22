@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { useTranslation } from '../../hooks/useTranslation';
+import { extractData } from '../../utils/pagination';
 
 interface TranslationItem {
   id: number;
@@ -21,7 +22,7 @@ export const TranslationManagement = () => {
   const fetchTranslations = async () => {
     try {
       const response = await api.get('/translations/');
-      setTranslations(response.data);
+      setTranslations(extractData(response.data));
     } catch (err) {
       setError(t('error_fetching_translations') || 'Error fetching translations');
     } finally {
