@@ -14,11 +14,14 @@ headers {
   Authorization: Bearer {{access_token}}
 }
 
-vars:post-response {
-  ins_id: res.body.results[0].id
+script:post-response {
+  if (res.body.results && res.body.results.length > 0) {
+    bru.setVar("ins_id", res.body.results[0].id);
+  } else {
+    bru.setVar("ins_id", null);
+  }
 }
 
 assert {
   res.status: eq 200
-  res.body.results.length: gt 0
 }

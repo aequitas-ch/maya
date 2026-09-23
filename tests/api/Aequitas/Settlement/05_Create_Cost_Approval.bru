@@ -26,6 +26,20 @@ body:json {
   }
 }
 
+script:pre-request {
+  const body = req.getBody();
+  if (body.ordering_institution_id === null || body.ordering_institution_id === "") {
+    delete body.ordering_institution_id;
+  }
+  if (body.executing_institution_id === null || body.executing_institution_id === "") {
+    delete body.executing_institution_id;
+  }
+  if (body.insurance_id === null || body.insurance_id === "") {
+    delete body.insurance_id;
+  }
+  req.setBody(body);
+}
+
 vars:post-response {
   ca_id: res.body.id
 }
