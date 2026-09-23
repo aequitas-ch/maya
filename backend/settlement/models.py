@@ -15,9 +15,9 @@ class Insurance(models.Model):
 
 class CostApproval(models.Model):
     dependent = models.ForeignKey(Dependent, on_delete=models.CASCADE, related_name='cost_approvals')
-    ordering_institution = models.ForeignKey(Institution, on_delete=models.PROTECT, related_name='ordered_approvals')
-    executing_institution = models.ForeignKey(Institution, on_delete=models.PROTECT, related_name='executed_approvals')
-    insurance = models.ForeignKey(Insurance, on_delete=models.PROTECT, related_name='approvals')
+    ordering_institution = models.ForeignKey(Institution, on_delete=models.PROTECT, related_name='ordered_approvals', null=True, blank=True)
+    executing_institution = models.ForeignKey(Institution, on_delete=models.PROTECT, related_name='executed_approvals', null=True, blank=True)
+    insurance = models.ForeignKey(Insurance, on_delete=models.PROTECT, related_name='approvals', null=True, blank=True)
 
     next_reminder = models.DateField(null=True, blank=True)
 

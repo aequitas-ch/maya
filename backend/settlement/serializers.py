@@ -30,15 +30,15 @@ class CostApprovalLogSerializer(serializers.ModelSerializer):
 class CostApprovalSerializer(serializers.ModelSerializer):
     ordering_institution = InstitutionSerializer(read_only=True)
     ordering_institution_id = serializers.PrimaryKeyRelatedField(
-        queryset=Institution.objects.all(), source='ordering_institution', write_only=True
+        queryset=Institution.objects.all(), source='ordering_institution', write_only=True, required=False, allow_null=True
     )
     executing_institution = InstitutionSerializer(read_only=True)
     executing_institution_id = serializers.PrimaryKeyRelatedField(
-        queryset=Institution.objects.all(), source='executing_institution', write_only=True
+        queryset=Institution.objects.all(), source='executing_institution', write_only=True, required=False, allow_null=True
     )
     insurance = InsuranceSerializer(read_only=True)
     insurance_id = serializers.PrimaryKeyRelatedField(
-        queryset=Insurance.objects.all(), source='insurance', write_only=True
+        queryset=Insurance.objects.all(), source='insurance', write_only=True, required=False, allow_null=True
     )
     dependent_id = serializers.PrimaryKeyRelatedField(
         queryset=Dependent.objects.all(), source='dependent', write_only=True
