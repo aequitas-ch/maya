@@ -121,10 +121,13 @@ export const Profile = () => {
 
   return (
     <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">{t('profile_page_title') || 'Profile Settings'}</h1>
+      </div>
       <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('profile_title') || 'Profile'}</h3>
+            <h2 className="text-lg font-medium leading-6 text-gray-900">{t('profile_title') || 'Profile'}</h2>
             <p className="mt-1 text-sm text-gray-500">
               {t('update_personal_info') || 'Update your personal information and how others see you on the platform.'}
             </p>
@@ -138,7 +141,7 @@ export const Profile = () => {
               )}
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6">
-                  <label className="block text-sm font-medium text-gray-700">{t('profile_picture') || 'Profile Picture'}</label>
+                  <label htmlFor="profile_picture" className="block text-sm font-medium text-gray-700">{t('profile_picture') || 'Profile Picture'}</label>
                   <div className="mt-1 flex items-center space-x-5">
                     {previewUrl ? (
                       <img
@@ -236,7 +239,7 @@ export const Profile = () => {
       <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('change_password') || 'Change Password'}</h3>
+            <h2 className="text-lg font-medium leading-6 text-gray-900">{t('change_password') || 'Change Password'}</h2>
             <p className="mt-1 text-sm text-gray-500">
               {t('update_account_password') || 'Update your account password.'}
             </p>
