@@ -10,7 +10,12 @@ export const Profile = () => {
     email: '',
     first_name: '',
     last_name: '',
-    display_name: ''
+    display_name: '',
+    module_health_enabled: false,
+    module_schedule_enabled: false,
+    module_settlement_enabled: false,
+    module_documents_enabled: false,
+    module_assistants_enabled: false
   });
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -30,7 +35,12 @@ export const Profile = () => {
         email: user.email || '',
         first_name: user.first_name || '',
         last_name: user.last_name || '',
-        display_name: user.display_name || ''
+        display_name: user.display_name || '',
+        module_health_enabled: user.module_health_enabled || false,
+        module_schedule_enabled: user.module_schedule_enabled || false,
+        module_settlement_enabled: user.module_settlement_enabled || false,
+        module_documents_enabled: user.module_documents_enabled || false,
+        module_assistants_enabled: user.module_assistants_enabled || false
       });
       if (user.profile_picture) {
         setPreviewUrl(user.profile_picture);
@@ -39,9 +49,10 @@ export const Profile = () => {
   }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
@@ -71,6 +82,11 @@ export const Profile = () => {
     submitData.append('first_name', formData.first_name);
     submitData.append('last_name', formData.last_name);
     submitData.append('display_name', formData.display_name);
+    submitData.append('module_health_enabled', formData.module_health_enabled.toString());
+    submitData.append('module_schedule_enabled', formData.module_schedule_enabled.toString());
+    submitData.append('module_settlement_enabled', formData.module_settlement_enabled.toString());
+    submitData.append('module_documents_enabled', formData.module_documents_enabled.toString());
+    submitData.append('module_assistants_enabled', formData.module_assistants_enabled.toString());
     if (profilePicture) {
       submitData.append('profile_picture', profilePicture);
     }
@@ -121,6 +137,96 @@ export const Profile = () => {
 
   return (
     <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
+      <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
+        <div className="md:grid md:grid-cols-3 md:gap-6">
+          <div className="md:col-span-1">
+            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('modules_title') || 'Active Modules'}</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {t('modules_description') || 'Enable or disable different platform modules for your account.'}
+            </p>
+          </div>
+          <div className="mt-5 md:mt-0 md:col-span-2">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="flex items-center">
+                <input
+                  id="module_health_enabled"
+                  name="module_health_enabled"
+                  type="checkbox"
+                  checked={formData.module_health_enabled}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                />
+                <label htmlFor="module_health_enabled" className="ml-2 block text-sm text-gray-900">
+                  {t('module_health') || 'Health'}
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="module_schedule_enabled"
+                  name="module_schedule_enabled"
+                  type="checkbox"
+                  checked={formData.module_schedule_enabled}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                />
+                <label htmlFor="module_schedule_enabled" className="ml-2 block text-sm text-gray-900">
+                  {t('module_schedule') || 'Schedule'}
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="module_settlement_enabled"
+                  name="module_settlement_enabled"
+                  type="checkbox"
+                  checked={formData.module_settlement_enabled}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                />
+                <label htmlFor="module_settlement_enabled" className="ml-2 block text-sm text-gray-900">
+                  {t('module_settlement') || 'Cost Approvals'}
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="module_documents_enabled"
+                  name="module_documents_enabled"
+                  type="checkbox"
+                  checked={formData.module_documents_enabled}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                />
+                <label htmlFor="module_documents_enabled" className="ml-2 block text-sm text-gray-900">
+                  {t('module_documents') || 'Documents'}
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="module_assistants_enabled"
+                  name="module_assistants_enabled"
+                  type="checkbox"
+                  checked={formData.module_assistants_enabled}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                />
+                <label htmlFor="module_assistants_enabled" className="ml-2 block text-sm text-gray-900">
+                  {t('module_assistants') || 'Assistants'}
+                </label>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                type="button"
+                onClick={(e) => handleSubmit(e as unknown as React.FormEvent)}
+                disabled={loading}
+                className="bg-teal-600 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
+              >
+                {loading ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">

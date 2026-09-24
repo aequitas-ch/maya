@@ -8,6 +8,12 @@ class Profile(models.Model):
     display_name = models.CharField(max_length=150, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
 
+    module_health_enabled = models.BooleanField(default=False)
+    module_schedule_enabled = models.BooleanField(default=False)
+    module_settlement_enabled = models.BooleanField(default=False)
+    module_documents_enabled = models.BooleanField(default=False)
+    module_assistants_enabled = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.user.username}'s Profile"
 

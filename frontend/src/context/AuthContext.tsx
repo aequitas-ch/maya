@@ -10,6 +10,11 @@ interface UserProfile {
   display_name: string;
   profile_picture?: string | null;
   is_staff: boolean;
+  module_health_enabled?: boolean;
+  module_schedule_enabled?: boolean;
+  module_settlement_enabled?: boolean;
+  module_documents_enabled?: boolean;
+  module_assistants_enabled?: boolean;
 }
 
 interface AuthContextType {

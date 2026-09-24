@@ -34,10 +34,17 @@ class ChangePasswordSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     display_name = serializers.CharField(source='profile.display_name', allow_blank=True, required=False)
     profile_picture = serializers.ImageField(source='profile.profile_picture', required=False, allow_null=True)
+    module_health_enabled = serializers.BooleanField(source='profile.module_health_enabled', required=False)
+    module_schedule_enabled = serializers.BooleanField(source='profile.module_schedule_enabled', required=False)
+    module_settlement_enabled = serializers.BooleanField(source='profile.module_settlement_enabled', required=False)
+    module_documents_enabled = serializers.BooleanField(source='profile.module_documents_enabled', required=False)
+    module_assistants_enabled = serializers.BooleanField(source='profile.module_assistants_enabled', required=False)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'display_name', 'profile_picture', 'is_staff')
+        fields = ('username', 'email', 'first_name', 'last_name', 'display_name', 'profile_picture', 'is_staff',
+                  'module_health_enabled', 'module_schedule_enabled', 'module_settlement_enabled',
+                  'module_documents_enabled', 'module_assistants_enabled')
         read_only_fields = ('username', 'is_staff')
 
     def update(self, instance, validated_data):
@@ -56,6 +63,16 @@ class ProfileSerializer(serializers.ModelSerializer):
             profile.display_name = profile_data.get('display_name', profile.display_name)
             if 'profile_picture' in profile_data:
                 profile.profile_picture = profile_data['profile_picture']
+            if 'module_health_enabled' in profile_data:
+                profile.module_health_enabled = profile_data['module_health_enabled']
+            if 'module_schedule_enabled' in profile_data:
+                profile.module_schedule_enabled = profile_data['module_schedule_enabled']
+            if 'module_settlement_enabled' in profile_data:
+                profile.module_settlement_enabled = profile_data['module_settlement_enabled']
+            if 'module_documents_enabled' in profile_data:
+                profile.module_documents_enabled = profile_data['module_documents_enabled']
+            if 'module_assistants_enabled' in profile_data:
+                profile.module_assistants_enabled = profile_data['module_assistants_enabled']
             profile.save()
 
         return instance

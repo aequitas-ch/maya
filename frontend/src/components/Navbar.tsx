@@ -38,12 +38,14 @@ export const Navbar = () => {
                 >
                   {t('dependents') || 'Dependents'}
                 </Link>
-                <Link
-                  to="/health"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  {t('health') || 'Health'}
-                </Link>
+                {user.module_health_enabled && (
+                  <Link
+                    to="/health"
+                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  >
+                    {t('health') || 'Health'}
+                  </Link>
+                )}
                 {user.is_staff && (
                   <Link
                     to="/admin"
@@ -52,30 +54,38 @@ export const Navbar = () => {
                     {t('admin') || 'Admin'}
                   </Link>
                 )}
-                <Link
-                  to="/schedule"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  {t('schedule_title') || 'Schedule'}
-                </Link>
-                <Link
-                  to="/assistants"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  {t('assistants') || 'Assistants'}
-                </Link>
-                <Link
-                  to="/assistants/dashboard"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  {t('assistants_dashboard') || 'Costs Dashboard'}
-                </Link>
-                <Link
-                  to="/cost-approvals"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  {t('cost_approvals') || 'Cost Approvals'}
-                </Link>
+                {user.module_schedule_enabled && (
+                  <Link
+                    to="/schedule"
+                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  >
+                    {t('schedule_title') || 'Schedule'}
+                  </Link>
+                )}
+                {user.module_assistants_enabled && (
+                  <>
+                    <Link
+                      to="/assistants"
+                      className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    >
+                      {t('assistants') || 'Assistants'}
+                    </Link>
+                    <Link
+                      to="/assistants/dashboard"
+                      className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    >
+                      {t('assistants_dashboard') || 'Costs Dashboard'}
+                    </Link>
+                  </>
+                )}
+                {user.module_settlement_enabled && (
+                  <Link
+                    to="/cost-approvals"
+                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  >
+                    {t('cost_approvals') || 'Cost Approvals'}
+                  </Link>
+                )}
               </div>
             )}
           </div>
