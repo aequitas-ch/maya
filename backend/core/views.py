@@ -1,9 +1,10 @@
 from rest_framework import generics, permissions, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from .models import Dependent, Translation
-from .serializers import RegisterSerializer, ProfileSerializer, ChangePasswordSerializer, DependentSerializer, AdminUserSerializer, TranslationSerializer
+from .serializers import RegisterSerializer, ProfileSerializer, ChangePasswordSerializer, DependentSerializer, AdminUserSerializer, TranslationSerializer, AdminSetPasswordSerializer
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -46,6 +47,16 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = AdminUserSerializer
     permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True, methods=['post'])
+    def set_password(self, request, pk=None):
+        user = self.get_object()
+        serializer = AdminSetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({'status': 'password set'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TranslationViewSet(viewsets.ModelViewSet):
     queryset = Translation.objects.all()

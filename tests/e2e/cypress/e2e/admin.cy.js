@@ -70,4 +70,62 @@ describe("Admin Dashboard", () => {
     cy.contains("manage_translations").click();
     cy.contains("Test English").should("be.visible");
   });
+
+  it("allows changing a user's password in user management", () => {
+    // Mock the profile response to ensure we are an admin
+    cy.intercept("GET", "**/users/profile/", (req) => {
+    req.reply({
+      username: "adminuser",
+      email: "admin@example.com",
+      first_name: "Admin",
+      last_name: "User",
+      display_name: "Admin User",
+      is_staff: true,
+    });
+  }).as("getProfile");
+
+  // Mock getting users
+  cy.intercept("GET", "**/admin/users/", {
+    results: [
+      {
+        id: 10,
+        username: "targetuser",
+        email: "target@example.com",
+        first_name: "Target",
+        last_name: "User",
+        is_staff: false,
+        is_active: true,
+      },
+    ],
+    count: 1,
+    next: null,
+    previous: null,
+  }).as("getUsers");
+
+  // Mock setting password
+  cy.intercept("POST", "**/admin/users/10/set_password/", (req) => {
+    expect(req.body.new_password).to.equal("NewPassword123!");
+    req.reply({ status: "password set" });
+  }).as("setPassword");
+
+  cy.visit("/admin");
+  cy.wait("@getProfile");
+
+  // Switch to User Management tab (Assuming it exists and is clickable via its text)
+  cy.contains("manage_users").click();
+  cy.wait("@getUsers");
+
+  cy.contains("targetuser").should("be.visible");
+  cy.contains("Change Password").click();
+
+  // The modal/form should be visible
+  cy.contains("Change password for targetuser").should("be.visible");
+  cy.get("input[type='password']").type("NewPassword123!");
+  cy.contains("Save").click();
+
+  cy.wait("@setPassword");
+
+    // Success message should appear
+    cy.contains("Password updated successfully").should("be.visible");
+  });
 });

@@ -17,6 +17,9 @@ export const UserManagement = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [passwordUser, setPasswordUser] = useState<AdminUser | null>(null);
+  const [newPassword, setNewPassword] = useState('');
   const { t } = useTranslation();
 
   const fetchUsers = async () => {
@@ -43,12 +46,51 @@ export const UserManagement = () => {
     }
   };
 
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passwordUser || !newPassword) return;
+
+    try {
+      await api.post(`/admin/users/${passwordUser.id}/set_password/`, { new_password: newPassword });
+      setSuccessMessage(t('password_updated_successfully') || 'Password updated successfully');
+      setPasswordUser(null);
+      setNewPassword('');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      setError(t('error_updating_password') || 'Error updating password');
+    }
+  };
+
   if (loading) return <div>{t('loading_data') || 'Loading...'}</div>;
   if (error) return <div className="text-red-600">{error}</div>;
 
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">{t('users') || 'Users'}</h2>
+      {successMessage && <div className="mb-4 text-green-600 bg-green-50 p-2 rounded">{successMessage}</div>}
+      {passwordUser && (
+        <div className="mb-4 p-4 border rounded shadow-sm bg-white">
+          <h3 className="text-lg font-medium mb-2">{t('change_password_for') || 'Change password for'} {passwordUser.username}</h3>
+          <form onSubmit={handleChangePassword} className="flex flex-col gap-2 max-w-sm">
+            <input
+              type="password"
+              placeholder={t('new_password') || 'New Password'}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="border p-2 rounded"
+              required
+            />
+            <div className="flex gap-2">
+              <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">
+                {t('save') || 'Save'}
+              </button>
+              <button type="button" onClick={() => setPasswordUser(null)} className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+                {t('cancel') || 'Cancel'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -72,8 +114,11 @@ export const UserManagement = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button onClick={() => toggleStaffStatus(user)} className="text-teal-600 hover:text-teal-900">
+                  <button onClick={() => toggleStaffStatus(user)} className="text-teal-600 hover:text-teal-900 mr-4">
                     {user.is_staff ? t('remove_admin') || 'Remove Admin' : t('make_admin') || 'Make Admin'}
+                  </button>
+                  <button onClick={() => setPasswordUser(user)} className="text-teal-600 hover:text-teal-900">
+                    {t('change_password') || 'Change Password'}
                   </button>
                 </td>
               </tr>
