@@ -144,6 +144,11 @@ class Command(BaseCommand):
             'upload_key_desc': {'en': 'Upload your encryption key file to decrypt your sensitive data locally.', 'de': 'Laden Sie Ihre Verschlüsselungsschlüsseldatei hoch, um Ihre sensiblen Daten lokal zu entschlüsseln.'},
             'upload_key_btn': {'en': 'Upload Key File', 'de': 'Schlüsseldatei hochladen'},
             'invalid_key_format': {'en': 'Invalid key file format.', 'de': 'Ungültiges Dateiformat für Schlüssel.'},
+            'password_updated_successfully': {'en': 'Password updated successfully', 'de': 'Passwort erfolgreich aktualisiert'},
+            'error_updating_password': {'en': 'Error updating password', 'de': 'Fehler beim Aktualisieren des Passworts'},
+            'change_password_for': {'en': 'Change password for', 'de': 'Passwort ändern für'},
+            'save': {'en': 'Save', 'de': 'Speichern'},
+            'cancel': {'en': 'Cancel', 'de': 'Abbrechen'},
         }
 
         for key, val in translations.items():
