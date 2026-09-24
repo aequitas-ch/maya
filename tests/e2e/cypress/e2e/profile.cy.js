@@ -27,12 +27,20 @@ describe("Profile Flow", () => {
     cy.visit("/login");
     cy.get('input[type="text"]').type(user.username);
     cy.get('input[type="password"]').type(user.password);
+    cy.intercept('POST', '**/api/token/').as('loginRequestInit');
     cy.get('button[type="submit"]').click();
 
     // Verify logged in
+    cy.wait('@loginRequestInit', { timeout: 15000 });
 
-    // Go to profile via the new avatar icon
-    cy.get('nav a[href="/profile"]').click();
+    // After login we are redirected to /
+    cy.url({ timeout: 10000 }).should("eq", Cypress.config().baseUrl + "/");
+
+    // Need to wait for profile fetch to populate context
+    cy.contains(user.display_name, { timeout: 10000 }).should("be.visible");
+
+    // Wait for nav to render with profile link
+    cy.get('nav a[href="/profile"]', { timeout: 10000 }).should('exist').click({ force: true });
 
     cy.injectAxe();
     cy.checkA11y();
@@ -85,40 +93,51 @@ describe("Profile Flow", () => {
     cy.get('input[name="last_name"]').type(flowUser.last_name);
     cy.get('input[name="display_name"]').type(flowUser.display_name);
     cy.get('input[name="password"]').type(flowUser.password);
+    cy.intercept('POST', '**/api/users/register/').as('registerRequest');
     cy.get('button[type="submit"]').click();
 
+    cy.wait('@registerRequest', { timeout: 15000 });
+
     // 2. Login
-    cy.contains("Login").should("be.visible");
+    cy.url({ timeout: 10000 }).should('include', '/login');
     cy.get('input[name="username"]').type(flowUser.username);
     cy.get('input[name="password"]').type(flowUser.password);
+    cy.intercept('POST', '**/api/token/').as('loginRequest');
     cy.get('button[type="submit"]').click();
 
     // Ensure login finishes
+    cy.wait('@loginRequest', { timeout: 15000 });
+    cy.url({ timeout: 10000 }).should("eq", Cypress.config().baseUrl + "/");
+    cy.contains(flowUser.display_name, { timeout: 10000 }).should("be.visible");
 
     // 3. Change Password
     // Go to profile via the new avatar icon
-    cy.get('nav a[href="/profile"]').click();
+    cy.get('nav a[href="/profile"]', { timeout: 10000 }).should('exist').click({ force: true });
+    cy.url().should('include', '/profile');
     cy.get('input[name="old_password"]').type(flowUser.password);
     cy.get('input[name="new_password"]').type(flowUser.newPassword);
     cy.get('input[name="confirm_password"]').type(flowUser.newPassword);
-    cy.contains("button", "Save").click();
+    cy.contains("h2", "Change Password", { timeout: 10000 }).parent().parent().find("button").contains("Save").click();
 
     // Verify success message
-    cy.contains("Password updated successfully!").should("exist");
+    cy.contains("Password updated successfully!", { timeout: 10000 }).should("be.visible");
 
     // 4. Logout
     cy.contains("button", "Logout").click();
 
     // Verify logout
-    cy.contains("Login").should("be.visible");
+    cy.url({ timeout: 10000 }).should('include', '/login');
 
     // 5. Login with new password
     cy.get('input[name="username"]').type(flowUser.username);
     cy.get('input[type="password"]').type(flowUser.newPassword);
+    cy.intercept('POST', '**/api/token/').as('loginRequest2');
     cy.get('button[type="submit"]').click();
 
     // Verify successful login
+    cy.wait('@loginRequest2', { timeout: 15000 });
+    cy.url({ timeout: 10000 }).should("eq", Cypress.config().baseUrl + "/");
 
-    cy.contains(flowUser.display_name).should("exist");
+    cy.contains(flowUser.display_name, { timeout: 10000 }).should("exist");
   });
 });

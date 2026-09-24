@@ -46,7 +46,7 @@ export const Dashboard = () => {
           <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">{t('session_locked') || 'Your session is currently locked'}</h3>
+                <h2 className="text-sm font-medium text-yellow-800">{t('session_locked') || 'Your session is currently locked'}</h2>
                 <div className="mt-2 text-sm text-yellow-700">
                   <p>{t('upload_key_desc') || 'Upload your encryption key file to decrypt your sensitive data locally.'}</p>
                   {keyError && <p className="text-red-600 mt-1">{keyError}</p>}
