@@ -1,3 +1,5 @@
+import { reportA11yViolations } from "../support/commands";
+
 describe("Profile Flow", () => {
   let user;
 
@@ -43,7 +45,7 @@ describe("Profile Flow", () => {
     cy.get('nav a[href="/profile"]', { timeout: 10000 }).should('exist').click({ force: true });
 
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(null, null, reportA11yViolations);
 
     // Change display name
     cy.get('input[name="display_name"]').clear().type("Jane Updated");

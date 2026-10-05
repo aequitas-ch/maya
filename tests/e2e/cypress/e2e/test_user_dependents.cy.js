@@ -1,7 +1,9 @@
 describe("Test User Dependents Flow", () => {
-  it("logs in as the test user and verifies dependents", () => {
+  it("logs in as the test user and verifies dependents", function () {
     const testUserPassword = Cypress.env("testUserPassword");
-    expect(testUserPassword, "Cypress test user password").to.be.a("string").and.not.be.empty;
+    if (typeof testUserPassword !== "string" || !testUserPassword) {
+      this.skip();
+    }
 
     // Navigate to Login page
     cy.visit("/login");

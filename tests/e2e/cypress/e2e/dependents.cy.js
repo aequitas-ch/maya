@@ -1,3 +1,5 @@
+import { reportA11yViolations } from "../support/commands";
+
 describe("Dependents Flow", () => {
   let testUser;
 
@@ -41,7 +43,7 @@ describe("Dependents Flow", () => {
     cy.url().should("include", "/dependents");
 
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(null, null, reportA11yViolations);
 
     // --- Create first dependent ---
     cy.get('input[id="firstName"]').type("Anna");

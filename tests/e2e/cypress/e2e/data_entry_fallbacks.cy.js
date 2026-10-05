@@ -1,3 +1,5 @@
+import { reportA11yViolations } from "../support/commands";
+
 describe("Data Entry with Fallbacks", () => {
   let testUser;
 
@@ -51,7 +53,7 @@ describe("Data Entry with Fallbacks", () => {
     cy.url().should("include", "/health");
 
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(null, null, reportA11yViolations);
 
     // Intercept the health record creation API call and simulate a 500 error
     cy.intercept("POST", "**/api/health/records/", {
@@ -83,7 +85,7 @@ describe("Data Entry with Fallbacks", () => {
     cy.contains("Failed to add health record").should("be.visible");
 
     // Check accessibility of the error state
-    cy.checkA11y();
+    cy.checkA11y(null, null, reportA11yViolations);
 
     // Verify that the data is not lost (form fields still have the values)
     cy.get('input[placeholder="e.g. Weight, Height"]').should(

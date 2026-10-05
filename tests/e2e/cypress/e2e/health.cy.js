@@ -1,3 +1,5 @@
+import { reportA11yViolations } from "../support/commands";
+
 describe("Health Data Management", () => {
   let testUser;
 
@@ -54,7 +56,7 @@ describe("Health Data Management", () => {
     cy.url().should("include", "/health");
 
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(null, null, reportA11yViolations);
 
     // Add a numeric health record
     cy.get('input[placeholder="e.g. Weight, Height"]').type("Weight");
