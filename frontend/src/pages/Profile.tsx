@@ -120,7 +120,7 @@ export const Profile = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
+    <main className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-6">{t('profile_page_title') || 'Profile Settings'}</h1>
       </div>
@@ -226,7 +226,7 @@ export const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-teal-600 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
+                  className="bg-teal-700 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
                   {loading ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
                 </button>
@@ -296,7 +296,7 @@ export const Profile = () => {
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="bg-teal-600 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
+                  className="bg-teal-700 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
                   {passwordLoading ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
                 </button>
@@ -305,6 +305,6 @@ export const Profile = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };

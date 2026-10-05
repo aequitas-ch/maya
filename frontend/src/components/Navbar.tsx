@@ -20,7 +20,7 @@ export const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="text-xl font-bold text-teal-600">
+              <Link to="/" className="text-xl font-bold text-teal-700">
                 Aequitas
               </Link>
             </div>
@@ -108,7 +108,7 @@ export const Navbar = () => {
                 <span className="text-sm text-gray-700">
                   {t('welcome') || 'Welcome'}, {user.display_name || user.first_name || user.username}
                 </span>
-                <Link to="/profile" className="flex items-center">
+                <Link to="/profile" className="flex items-center" aria-label="Profile">
                   {user.profile_picture ? (
                     <img
                       src={user.profile_picture}
@@ -117,7 +117,7 @@ export const Navbar = () => {
                     />
                   ) : (
                     <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300 text-gray-500">
-                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                       </svg>
                     </div>
