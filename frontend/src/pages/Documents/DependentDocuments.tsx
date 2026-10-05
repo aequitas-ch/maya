@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from '../../hooks/useTranslation';
+import { extractData } from '../../utils/pagination';
 
 interface Document {
   id: number;
@@ -48,8 +49,9 @@ export const DependentDocuments: React.FC = () => {
       });
       if (response.ok) {
         const data = await response.json();
+        const extractedData = extractData(data) as Document[];
         // The endpoint returns all documents for user's dependents, filter for this dependent
-        const dependentDocs = data.filter((doc: Document) => doc.dependent.toString() === id);
+        const dependentDocs = extractedData.filter((doc: Document) => doc.dependent.toString() === id);
         setDocuments(dependentDocs);
       }
     } catch (err) {
@@ -67,7 +69,7 @@ export const DependentDocuments: React.FC = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setInstitutions(data);
+        setInstitutions(extractData(data) as Institution[]);
       }
     } catch (err) {
       console.error("Failed to fetch institutions", err);
