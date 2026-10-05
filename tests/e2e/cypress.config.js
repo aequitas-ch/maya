@@ -12,5 +12,17 @@ module.exports = defineConfig({
 
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL || 'http://localhost:5173',
+    setupNodeEvents(on, config) {
+      on('task', {
+        log(message) {
+          console.log(message)
+          return null
+        },
+        table(message) {
+          console.table(message)
+          return null
+        }
+      })
+    },
   },
 });
