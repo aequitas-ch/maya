@@ -77,12 +77,12 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             {t('create_account') || 'Create an account'}
-          </h2>
+          </h1>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -92,6 +92,7 @@ export const Register = () => {
             <div>
               <input
                 name="username"
+                aria-label={t('username_placeholder') || 'Username'}
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-xl focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
@@ -103,6 +104,7 @@ export const Register = () => {
             <div>
               <input
                 name="email"
+                aria-label={t('email_address') || 'Email address'}
                 type="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
@@ -114,6 +116,7 @@ export const Register = () => {
             <div>
               <input
                 name="first_name"
+                aria-label={t('first_name') || 'First Name'}
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
@@ -125,6 +128,7 @@ export const Register = () => {
             <div>
               <input
                 name="last_name"
+                aria-label={t('last_name') || 'Last Name'}
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
@@ -136,6 +140,7 @@ export const Register = () => {
             <div>
               <input
                 name="display_name"
+                aria-label={t('display_name_placeholder') || 'Display Name (Optional)'}
                 type="text"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('display_name_placeholder') || 'Display Name (Optional)'}
@@ -146,6 +151,7 @@ export const Register = () => {
             <div>
               <input
                 name="password"
+                aria-label={t('password_placeholder') || 'Password'}
                 type="password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-xl focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
@@ -157,7 +163,7 @@ export const Register = () => {
           </div>
 
           <div className="bg-white p-4 rounded border shadow-sm text-sm text-gray-700">
-            <h3 className="font-bold mb-2">Privacy by Design</h3>
+            <h2 className="font-bold mb-2">Privacy by Design</h2>
             <p className="mb-4">
               To keep your most sensitive data secure, Aequitas uses end-to-end encryption. Generate an encryption key now.
               <strong> You must save this key file securely. If you lose it, your encrypted data cannot be recovered.</strong>
@@ -175,18 +181,18 @@ export const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-teal-700 hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-500"
             >
               {loading ? t('loading_data') || 'Loading...' : t('register') || 'Register'}
             </button>
           </div>
           <div className="text-sm text-center">
-            <Link to="/login" className="font-medium text-teal-600 hover:text-teal-500">
+            <Link to="/login" className="font-medium text-teal-700 hover:text-teal-600">
               {t('already_have_account') || 'Already have an account? Sign in'}
             </Link>
           </div>
         </form>
       </div>
-    </div>
+    </main>
   );
 };

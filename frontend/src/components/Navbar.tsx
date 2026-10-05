@@ -82,7 +82,7 @@ export const Navbar = () => {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             {user ? (
               <div className="flex items-center space-x-4">
-                <select
+                <select aria-label={t('select_language') || 'Select Language'}
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as 'en' | 'de')}
                   className="text-sm border-gray-300 rounded-xl shadow-sm focus:border-teal-300 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
@@ -125,14 +125,14 @@ export const Navbar = () => {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="bg-teal-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                  className="bg-teal-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                 >
                   {t('logout') || 'Logout'}
                 </button>
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <select
+                <select aria-label={t('select_language') || 'Select Language'}
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as 'en' | 'de')}
                   className="text-sm border-gray-300 rounded-xl shadow-sm focus:border-teal-300 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
@@ -148,7 +148,7 @@ export const Navbar = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-teal-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-700"
+                  className="bg-teal-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-800"
                 >
                   {t('register') || 'Register'}
                 </Link>
