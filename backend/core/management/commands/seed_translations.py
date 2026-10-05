@@ -149,6 +149,13 @@ class Command(BaseCommand):
             'change_password_for': {'en': 'Change password for', 'de': 'Passwort ändern für'},
             'save': {'en': 'Save', 'de': 'Speichern'},
             'cancel': {'en': 'Cancel', 'de': 'Abbrechen'},
+            'modules_title': {'en': 'Active Modules', 'de': 'Aktive Module'},
+            'modules_description': {'en': 'Enable or disable different platform modules for your account.', 'de': 'Aktivieren oder deaktivieren Sie verschiedene Plattform-Module für Ihr Konto.'},
+            'module_health': {'en': 'Health', 'de': 'Gesundheit'},
+            'module_schedule': {'en': 'Schedule', 'de': 'Termine'},
+            'module_settlement': {'en': 'Cost Approvals', 'de': 'Kostengutsprachen'},
+            'module_documents': {'en': 'Documents', 'de': 'Dokumente'},
+            'module_assistants': {'en': 'Assistants', 'de': 'Assistenzen'},
         }
 
         for key, val in translations.items():
