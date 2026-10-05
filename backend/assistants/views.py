@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -22,8 +23,12 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         employee = self.get_object()
         year = request.data.get('year', datetime.date.today().year)
 
-        # Aggregate all payslips for the given year
-        payslips = Payslip.objects.filter(working_hours__contract__employee=employee, working_hours__year=year)
+        # Aggregate all payslips for the given year, securing against BOLA
+        payslips = Payslip.objects.filter(
+            working_hours__contract__employee=employee,
+            working_hours__contract__employee__employer=request.user,
+            working_hours__year=year
+        )
 
         totals = payslips.aggregate(
             total_gross=Sum('gross_pay'),
@@ -49,7 +54,7 @@ class ContractViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         employee_id = self.request.data.get('employee')
-        employee = Employee.objects.get(id=employee_id, employer=self.request.user)
+        employee = get_object_or_404(Employee, id=employee_id, employer=self.request.user)
         serializer.save(employee=employee)
 
 class WorkingHoursViewSet(viewsets.ModelViewSet):
@@ -58,6 +63,19 @@ class WorkingHoursViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return WorkingHours.objects.filter(contract__employee__employer=self.request.user)
+
+    def perform_create(self, serializer):
+        contract_id = self.request.data.get('contract')
+        contract = get_object_or_404(Contract, id=contract_id, employee__employer=self.request.user)
+        serializer.save(contract=contract)
+
+    def perform_update(self, serializer):
+        contract_id = self.request.data.get('contract')
+        if contract_id:
+            contract = get_object_or_404(Contract, id=contract_id, employee__employer=self.request.user)
+            serializer.save(contract=contract)
+        else:
+            serializer.save()
 
     @action(detail=True, methods=['post'])
     def generate_payslip(self, request, pk=None):
