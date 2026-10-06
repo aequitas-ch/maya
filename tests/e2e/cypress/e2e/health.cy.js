@@ -20,6 +20,7 @@ describe("Health Data Management", () => {
       url: apiUrl,
       body: testUser,
     });
+    cy.enableModules(testUser, { module_health_enabled: true });
   });
 
   beforeEach(() => {

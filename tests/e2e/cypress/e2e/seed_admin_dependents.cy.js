@@ -5,7 +5,7 @@ describe("Seed Admin Dependents", () => {
 
     // Login as admin
     cy.visit("/login");
-    cy.get('input[name="username"]').type("admin");
+    cy.get('input[name="username"]').type("adminuser");
     cy.get('input[name="password"]').type(adminUserPassword);
     cy.get('button[type="submit"]').click();
 

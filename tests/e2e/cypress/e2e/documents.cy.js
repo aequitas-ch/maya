@@ -51,6 +51,7 @@ describe('Documents Flow', () => {
             });
         });
     });
+    cy.enableModules(testUser, { module_documents_enabled: true });
 
     // Login via UI
     cy.visit('/login');
