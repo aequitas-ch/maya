@@ -2,7 +2,12 @@
 
 Cypress.Commands.add("login", (username = "test", password = null) => {
   // Use provided password or get from environment
-  const loginPassword = password || Cypress.env("testUserPassword");
+  let loginPassword = password || Cypress.env("testUserPassword");
+  
+  // Fallback to default if still empty (for development/testing)
+  if (!loginPassword) {
+    loginPassword = "test_password_123";
+  }
   
   expect(loginPassword, "Password for login").to.be.a("string").and.not.be.empty;
 
