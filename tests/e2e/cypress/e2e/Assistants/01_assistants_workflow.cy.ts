@@ -1,6 +1,6 @@
 describe('Assistants Workflow', () => {
   beforeEach(() => {
-    cy.login(); // Assuming a custom command exists or we simulate login
+    cy.login(); // Use the custom login command with test user
     cy.visit('/assistants');
   });
 
