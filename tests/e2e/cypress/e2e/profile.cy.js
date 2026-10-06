@@ -117,7 +117,7 @@ describe("Profile Flow", () => {
     cy.get('input[name="old_password"]').type(flowUser.password);
     cy.get('input[name="new_password"]').type(flowUser.newPassword);
     cy.get('input[name="confirm_password"]').type(flowUser.newPassword);
-    cy.contains("h2", "Change Password", { timeout: 10000 }).parent().parent().find("button").contains("Save").click();
+    cy.contains("h3", "Change Password", { timeout: 10000 }).parent().parent().find("button").contains("Save").click();
 
     // Verify success message
     cy.contains("Password updated successfully!", { timeout: 10000 }).should("be.visible");

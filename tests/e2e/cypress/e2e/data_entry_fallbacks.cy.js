@@ -20,6 +20,7 @@ describe("Data Entry with Fallbacks", () => {
       url: apiUrl,
       body: testUser,
     });
+    cy.enableModules(testUser, { module_health_enabled: true });
 
     // Login via UI
     cy.visit("/login");

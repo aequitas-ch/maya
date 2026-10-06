@@ -1,15 +1,26 @@
 describe("Test User Dependents Flow", () => {
-  it("logs in as the test user and verifies dependents", () => {
-    const testUserPassword = Cypress.env("testUserPassword");
-    expect(testUserPassword, "Cypress test user password").to.be.a("string").and.not.be.empty;
+  it("logs in as a test user and verifies dependents", () => {
+    const randomString = Math.random().toString(36).substring(2, 10);
+    const testUser = {
+      username: `dependents_${randomString}`,
+      email: `dependents_${randomString}@example.com`,
+      first_name: "Test",
+      last_name: "User",
+      password: `TestPass123!${randomString}`,
+    };
+    const apiUrl = Cypress.env("apiUrl");
 
-    // Navigate to Login page
+    cy.request({
+      method: "POST",
+      url: `${apiUrl}/api/users/register/`,
+      body: testUser,
+    });
+
     cy.visit("/login");
 
-    // Login as the seeded test user (created via migration 0005_create_test_user)
     cy.intercept('POST', '**/api/token/').as('loginRequest');
-    cy.get('input[name="username"]').type("test");
-    cy.get('input[name="password"]').type(testUserPassword);
+    cy.get('input[name="username"]').type(testUser.username);
+    cy.get('input[name="password"]').type(testUser.password);
     cy.get('button[type="submit"]').click();
 
     cy.wait('@loginRequest').its('response.statusCode').should('eq', 200);
@@ -19,7 +30,7 @@ describe("Test User Dependents Flow", () => {
     cy.url().should("eq", `${Cypress.config().baseUrl}/`);
 
     // Verify display name
-    cy.contains(/test/i, { matchCase: false, timeout: 10000 }).should("be.visible");
+    cy.contains(testUser.first_name, { timeout: 10000 }).should("be.visible");
 
     // Navigate to Dependents page
     cy.get('a[href="/dependents"]').first().click();
