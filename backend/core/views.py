@@ -43,6 +43,9 @@ class DependentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.dependents.all()
 
+    def perform_create(self, serializer):
+        serializer.save(users=[self.request.user])
+
 class AdminUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = AdminUserSerializer

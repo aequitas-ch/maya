@@ -19,13 +19,17 @@ class Profile(models.Model):
 
 class Dependent(models.Model):
     users = models.ManyToManyField(User, related_name='dependents')
-    first_name = models.CharField(max_length=500)
-    last_name = models.CharField(max_length=500)
-    address = models.CharField(max_length=200)
-    city = models.CharField(max_length=100)
-    postal_code = models.CharField(max_length=20)
-    main_diagnosis = models.CharField(max_length=255)
-    ahv_number = models.CharField(max_length=500)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    birth_date = models.DateField(null=True, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    postal_code = models.CharField(max_length=20, blank=True)
+    main_diagnosis = models.CharField(max_length=255, blank=True)
+    ahv_number = models.CharField(max_length=500, blank=True)
+    emergency_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     is_encrypted = models.BooleanField(default=False)
 
