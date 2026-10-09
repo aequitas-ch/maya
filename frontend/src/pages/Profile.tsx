@@ -6,6 +6,24 @@ import { getPassKeyPrfSecret } from '../utils/passkey';
 import { deriveMasterKey, encryptFile, decryptFile } from '../utils/crypto';
 import { extractData } from '../utils/pagination';
 
+type EncryptedDocument = {
+  id: number;
+  title: string;
+  file: string;
+  encrypted_dek: string;
+  iv: string;
+  mime_type: string;
+  size_bytes: number;
+  created_at: string;
+};
+
+const DOCUMENT_KEY_SALT = new TextEncoder().encode('aequitas-medical-documents-master-key-v1');
+
+const fetchEncryptedDocuments = async (): Promise<EncryptedDocument[]> => {
+  const response = await api.get('/documents/encrypted-documents/');
+  return extractData(response.data) as EncryptedDocument[];
+};
+
 export const Profile = () => {
   const { user, updateUserProfile } = useAuth();
   const { t } = useTranslation();
@@ -55,6 +73,71 @@ export const Profile = () => {
       }
     }
   }, [user]);
+
+  useEffect(() => {
+    fetchEncryptedDocuments()
+      .then(setEncryptedDocs)
+      .catch(() => setDocMessage({ type: 'error', text: 'Failed to load encrypted documents.' }));
+  }, []);
+
+  const handleDocUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!docFile) return;
+
+    setDocLoading(true);
+    setDocMessage({ type: 'success', text: '' });
+
+    try {
+      const prfSecret = await getPassKeyPrfSecret();
+      const masterKey = await deriveMasterKey(prfSecret, DOCUMENT_KEY_SALT);
+      const { ciphertextBlob, encryptedDekBase64, ivBase64 } = await encryptFile(docFile, masterKey);
+      const formData = new FormData();
+      formData.append('title', docTitle);
+      formData.append('file', ciphertextBlob, docFile.name);
+      formData.append('encrypted_dek', encryptedDekBase64);
+      formData.append('iv', ivBase64);
+      formData.append('mime_type', docFile.type || 'application/octet-stream');
+      formData.append('size_bytes', docFile.size.toString());
+
+      await api.post('/documents/encrypted-documents/', formData);
+      setDocTitle('');
+      setDocFile(null);
+
+      try {
+        setEncryptedDocs(await fetchEncryptedDocuments());
+        setDocMessage({ type: 'success', text: 'Document encrypted and uploaded successfully.' });
+      } catch {
+        setDocMessage({ type: 'error', text: 'Document uploaded, but the list could not be refreshed.' });
+      }
+    } catch {
+      setDocMessage({ type: 'error', text: 'Failed to encrypt or upload the document.' });
+    } finally {
+      setDocLoading(false);
+    }
+  };
+
+  const handleDocDownload = async (doc: EncryptedDocument) => {
+    setDocMessage({ type: 'success', text: '' });
+
+    try {
+      const prfSecret = await getPassKeyPrfSecret();
+      const masterKey = await deriveMasterKey(prfSecret, DOCUMENT_KEY_SALT);
+      const response = await api.get(doc.file, { responseType: 'blob' });
+      const decryptedBlob = await decryptFile(response.data, doc.encrypted_dek, doc.iv, masterKey);
+      const downloadBlob = new Blob([decryptedBlob], { type: doc.mime_type || 'application/octet-stream' });
+      const downloadUrl = URL.createObjectURL(downloadBlob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = doc.title;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+      setDocMessage({ type: 'success', text: 'Document decrypted and downloaded.' });
+    } catch {
+      setDocMessage({ type: 'error', text: 'Failed to decrypt or download the document.' });
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
