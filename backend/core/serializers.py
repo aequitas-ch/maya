@@ -81,9 +81,12 @@ import re
 class DependentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dependent
-        fields = ['id', 'first_name', 'last_name', 'address', 'city', 'postal_code', 'main_diagnosis', 'ahv_number', 'is_encrypted']
+        fields = ['id', 'first_name', 'last_name', 'birth_date', 'address', 'city', 'postal_code', 'main_diagnosis', 'ahv_number', 'emergency_notes', 'created_at', 'is_encrypted']
 
     def validate_ahv_number(self, value):
+        if not value:
+            return value
+
         is_encrypted = self.initial_data.get('is_encrypted', False)
         # Convert to boolean if it's a string from form data
         if isinstance(is_encrypted, str):
@@ -93,12 +96,6 @@ class DependentSerializer(serializers.ModelSerializer):
             if not re.match(r'^756\.\d{4}\.\d{4}\.\d{2}$', value):
                 raise serializers.ValidationError('AHV number must be in the format 756.xxxx.xxxx.xx')
         return value
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        dependent = Dependent.objects.create(**validated_data)
-        dependent.users.add(user)
-        return dependent
 
 class AdminUserSerializer(serializers.ModelSerializer):
     class Meta:
