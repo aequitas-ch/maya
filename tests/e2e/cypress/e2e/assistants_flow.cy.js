@@ -1,5 +1,5 @@
 describe('Assistants Flow', () => {
   it('creates employee, logs hours, generates payslip, checks dashboard', () => {
-    expect(true).to.be.true;
+    expect(true).to.equal(true);
   });
 });

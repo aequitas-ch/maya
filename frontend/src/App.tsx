@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { EncryptionProvider } from './context/EncryptionContext';
 import { TranslationProvider } from './context/TranslationContext';
@@ -30,7 +29,6 @@ function App() {
         <EncryptionProvider>
           <Router>
             <div className="min-h-screen bg-gray-50">
-              <Toaster position="top-right" />
               <Navbar />
               <Routes>
                 <Route path="/login" element={<Login />} />

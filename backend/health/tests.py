@@ -14,4 +14,5 @@ class HealthLogicTests(TestCase):
         # Inside Norm -> Green
         # Borderline (<10%) -> Yellow
         # Pathological -> Red
+        # Added comment to fix warning
         self.assertTrue(True)

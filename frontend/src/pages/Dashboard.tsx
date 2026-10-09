@@ -14,17 +14,11 @@ export const Dashboard = () => {
   const { getUpcomingAppointments } = useAppointments();
 
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUpcoming = async () => {
-      setLoading(true);
-      try {
-        const appts = await getUpcomingAppointments();
-        setUpcomingAppointments(appts);
-      } finally {
-        setLoading(false);
-      }
+      const appts = await getUpcomingAppointments();
+      setUpcomingAppointments(appts);
     };
     fetchUpcoming();
   }, [getUpcomingAppointments]);
@@ -80,21 +74,7 @@ export const Dashboard = () => {
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">{t('upcoming_appointments') || 'Upcoming Appointments'}</h2>
 
-            {loading ? (
-              <ul className="divide-y divide-gray-200">
-                {[1, 2].map((i) => (
-                  <li key={i} className="py-4">
-                    <div className="flex items-center space-x-4 animate-pulse">
-                      <div className="flex-shrink-0 h-12 w-12 rounded bg-gray-200"></div>
-                      <div className="flex-1 space-y-2 py-1">
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : upcomingAppointments.length === 0 ? (
+            {upcomingAppointments.length === 0 ? (
               <p className="text-gray-500 italic">{t('no_upcoming_appointments') || 'No upcoming appointments.'}</p>
             ) : (
               <ul className="divide-y divide-gray-200">

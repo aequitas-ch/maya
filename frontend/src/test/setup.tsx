@@ -23,11 +23,11 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
       <EncryptionProvider>
         <TranslationContext.Provider value={{
           t: (key: string) => {
-             const m = {
+             const m: Record<string, string> = {
                'health_data_title': 'Health Data',
                'employee': 'Employee'
-             }
-             return m[key as keyof typeof m] || key;
+             };
+             return m[key] || key;
           },
           language: 'en',
           setLanguage: () => {},
