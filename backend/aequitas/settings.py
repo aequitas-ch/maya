@@ -160,8 +160,21 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+USE_S3_STORAGE = os.environ.get('USE_S3_STORAGE', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
+
+if USE_S3_STORAGE:
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('STORAGE_BUCKET_NAME')
+    AWS_S3_ACCESS_KEY_ID = os.environ.get('STORAGE_ACCESS_KEY_ID')
+    AWS_S3_SECRET_ACCESS_KEY = os.environ.get('STORAGE_SECRET_ACCESS_KEY')
+    AWS_S3_ENDPOINT_URL = os.environ.get('STORAGE_ENDPOINT_URL')
+    AWS_S3_REGION_NAME = os.environ.get('STORAGE_REGION_NAME', 'eu-central-1')
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
