@@ -26,6 +26,11 @@ import dj_database_url
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
 
+# AI Provider Settings
+AI_PROVIDER = os.environ.get('AI_PROVIDER', 'gemini')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY', '')
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
@@ -54,6 +59,7 @@ INSTALLED_APPS = [
     "schedule",
     "documents",
     "assistants",
+    "ai",
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
