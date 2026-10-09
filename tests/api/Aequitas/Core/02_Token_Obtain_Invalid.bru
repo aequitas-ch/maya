@@ -1,0 +1,22 @@
+meta {
+  name: 02_Token_Obtain_Invalid
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/token/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{testUsername}}",
+    "password": "wrongpassword"
+  }
+}
+
+assert {
+  res.status: eq 401
+}

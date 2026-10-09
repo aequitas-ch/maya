@@ -1,0 +1,19 @@
+meta {
+  name: 03_Dependent_CRUD
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/dependents/
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+}

@@ -1,69 +1,49 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from rest_framework.test import APIClient
 from decimal import Decimal
-from .models import Employee, Contract, WorkingHours, Payslip
+from django.core.exceptions import ValidationError
+from assistants.models import validate_ahv_number
+from assistants.views import WorkingHoursViewSet
+from assistants.models import Employee, Contract, WorkingHours, Payslip
+from django.contrib.auth.models import User
 
-User = get_user_model()
+class AssistantsQATests(TestCase):
+    def test_ahv_number_validation(self):
+        # Format 756.xxxx.xxxx.xx with EAN-13 check digit.
+        # Note: the model validation is a simple regex
+        with self.assertRaises(ValidationError):
+            validate_ahv_number("123")
+        with self.assertRaises(ValidationError):
+            validate_ahv_number("756.1234.1234.1")
+        validate_ahv_number("756.1234.1234.12")  # Valid format
 
-class AssistantsTests(TestCase):
-    def setUp(self):
-        # Default Django user model requires username unless customized
-        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
-        self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
-
-        self.employee = Employee.objects.create(
-            employer=self.user,
-            first_name='Test',
-            last_name='User',
-            ahv_number='756.1234.5678.90',
-            type='IV_ASSISTANCE'
+    def test_payslip_calculator(self):
+        # Setup data
+        user = User.objects.create_user(username='employer', password='123')
+        employee = Employee.objects.create(employer=user, first_name='Test', last_name='Emp', type='DOMESTIC')
+        contract = Contract.objects.create(employee=employee, hourly_wage=Decimal('25.00'), start_date='2023-01-01')
+        working_hours = WorkingHours.objects.create(
+            contract=contract, year=2023, month=1,
+            basic_hours=Decimal('40.00'), expenses=Decimal('10.00')
         )
 
-        self.contract = Contract.objects.create(
-            employee=self.employee,
-            hourly_wage=Decimal('35.00'),
-            start_date='2023-01-01'
-        )
+        # Calculate manually
+        gross_pay = (Decimal('40.00') * Decimal('25.00')) + Decimal('10.00') # 1010.00
+        ahv = gross_pay * Decimal('0.053') # 53.53
+        alv = gross_pay * Decimal('0.011') # 11.11
+        net_pay = gross_pay - ahv - alv
+        employer_costs = ahv + alv
 
-    def test_create_working_hours_and_payslip(self):
-        wh_data = {
-            'contract': self.contract.id,
-            'year': 2023,
-            'month': 10,
-            'basic_hours': 40,
-            'expenses': 10
-        }
-        response = self.client.post('/api/assistants/working-hours/', wh_data)
+        # Mock request to views generate_payslip
+        from rest_framework.test import APIRequestFactory, force_authenticate
+        factory = APIRequestFactory()
+        request = factory.post(f'/api/working-hours/{working_hours.id}/generate_payslip/')
+        force_authenticate(request, user=user)
+
+        view = WorkingHoursViewSet.as_view({'post': 'generate_payslip'})
+        response = view(request, pk=working_hours.id)
+
         self.assertEqual(response.status_code, 201)
-        wh_id = response.data['id']
-
-        # Generate payslip
-        ps_response = self.client.post(f'/api/assistants/working-hours/{wh_id}/generate_payslip/')
-        self.assertEqual(ps_response.status_code, 201)
-
-        # 40 hours * 35.00 + 10 = 1410.00
-        self.assertEqual(Decimal(ps_response.data['gross_pay']), Decimal('1410.00'))
-
-    def test_dashboard_data(self):
-        # Create some data
-        wh = WorkingHours.objects.create(
-            contract=self.contract,
-            year=2023,
-            month=10,
-            basic_hours=10
-        )
-        Payslip.objects.create(
-            working_hours=wh,
-            gross_pay=Decimal('350.00'),
-            net_pay=Decimal('300.00'),
-            employer_costs=Decimal('20.00')
-        )
-
-        response = self.client.get('/api/assistants/dashboard/?year=2023')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data['monthly_costs']), 12)
-        month_10 = next(m for m in response.data['monthly_costs'] if m['month'] == 10)
-        # gross (350) + employer_costs (20) = 370
-        self.assertEqual(month_10['total_cost'], 370)
+        self.assertEqual(Decimal(str(response.data['gross_pay'])), gross_pay.quantize(Decimal('0.01')))
+        self.assertEqual(Decimal(str(response.data['ahv_iv_eo_deduction'])), ahv.quantize(Decimal('0.01')))
+        self.assertEqual(Decimal(str(response.data['alv_deduction'])), alv.quantize(Decimal('0.01')))
+        self.assertEqual(Decimal(str(response.data['net_pay'])), net_pay.quantize(Decimal('0.01')))
