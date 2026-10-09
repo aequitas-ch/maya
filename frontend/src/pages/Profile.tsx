@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 import { useTranslation } from '../hooks/useTranslation';
+import { getPassKeyPrfSecret } from '../utils/passkey';
+import { deriveMasterKey, encryptFile, decryptFile } from '../utils/crypto';
+import { extractData } from '../utils/pagination';
 
 export const Profile = () => {
   const { user, updateUserProfile } = useAuth();
@@ -25,6 +28,11 @@ export const Profile = () => {
     confirm_password: ''
   });
   const [loading, setLoading] = useState(false);
+  const [encryptedDocs, setEncryptedDocs] = useState<EncryptedDocument[]>([]);
+  const [docFile, setDocFile] = useState<File | null>(null);
+  const [docTitle, setDocTitle] = useState('');
+  const [docLoading, setDocLoading] = useState(false);
+  const [docMessage, setDocMessage] = useState<{type: 'success'|'error', text: string}>({type: 'success', text: ''});
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
@@ -336,6 +344,83 @@ export const Profile = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Encrypted Documents Section */}
+      <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6 mb-8">
+        <div className="md:grid md:grid-cols-3 md:gap-6">
+          <div className="md:col-span-1">
+            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('e2ee_docs_title') || 'Encrypted Medical Documents'}</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {t('e2ee_docs_desc') || 'Client-side encrypted documents. The server never sees your plaintext data. Protected by your PassKey.'}
+            </p>
+          </div>
+          <div className="mt-5 md:mt-0 md:col-span-2">
+            <form onSubmit={handleDocUpload}>
+              {docMessage.text && (
+                <div className={`mb-4 p-4 rounded-xl ${docMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                  {docMessage.text}
+                </div>
+              )}
+              <div className="grid grid-cols-6 gap-6">
+                <div className="col-span-6 sm:col-span-3">
+                  <label htmlFor="doc_title" className="block text-sm font-medium text-gray-700">{t('doc_title') || 'Document Title'}</label>
+                  <input
+                    type="text"
+                    id="doc_title"
+                    required
+                    value={docTitle}
+                    onChange={(e) => setDocTitle(e.target.value)}
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
+                  />
+                </div>
+                <div className="col-span-6 sm:col-span-3">
+                  <label htmlFor="doc_file" className="block text-sm font-medium text-gray-700">{t('doc_file') || 'Select File'}</label>
+                  <input
+                    type="file"
+                    id="doc_file"
+                    required
+                    onChange={(e) => setDocFile(e.target.files ? e.target.files[0] : null)}
+                    className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                  />
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={docLoading}
+                  className="bg-teal-700 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
+                >
+                  {docLoading ? (t('encrypting') || 'Encrypting...') : (t('encrypt_and_upload') || 'Encrypt & Upload')}
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-8 border-t border-gray-200 pt-6">
+              <h4 className="text-md font-medium text-gray-900 mb-4">{t('your_encrypted_docs') || 'Your Encrypted Documents'}</h4>
+              {encryptedDocs.length === 0 ? (
+                <p className="text-sm text-gray-500">{t('no_encrypted_docs') || 'No encrypted documents found.'}</p>
+              ) : (
+                <ul className="divide-y divide-gray-200">
+                  {encryptedDocs.map(doc => (
+                    <li key={doc.id} className="py-4 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{doc.title}</p>
+                        <p className="text-xs text-gray-500">{new Date(doc.created_at).toLocaleDateString()} - {(doc.size_bytes / 1024).toFixed(2)} KB</p>
+                      </div>
+                      <button
+                        onClick={() => handleDocDownload(doc)}
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-xl shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none"
+                      >
+                        {t('decrypt_download') || 'Decrypt & Download'}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
       </div>
