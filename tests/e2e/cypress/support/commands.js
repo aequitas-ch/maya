@@ -46,3 +46,21 @@ Cypress.Commands.add("enableModules", (user, modules) => {
     });
   });
 });
+
+Cypress.Commands.add("loginByApi", (username = "test", password = null) => {
+  let loginPassword = password || Cypress.env("testUserPassword");
+  if (!loginPassword) {
+    loginPassword = "test_password_123";
+  }
+
+  const apiUrl = Cypress.env("apiUrl");
+
+  cy.request({
+    method: "POST",
+    url: `${apiUrl}/api/token/`,
+    body: { username, password: loginPassword },
+  }).then(({ body }) => {
+    window.localStorage.setItem("access_token", body.access);
+    window.localStorage.setItem("refresh_token", body.refresh);
+  });
+});

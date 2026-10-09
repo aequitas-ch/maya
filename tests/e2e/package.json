@@ -5,7 +5,7 @@
     "test": "cypress run"
   },
   "devDependencies": {
-    "axe-core": "^4.13.0",
+    "axe-core": "^4.14.0",
     "cypress": "^15.15.0",
     "cypress-axe": "^1.7.0",
     "cypress-file-upload": "^5.0.8",
