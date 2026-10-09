@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import toast from 'react-hot-toast';
 import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 import { useTranslation } from '../hooks/useTranslation';
+import { ProfileSchema, type ProfileFormData, ChangePasswordSchema, type ChangePasswordFormData } from '../utils/schemas';
 import { getPassKeyPrfSecret } from '../utils/passkey';
 import { deriveMasterKey, encryptFile, decryptFile } from '../utils/crypto';
 import { extractData } from '../utils/pagination';
@@ -27,37 +31,53 @@ const fetchEncryptedDocuments = async (): Promise<EncryptedDocument[]> => {
 export const Profile = () => {
   const { user, updateUserProfile } = useAuth();
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    email: '',
-    first_name: '',
-    last_name: '',
-    display_name: '',
-    module_health_enabled: false,
-    module_schedule_enabled: false,
-    module_settlement_enabled: false,
-    module_documents_enabled: false,
-    module_assistants_enabled: false
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting }
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(ProfileSchema),
+    defaultValues: {
+      email: '',
+      first_name: '',
+      last_name: '',
+      display_name: '',
+      module_health_enabled: false,
+      module_schedule_enabled: false,
+      module_settlement_enabled: false,
+      module_documents_enabled: false,
+      module_assistants_enabled: false
+    }
   });
+
+  const {
+    register: registerPassword,
+    handleSubmit: handlePasswordSubmitForm,
+    reset: resetPassword,
+    formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting }
+  } = useForm<ChangePasswordFormData>({
+    resolver: zodResolver(ChangePasswordSchema),
+    defaultValues: {
+      old_password: '',
+      new_password: '',
+      confirm_password: ''
+    }
+  });
+
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [passwordData, setPasswordData] = useState({
-    old_password: '',
-    new_password: '',
-    confirm_password: ''
-  });
-  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [encryptedDocs, setEncryptedDocs] = useState<EncryptedDocument[]>([]);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [docTitle, setDocTitle] = useState('');
   const [docLoading, setDocLoading] = useState(false);
   const [docMessage, setDocMessage] = useState<{type: 'success'|'error', text: string}>({type: 'success', text: ''});
-  const [passwordLoading, setPasswordLoading] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
-  const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
     if (user) {
-      setFormData({
+      reset({
         email: user.email || '',
         first_name: user.first_name || '',
         last_name: user.last_name || '',
@@ -71,14 +91,39 @@ export const Profile = () => {
       if (user.profile_picture) {
         setPreviewUrl(user.profile_picture);
       }
+      setInitialLoading(false);
     }
-  }, [user]);
+  }, [user, reset]);
 
   useEffect(() => {
     fetchEncryptedDocuments()
       .then(setEncryptedDocs)
       .catch(() => setDocMessage({ type: 'error', text: 'Failed to load encrypted documents.' }));
   }, []);
+
+  if (initialLoading) {
+    return (
+      <main className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
+        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
+        <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6 animate-pulse">
+          <div className="h-6 w-32 bg-gray-200 rounded mb-4"></div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="h-4 w-full bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+        <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6 animate-pulse">
+          <div className="h-6 w-24 bg-gray-200 rounded mb-4"></div>
+          <div className="space-y-4">
+             <div className="h-24 w-24 bg-gray-200 rounded-full"></div>
+             <div className="h-10 w-full bg-gray-200 rounded"></div>
+             <div className="h-10 w-full bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   const handleDocUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -139,14 +184,6 @@ export const Profile = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
-  };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -156,28 +193,17 @@ export const Profile = () => {
     }
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordData({
-      ...passwordData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage({ type: '', text: '' });
-
+  const onSubmit = async (data: ProfileFormData) => {
     const submitData = new FormData();
-    submitData.append('email', formData.email);
-    submitData.append('first_name', formData.first_name);
-    submitData.append('last_name', formData.last_name);
-    submitData.append('display_name', formData.display_name);
-    submitData.append('module_health_enabled', formData.module_health_enabled.toString());
-    submitData.append('module_schedule_enabled', formData.module_schedule_enabled.toString());
-    submitData.append('module_settlement_enabled', formData.module_settlement_enabled.toString());
-    submitData.append('module_documents_enabled', formData.module_documents_enabled.toString());
-    submitData.append('module_assistants_enabled', formData.module_assistants_enabled.toString());
+    submitData.append('email', data.email);
+    submitData.append('first_name', data.first_name);
+    submitData.append('last_name', data.last_name);
+    submitData.append('display_name', data.display_name || '');
+    submitData.append('module_health_enabled', String(!!data.module_health_enabled));
+    submitData.append('module_schedule_enabled', String(!!data.module_schedule_enabled));
+    submitData.append('module_settlement_enabled', String(!!data.module_settlement_enabled));
+    submitData.append('module_documents_enabled', String(!!data.module_documents_enabled));
+    submitData.append('module_assistants_enabled', String(!!data.module_assistants_enabled));
     if (profilePicture) {
       submitData.append('profile_picture', profilePicture);
     }
@@ -189,40 +215,26 @@ export const Profile = () => {
         }
       });
       updateUserProfile(response.data);
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
+      toast.success('Profile updated successfully!');
     } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' });
-    } finally {
-      setLoading(false);
+      toast.error('Failed to update profile. Please try again.');
     }
   };
 
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPasswordMessage({ type: '', text: '' });
-
-    if (passwordData.new_password !== passwordData.confirm_password) {
-      setPasswordMessage({ type: 'error', text: 'New passwords do not match.' });
-      return;
-    }
-
-    setPasswordLoading(true);
-
+  const onPasswordSubmit = async (data: ChangePasswordFormData) => {
     try {
       await api.post('/users/change-password/', {
-        old_password: passwordData.old_password,
-        new_password: passwordData.new_password
+        old_password: data.old_password,
+        new_password: data.new_password
       });
-      setPasswordMessage({ type: 'success', text: 'Password updated successfully!' });
-      setPasswordData({ old_password: '', new_password: '', confirm_password: '' });
+      toast.success('Password updated successfully!');
+      resetPassword();
     } catch (err: any) {
       if (err.response?.data?.old_password) {
-         setPasswordMessage({ type: 'error', text: err.response.data.old_password[0] });
+         toast.error(err.response.data.old_password[0]);
       } else {
-         setPasswordMessage({ type: 'error', text: 'Failed to update password. Please try again.' });
+         toast.error('Failed to update password. Please try again.');
       }
-    } finally {
-      setPasswordLoading(false);
     }
   };
 
@@ -230,110 +242,96 @@ export const Profile = () => {
     <main className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">{t('profile_page_title') || 'Profile Settings'}</h1>
       <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
-        <div className="md:grid md:grid-cols-3 md:gap-6">
-          <div className="md:col-span-1">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('modules_title') || 'Active Modules'}</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {t('modules_description') || 'Enable or disable different platform modules for your account.'}
-            </p>
-          </div>
-          <div className="mt-5 md:mt-0 md:col-span-2">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="flex items-center">
-                <input
-                  id="module_health_enabled"
-                  name="module_health_enabled"
-                  type="checkbox"
-                  checked={formData.module_health_enabled}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                />
-                <label htmlFor="module_health_enabled" className="ml-2 block text-sm text-gray-900">
-                  {t('module_health') || 'Health'}
-                </label>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <h3 className="text-lg font-medium leading-6 text-gray-900">{t('modules_title') || 'Active Modules'}</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {t('modules_description') || 'Enable or disable different platform modules for your account.'}
+              </p>
+            </div>
+            <div className="mt-5 md:mt-0 md:col-span-2">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className="flex items-center">
+                  <input
+                    id="module_health_enabled"
+                    {...register("module_health_enabled")}
+                    type="checkbox"
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="module_health_enabled" className="ml-2 block text-sm text-gray-900">
+                    {t('module_health') || 'Health'}
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="module_schedule_enabled"
+                    {...register("module_schedule_enabled")}
+                    type="checkbox"
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="module_schedule_enabled" className="ml-2 block text-sm text-gray-900">
+                    {t('module_schedule') || 'Schedule'}
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="module_settlement_enabled"
+                    {...register("module_settlement_enabled")}
+                    type="checkbox"
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="module_settlement_enabled" className="ml-2 block text-sm text-gray-900">
+                    {t('module_settlement') || 'Cost Approvals'}
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="module_documents_enabled"
+                    {...register("module_documents_enabled")}
+                    type="checkbox"
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="module_documents_enabled" className="ml-2 block text-sm text-gray-900">
+                    {t('module_documents') || 'Documents'}
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="module_assistants_enabled"
+                    {...register("module_assistants_enabled")}
+                    type="checkbox"
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="module_assistants_enabled" className="ml-2 block text-sm text-gray-900">
+                    {t('module_assistants') || 'Assistants'}
+                  </label>
+                </div>
               </div>
-              <div className="flex items-center">
-                <input
-                  id="module_schedule_enabled"
-                  name="module_schedule_enabled"
-                  type="checkbox"
-                  checked={formData.module_schedule_enabled}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                />
-                <label htmlFor="module_schedule_enabled" className="ml-2 block text-sm text-gray-900">
-                  {t('module_schedule') || 'Schedule'}
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="module_settlement_enabled"
-                  name="module_settlement_enabled"
-                  type="checkbox"
-                  checked={formData.module_settlement_enabled}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                />
-                <label htmlFor="module_settlement_enabled" className="ml-2 block text-sm text-gray-900">
-                  {t('module_settlement') || 'Cost Approvals'}
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="module_documents_enabled"
-                  name="module_documents_enabled"
-                  type="checkbox"
-                  checked={formData.module_documents_enabled}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                />
-                <label htmlFor="module_documents_enabled" className="ml-2 block text-sm text-gray-900">
-                  {t('module_documents') || 'Documents'}
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="module_assistants_enabled"
-                  name="module_assistants_enabled"
-                  type="checkbox"
-                  checked={formData.module_assistants_enabled}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                />
-                <label htmlFor="module_assistants_enabled" className="ml-2 block text-sm text-gray-900">
-                  {t('module_assistants') || 'Assistants'}
-                </label>
+              <div className="mt-6 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-teal-700 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
+                >
+                  {isSubmitting ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
+                </button>
               </div>
             </div>
-            <div className="mt-6 flex justify-end">
-              <button
-                type="button"
-                onClick={(e) => handleSubmit(e as unknown as React.FormEvent)}
-                disabled={loading}
-                className="bg-teal-700 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
-              >
-                {loading ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
-              </button>
-            </div>
           </div>
-        </div>
+        </form>
       </div>
 
       <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
-        <div className="md:grid md:grid-cols-3 md:gap-6">
-          <div className="md:col-span-1">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('profile_title') || 'Profile'}</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {t('update_personal_info') || 'Update your personal information and how others see you on the platform.'}
-            </p>
-          </div>
-          <div className="mt-5 md:mt-0 md:col-span-2">
-            <form onSubmit={handleSubmit}>
-              {message.text && (
-                <div className={`mb-4 p-4 rounded-xl ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-                  {message.text}
-                </div>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <h3 className="text-lg font-medium leading-6 text-gray-900">{t('profile_title') || 'Profile'}</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {t('update_personal_info') || 'Update your personal information and how others see you on the platform.'}
+              </p>
+            </div>
+            <div className="mt-5 md:mt-0 md:col-span-2">
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6">
                   <label className="block text-sm font-medium text-gray-700">{t('profile_picture') || 'Profile Picture'}</label>
@@ -366,51 +364,44 @@ export const Profile = () => {
                   <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">{t('first_name') || 'First name'}</label>
                   <input
                     type="text"
-                    name="first_name"
                     id="first_name"
-                    required
-                    value={formData.first_name}
-                    onChange={handleChange}
+                    {...register("first_name")}
                     className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
+                  {errors.first_name && <p className="mt-1 text-sm text-red-600">{errors.first_name.message}</p>}
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
                   <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">{t('last_name') || 'Last name'}</label>
                   <input
                     type="text"
-                    name="last_name"
                     id="last_name"
-                    required
-                    value={formData.last_name}
-                    onChange={handleChange}
+                    {...register("last_name")}
                     className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
+                  {errors.last_name && <p className="mt-1 text-sm text-red-600">{errors.last_name.message}</p>}
                 </div>
 
                 <div className="col-span-6">
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700">{t('email_address') || 'Email address'}</label>
                   <input
                     type="email"
-                    name="email"
                     id="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
+                    {...register("email")}
                     className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
+                  {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
                 </div>
 
                 <div className="col-span-6">
                   <label htmlFor="display_name" className="block text-sm font-medium text-gray-700">{t('display_name') || 'Display name'}</label>
                   <input
                     type="text"
-                    name="display_name"
                     id="display_name"
-                    value={formData.display_name}
-                    onChange={handleChange}
+                    {...register("display_name")}
                     className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
+                  {errors.display_name && <p className="mt-1 text-sm text-red-600">{errors.display_name.message}</p>}
                   <p className="mt-2 text-sm text-gray-500">
                     {t('display_name_desc') || 'This is the name that will be displayed to other users.'}
                   </p>
@@ -420,15 +411,15 @@ export const Profile = () => {
               <div className="mt-6 flex justify-end">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={isSubmitting}
                   className="bg-teal-700 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
-                  {loading ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
+                  {isSubmitting ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
 
       {/* Encrypted Documents Section */}
@@ -509,73 +500,62 @@ export const Profile = () => {
       </div>
 
       <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6">
-        <div className="md:grid md:grid-cols-3 md:gap-6">
-          <div className="md:col-span-1">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">{t('change_password') || 'Change Password'}</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {t('update_account_password') || 'Update your account password.'}
-            </p>
-          </div>
-          <div className="mt-5 md:mt-0 md:col-span-2">
-            <form onSubmit={handlePasswordSubmit}>
-              {passwordMessage.text && (
-                <div className={`mb-4 p-4 rounded-xl ${passwordMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-                  {passwordMessage.text}
-                </div>
-              )}
+        <form onSubmit={handlePasswordSubmitForm(onPasswordSubmit)}>
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <h3 className="text-lg font-medium leading-6 text-gray-900">{t('change_password') || 'Change Password'}</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {t('update_account_password') || 'Update your account password.'}
+              </p>
+            </div>
+            <div className="mt-5 md:mt-0 md:col-span-2">
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6">
                   <label htmlFor="old_password" className="block text-sm font-medium text-gray-700">{t('current_password') || 'Current Password'}</label>
                   <input
                     type="password"
-                    name="old_password"
                     id="old_password"
-                    required
-                    value={passwordData.old_password}
-                    onChange={handlePasswordChange}
+                    {...registerPassword("old_password")}
                     className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
+                  {passwordErrors.old_password && <p className="mt-1 text-sm text-red-600">{passwordErrors.old_password.message}</p>}
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
                   <label htmlFor="new_password" className="block text-sm font-medium text-gray-700">{t('new_password') || 'New Password'}</label>
                   <input
                     type="password"
-                    name="new_password"
                     id="new_password"
-                    required
-                    value={passwordData.new_password}
-                    onChange={handlePasswordChange}
+                    {...registerPassword("new_password")}
                     className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
+                  {passwordErrors.new_password && <p className="mt-1 text-sm text-red-600">{passwordErrors.new_password.message}</p>}
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
                   <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700">{t('confirm_new_password') || 'Confirm New Password'}</label>
                   <input
                     type="password"
-                    name="confirm_password"
                     id="confirm_password"
-                    required
-                    value={passwordData.confirm_password}
-                    onChange={handlePasswordChange}
+                    {...registerPassword("confirm_password")}
                     className="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-md sm:text-sm border-gray-300 rounded-xl p-2 border"
                   />
+                  {passwordErrors.confirm_password && <p className="mt-1 text-sm text-red-600">{passwordErrors.confirm_password.message}</p>}
                 </div>
               </div>
 
               <div className="mt-6 flex justify-end">
                 <button
                   type="submit"
-                  disabled={passwordLoading}
+                  disabled={isPasswordSubmitting}
                   className="bg-teal-700 border border-transparent rounded-xl shadow-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400"
                 >
-                  {passwordLoading ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
+                  {isPasswordSubmitting ? t('loading_data') || 'Loading...' : t('save') || 'Save'}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     </main>
   );
