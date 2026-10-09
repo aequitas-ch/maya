@@ -43,6 +43,10 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+        with:
+          config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
 
       - name: Build Backend Image
         env:
@@ -232,11 +236,12 @@ jobs:
           node-version: '20'
 
       - name: Install Bruno CLI
-        run: npm install -g @usebruno/cli
+        working-directory: tests/api
+        run: npm ci
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
+        run: npx bru run --env test --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var baseUrl=${{ needs.deploy-test.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
@@ -279,6 +284,11 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+        with:
+          driver-opts: image=mirror.gcr.io/moby/buildkit:buildx-stable-1
+          config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
 
       - name: Build Backend Image
         env:
@@ -454,11 +464,12 @@ jobs:
           node-version: '20'
 
       - name: Install Bruno CLI
-        run: npm install -g @usebruno/cli # NOSONAR
+        working-directory: tests/api
+        run: npm ci
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: bru run --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_UAT || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
+        run: npx bru run --env test --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --env-var baseUrl=${{ needs.deploy-uat.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_UAT || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4

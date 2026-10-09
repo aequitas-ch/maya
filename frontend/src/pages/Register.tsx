@@ -1,22 +1,32 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import toast from 'react-hot-toast';
 import api from '../api/axios';
 import { generateKey, exportKey } from '../utils/crypto';
 import { useEncryption } from '../context/EncryptionContext';
 import { useTranslation } from '../hooks/useTranslation';
+import { RegisterSchema, type RegisterFormData } from '../utils/schemas';
 
 export const Register = () => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    first_name: '',
-    last_name: '',
-    password: '',
-    display_name: ''
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+      first_name: '',
+      last_name: '',
+      password: '',
+      display_name: ''
+    }
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+
   const [keyGenerated, setKeyGenerated] = useState(false);
 
   const { setEncryptionKey } = useEncryption();
@@ -39,40 +49,28 @@ export const Register = () => {
       document.body.removeChild(element);
 
       setKeyGenerated(true);
+      toast.success('Encryption key generated and downloaded!');
     } catch (err) {
-      setError('Failed to generate encryption key.');
+      toast.error('Failed to generate encryption key.');
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
+  const onSubmit = async (data: RegisterFormData) => {
     try {
-      await api.post('/users/register/', formData);
+      await api.post('/users/register/', data);
+      toast.success('Registration successful!');
       navigate('/login');
     } catch (err: any) {
       if (err.response?.data) {
-        // Simple error handling
         const firstError = Object.values(err.response.data)[0];
         if (Array.isArray(firstError)) {
-          setError(firstError[0] as string);
+          toast.error(firstError[0] as string);
         } else {
-          setError('Failed to register. Please check your inputs.');
+          toast.error('Failed to register. Please check your inputs.');
         }
       } else {
-        setError('Failed to register. Please try again.');
+        toast.error('Failed to register. Please try again.');
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -84,81 +82,67 @@ export const Register = () => {
             {t('create_account') || 'Create an account'}
           </h1>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
-          )}
-          <div className="rounded-xl shadow-md -space-y-px">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <div className="rounded-xl shadow-md space-y-4 p-4 bg-white">
             <div>
               <input
-                name="username"
+                {...register("username")}
                 aria-label={t('username_placeholder') || 'Username'}
                 type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-xl focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('username_placeholder') || 'Username'}
-                value={formData.username}
-                onChange={handleChange}
               />
+              {errors.username && <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>}
             </div>
             <div>
               <input
-                name="email"
+                {...register("email")}
                 aria-label={t('email_address') || 'Email address'}
                 type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('email_address') || 'Email address'}
-                value={formData.email}
-                onChange={handleChange}
               />
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
             </div>
             <div>
               <input
-                name="first_name"
+                {...register("first_name")}
                 aria-label={t('first_name') || 'First Name'}
                 type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('first_name') || 'First Name'}
-                value={formData.first_name}
-                onChange={handleChange}
               />
+              {errors.first_name && <p className="mt-1 text-sm text-red-600">{errors.first_name.message}</p>}
             </div>
             <div>
               <input
-                name="last_name"
+                {...register("last_name")}
                 aria-label={t('last_name') || 'Last Name'}
                 type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('last_name') || 'Last Name'}
-                value={formData.last_name}
-                onChange={handleChange}
               />
+              {errors.last_name && <p className="mt-1 text-sm text-red-600">{errors.last_name.message}</p>}
             </div>
             <div>
               <input
-                name="display_name"
+                {...register("display_name")}
                 aria-label={t('display_name_placeholder') || 'Display Name (Optional)'}
                 type="text"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('display_name_placeholder') || 'Display Name (Optional)'}
-                value={formData.display_name}
-                onChange={handleChange}
               />
+              {errors.display_name && <p className="mt-1 text-sm text-red-600">{errors.display_name.message}</p>}
             </div>
             <div>
               <input
-                name="password"
+                {...register("password")}
                 aria-label={t('password_placeholder') || 'Password'}
                 type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-xl focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
                 placeholder={t('password_placeholder') || 'Password'}
-                value={formData.password}
-                onChange={handleChange}
               />
+              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
             </div>
           </div>
 
@@ -180,10 +164,10 @@ export const Register = () => {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-teal-700 hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-500"
             >
-              {loading ? t('loading_data') || 'Loading...' : t('register') || 'Register'}
+              {isSubmitting ? t('loading_data') || 'Loading...' : t('register') || 'Register'}
             </button>
           </div>
           <div className="text-sm text-center">

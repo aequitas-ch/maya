@@ -1,0 +1,22 @@
+meta {
+  name: 01_Create_Employee_Contract
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/employees/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "first_name": "Test",
+    "last_name": "Employee"
+  }
+}
