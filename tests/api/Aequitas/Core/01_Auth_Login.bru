@@ -1,0 +1,25 @@
+meta {
+  name: 01_Auth_Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/token/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{testUsername}}",
+    "password": "{{testPassword}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("accessToken", res.body.access);
+    bru.setEnvVar("refreshToken", res.body.refresh);
+  }
+}

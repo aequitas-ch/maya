@@ -1,0 +1,23 @@
+meta {
+  name: 01_Token_Obtain_Valid
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/token/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{testUsername}}",
+    "password": "{{testPassword}}"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.access: isDefined
+}

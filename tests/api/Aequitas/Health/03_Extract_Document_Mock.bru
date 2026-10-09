@@ -1,0 +1,21 @@
+meta {
+  name: 03_Extract_Document_Mock
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/health-records/extract/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "file": "mock_file_data"
+  }
+}

@@ -1,0 +1,15 @@
+meta {
+  name: 03_Get_IV_Quarterly_Report
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/reports/iv-quarterly/
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
