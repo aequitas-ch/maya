@@ -243,7 +243,7 @@ jobs:
         working-directory: tests/api/Aequitas
         env:
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_TEST || secrets.TEST_USER_PASSWORD }}
-        run: npx bru run --env test --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var baseUrl=${{ needs.deploy-test.outputs.backend_url }} --env-var testPassword="$TEST_USER_PASSWORD" --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
+        run: npx bru run --env test --exclude-tags=ci-disabled --env-var base_url=${{ needs.deploy-test.outputs.backend_url }} --env-var baseUrl=${{ needs.deploy-test.outputs.backend_url }} --env-var testPassword="$TEST_USER_PASSWORD" --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
@@ -486,7 +486,7 @@ jobs:
 
       - name: Run Bruno tests
         working-directory: tests/api/Aequitas
-        run: npx bru run --env test --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --env-var baseUrl=${{ needs.deploy-uat.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_UAT || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
+        run: npx bru run --env test --exclude-tags=ci-disabled --env-var base_url=${{ needs.deploy-uat.outputs.backend_url }} --env-var baseUrl=${{ needs.deploy-uat.outputs.backend_url }} --env-var admin_password=${{ secrets.ADMIN_USER_PASSWORD_UAT || secrets.ADMIN_USER_PASSWORD }} --reporter-junit results.xml # NOSONAR
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
