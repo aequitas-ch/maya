@@ -5,19 +5,19 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/token/refresh/
+  url: {{base_url}}/api/token/refresh/
   body: json
   auth: none
 }
 
 body:json {
   {
-    "refresh": "{{refreshToken}}"
+    "refresh": "{{refresh_token}}"
   }
 }
 
 script:post-response {
   if (res.status === 200) {
-    bru.setEnvVar("accessToken", res.body.access);
+    bru.setVar("access_token", res.body.access);
   }
 }

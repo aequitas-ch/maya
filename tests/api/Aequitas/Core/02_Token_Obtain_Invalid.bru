@@ -5,14 +5,14 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/token/
+  url: {{base_url}}/api/token/
   body: json
   auth: none
 }
 
 body:json {
   {
-    "username": "{{testUsername}}",
+    "username": "{{test_username}}",
     "password": "wrongpassword"
   }
 }

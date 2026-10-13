@@ -1,6 +1,5 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { render } from '@testing-library/react';
-import React from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { EncryptionProvider } from '../context/EncryptionContext';
 import type { ReactNode, ReactElement } from 'react';

@@ -1,17 +1,17 @@
 meta {
   name: 03_Extract_Document_Mock
   type: http
-  seq: 3
+  seq: 7
 }
 
 post {
-  url: {{baseUrl}}/api/health-records/extract/
+  url: {{base_url}}/api/health/records/extract/
   body: json
   auth: bearer
 }
 
 auth:bearer {
-  token: {{accessToken}}
+  token: {{access_token}}
 }
 
 body:json {
