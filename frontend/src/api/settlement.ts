@@ -1,5 +1,5 @@
 import api from './axios';
-import type { Institution, Insurance, CostApproval, CostApprovalCreateData } from '../types/settlement';
+import type { Institution, Insurance, CostApproval, CostApprovalCreateData, SettlementCost, SettlementCostCreateData } from '../types/settlement';
 
 import { extractData } from '../utils/pagination';
 
@@ -48,4 +48,26 @@ export const settlementApi = {
     });
     return response.data;
   },
+
+  getUpcomingReminders: async (): Promise<CostApproval[]> => {
+    const response = await api.get('/settlement/cost-approvals/upcoming_reminders/');
+    // If backend doesn't paginate list routes, we can just return data, but assuming it uses extractData is safer
+    return extractData(response.data);
+  },
+
+  getSettlementCosts: async (costApprovalId?: number): Promise<SettlementCost[]> => {
+    const params = costApprovalId ? { cost_approval_id: costApprovalId } : {};
+    const response = await api.get('/settlement/settlement-costs/', { params });
+    return extractData(response.data);
+  },
+
+  createSettlementCost: async (data: SettlementCostCreateData): Promise<SettlementCost> => {
+    const response = await api.post('/settlement/settlement-costs/', data);
+    return response.data;
+  },
+
+  updateSettlementCost: async (id: number, data: Partial<SettlementCostCreateData>): Promise<SettlementCost> => {
+    const response = await api.patch(`/settlement/settlement-costs/${id}/`, data);
+    return response.data;
+  }
 };
