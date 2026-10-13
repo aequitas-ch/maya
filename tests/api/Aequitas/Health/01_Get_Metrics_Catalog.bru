@@ -1,17 +1,17 @@
 meta {
   name: 01_Get_Metrics_Catalog
   type: http
-  seq: 1
+  seq: 3
 }
 
 get {
-  url: {{baseUrl}}/api/health/metrics/
+  url: {{base_url}}/api/health/metrics/
   body: none
   auth: bearer
 }
 
 auth:bearer {
-  token: {{accessToken}}
+  token: {{access_token}}
 }
 
 assert {

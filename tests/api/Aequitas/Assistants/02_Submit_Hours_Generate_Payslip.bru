@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/working-hours/
+  url: {{base_url}}/api/working-hours/
   body: json
   auth: bearer
 }
 
 auth:bearer {
-  token: {{accessToken}}
+  token: {{access_token}}
 }
 
 body:json {
