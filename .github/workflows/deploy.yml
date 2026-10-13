@@ -224,6 +224,7 @@ jobs:
   bruno-test:
     name: Run Bruno API Tests
     runs-on: ubuntu-latest
+    environment: test
     needs: deploy-test
     if: github.ref == 'refs/heads/test'
     steps:
@@ -469,6 +470,7 @@ jobs:
   bruno-uat:
     name: Run Bruno API Tests
     runs-on: ubuntu-latest
+    environment: uat
     needs: deploy-uat
     if: github.ref == 'refs/heads/uat'
     steps:
