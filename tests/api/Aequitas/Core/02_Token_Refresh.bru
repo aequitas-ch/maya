@@ -12,12 +12,12 @@ post {
 
 body:json {
   {
-    "refresh": "{{refreshToken}}"
+    "refresh": "{{refresh_token}}"
   }
 }
 
 script:post-response {
   if (res.status === 200) {
-    bru.setEnvVar("accessToken", res.body.access);
+    bru.setVar("access_token", res.body.access);
   }
 }

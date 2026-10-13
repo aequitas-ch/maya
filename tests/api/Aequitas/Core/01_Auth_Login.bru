@@ -12,14 +12,14 @@ post {
 
 body:json {
   {
-    "username": "{{testUsername}}",
-    "password": "{{testPassword}}"
+    "username": "{{test_username}}",
+    "password": "{{test_password}}"
   }
 }
 
 script:post-response {
   if (res.status === 200) {
-    bru.setEnvVar("accessToken", res.body.access);
-    bru.setEnvVar("refreshToken", res.body.refresh);
+    bru.setVar("access_token", res.body.access);
+    bru.setVar("refresh_token", res.body.refresh);
   }
 }
