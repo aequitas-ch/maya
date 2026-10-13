@@ -45,6 +45,40 @@ export const Dashboard = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-0">
+          <div className="mb-8 p-6 bg-white shadow rounded-lg animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white shadow rounded-lg p-6 animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+              <ul className="divide-y divide-gray-200">
+                {[1, 2].map((i) => (
+                  <li key={i} className="py-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0 h-12 w-12 rounded bg-gray-200"></div>
+                      <div className="flex-1 space-y-2 py-1">
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="border-4 border-dashed border-gray-200 rounded-lg h-64 flex flex-col items-center justify-center animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
@@ -80,21 +114,7 @@ export const Dashboard = () => {
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">{t('upcoming_appointments') || 'Upcoming Appointments'}</h2>
 
-            {loading ? (
-              <ul className="divide-y divide-gray-200">
-                {[1, 2].map((i) => (
-                  <li key={i} className="py-4">
-                    <div className="flex items-center space-x-4 animate-pulse">
-                      <div className="flex-shrink-0 h-12 w-12 rounded bg-gray-200"></div>
-                      <div className="flex-1 space-y-2 py-1">
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : upcomingAppointments.length === 0 ? (
+            {upcomingAppointments.length === 0 ? (
               <p className="text-gray-500 italic">{t('no_upcoming_appointments') || 'No upcoming appointments.'}</p>
             ) : (
               <ul className="divide-y divide-gray-200">

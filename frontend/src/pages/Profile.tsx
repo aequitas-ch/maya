@@ -73,7 +73,6 @@ export const Profile = () => {
   const [docFile, setDocFile] = useState<File | null>(null);
   const [docTitle, setDocTitle] = useState('');
   const [docLoading, setDocLoading] = useState(false);
-  const [docMessage, setDocMessage] = useState<{type: 'success'|'error', text: string}>({type: 'success', text: ''});
 
   useEffect(() => {
     if (user) {
@@ -98,27 +97,74 @@ export const Profile = () => {
   useEffect(() => {
     fetchEncryptedDocuments()
       .then(setEncryptedDocs)
-      .catch(() => setDocMessage({ type: 'error', text: 'Failed to load encrypted documents.' }));
+      .catch(() => toast.error('Failed to load encrypted documents.'));
   }, []);
 
   if (initialLoading) {
     return (
-      <main className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-6">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
-        <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6 animate-pulse">
-          <div className="h-6 w-32 bg-gray-200 rounded mb-4"></div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-4 w-full bg-gray-200 rounded"></div>
-            ))}
+      <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        {/* Profile Card Skeleton */}
+        <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6 mb-8 animate-pulse">
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <div className="h-6 w-32 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 w-48 bg-gray-200 rounded"></div>
+            </div>
+            <div className="mt-5 md:mt-0 md:col-span-2">
+              <div className="flex items-center space-x-6 mb-6">
+                <div className="h-24 w-24 bg-gray-200 rounded-full"></div>
+                <div className="h-10 w-32 bg-gray-200 rounded"></div>
+              </div>
+              <div className="grid grid-cols-6 gap-6">
+                <div className="col-span-6 sm:col-span-3 h-10 bg-gray-200 rounded"></div>
+                <div className="col-span-6 sm:col-span-3 h-10 bg-gray-200 rounded"></div>
+                <div className="col-span-6 h-10 bg-gray-200 rounded"></div>
+                <div className="col-span-6 h-10 bg-gray-200 rounded"></div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* E2EE Docs Card Skeleton */}
+        <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6 mb-8 animate-pulse">
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <div className="h-6 w-48 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 w-64 bg-gray-200 rounded"></div>
+            </div>
+            <div className="mt-5 md:mt-0 md:col-span-2">
+              <div className="grid grid-cols-6 gap-6 mb-6">
+                <div className="col-span-6 sm:col-span-3 h-10 bg-gray-200 rounded"></div>
+                <div className="col-span-6 sm:col-span-3 h-10 bg-gray-200 rounded"></div>
+              </div>
+              <div className="flex justify-end border-b border-gray-200 pb-6">
+                <div className="h-10 w-32 bg-gray-200 rounded"></div>
+              </div>
+              <div className="mt-6">
+                <div className="h-5 w-40 bg-gray-200 rounded mb-4"></div>
+                <div className="h-12 w-full bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Change Password Card Skeleton */}
         <div className="bg-white shadow px-4 py-5 sm:rounded-2xl sm:p-6 animate-pulse">
-          <div className="h-6 w-24 bg-gray-200 rounded mb-4"></div>
-          <div className="space-y-4">
-             <div className="h-24 w-24 bg-gray-200 rounded-full"></div>
-             <div className="h-10 w-full bg-gray-200 rounded"></div>
-             <div className="h-10 w-full bg-gray-200 rounded"></div>
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <div className="h-6 w-32 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 w-48 bg-gray-200 rounded"></div>
+            </div>
+            <div className="mt-5 md:mt-0 md:col-span-2">
+              <div className="grid grid-cols-6 gap-6">
+                <div className="col-span-6 h-10 bg-gray-200 rounded"></div>
+                <div className="col-span-6 sm:col-span-3 h-10 bg-gray-200 rounded"></div>
+                <div className="col-span-6 sm:col-span-3 h-10 bg-gray-200 rounded"></div>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <div className="h-10 w-24 bg-gray-200 rounded"></div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
@@ -130,7 +176,6 @@ export const Profile = () => {
     if (!docFile) return;
 
     setDocLoading(true);
-    setDocMessage({ type: 'success', text: '' });
 
     try {
       const prfSecret = await getPassKeyPrfSecret();
@@ -150,20 +195,18 @@ export const Profile = () => {
 
       try {
         setEncryptedDocs(await fetchEncryptedDocuments());
-        setDocMessage({ type: 'success', text: 'Document encrypted and uploaded successfully.' });
+        toast.success('Document encrypted and uploaded successfully.');
       } catch {
-        setDocMessage({ type: 'error', text: 'Document uploaded, but the list could not be refreshed.' });
+        toast.error('Document uploaded, but the list could not be refreshed.');
       }
     } catch {
-      setDocMessage({ type: 'error', text: 'Failed to encrypt or upload the document.' });
+      toast.error('Failed to encrypt or upload the document.');
     } finally {
       setDocLoading(false);
     }
   };
 
   const handleDocDownload = async (doc: EncryptedDocument) => {
-    setDocMessage({ type: 'success', text: '' });
-
     try {
       const prfSecret = await getPassKeyPrfSecret();
       const masterKey = await deriveMasterKey(prfSecret, DOCUMENT_KEY_SALT);
@@ -178,9 +221,9 @@ export const Profile = () => {
       link.click();
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
-      setDocMessage({ type: 'success', text: 'Document decrypted and downloaded.' });
+      toast.success('Document decrypted and downloaded.');
     } catch {
-      setDocMessage({ type: 'error', text: 'Failed to decrypt or download the document.' });
+      toast.error('Failed to decrypt or download the document.');
     }
   };
 
@@ -433,11 +476,6 @@ export const Profile = () => {
           </div>
           <div className="mt-5 md:mt-0 md:col-span-2">
             <form onSubmit={handleDocUpload}>
-              {docMessage.text && (
-                <div className={`mb-4 p-4 rounded-xl ${docMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-                  {docMessage.text}
-                </div>
-              )}
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
                   <label htmlFor="doc_title" className="block text-sm font-medium text-gray-700">{t('doc_title') || 'Document Title'}</label>
