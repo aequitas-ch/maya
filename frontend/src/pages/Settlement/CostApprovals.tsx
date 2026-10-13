@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { settlementApi } from '../../api/settlement';
 import api from '../../api/axios';
@@ -52,12 +52,12 @@ export const CostApprovals: React.FC = () => {
   const [filterActiveOnly, setFilterActiveOnly] = useState(false);
   const [filterPendingReimbursement, setFilterPendingReimbursement] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [appRes, depRes, instRes, insRes] = await Promise.all([
         settlementApi.getCostApprovals(),
-        api.get('/core/dependents/').then(r => extractData(r.data)),
+        api.get('/core/dependents/').then(r => extractData(r.data) as Dependent[]),
         settlementApi.getInstitutions(),
         settlementApi.getInsurances(),
       ]);
@@ -72,11 +72,11 @@ export const CostApprovals: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const handleCreateApproval = async (e: React.FormEvent) => {
     e.preventDefault();
