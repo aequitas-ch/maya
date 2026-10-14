@@ -75,8 +75,40 @@ export const CostApprovals: React.FC = () => {
   }, [t]);
 
   useEffect(() => {
-    fetchData();
+    let mounted = true;
+    const fetchWrapper = async () => {
+      if (mounted) {
+         await fetchData();
+      }
+    };
+
+    void fetchWrapper();
+
+    return () => { mounted = false; };
   }, [fetchData]);
+
+  const refreshData = async () => {
+      setLoading(true);
+      try {
+        const [appRes, depRes, instRes, insRes] = await Promise.all([
+          settlementApi.getCostApprovals(),
+          api.get('/core/dependents/').then(r => extractData(r.data) as Dependent[]),
+          settlementApi.getInstitutions(),
+          settlementApi.getInsurances(),
+        ]);
+        setApprovals(appRes);
+        setDependents(depRes);
+        setInstitutions(instRes);
+        setInsurances(insRes);
+        setError(null);
+      } catch (err) {
+        console.error(err);
+        setError(t('error_loading_data') || 'Error loading data');
+      } finally {
+        setLoading(false);
+      }
+  };
+
 
   const handleCreateApproval = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +148,7 @@ export const CostApprovals: React.FC = () => {
       setCaseNumber('');
       setCoverageType('IV_GGV');
 
-      await fetchData();
+      await refreshData();
     } catch (err) {
       console.error(err);
       setError(t('error_saving') || 'Error saving approval');
@@ -153,7 +185,7 @@ export const CostApprovals: React.FC = () => {
       setCostStatus('offen');
       setCostPaidByParents(false);
 
-      await fetchData();
+      await refreshData();
     } catch (err) {
       console.error(err);
       alert(t('error_saving') || 'Error saving cost');
@@ -189,13 +221,13 @@ export const CostApprovals: React.FC = () => {
   };
 
   const handleAddStatus = async (id: number) => {
-    const status = prompt("Status (zz.B. eingereicht, genehmigt, abgelehnt):");
+    const status = prompt("Status (z.B. eingereicht, genehmigt, abgelehnt):");
     if (!status) return;
     const date = prompt("Datum (YYYY-MM-DD):", new Date().toISOString().split('T')[0]);
     if (!date) return;
     try {
       await settlementApi.addStatus(id, status, date);
-      await fetchData();
+      await refreshData();
     } catch (e) {
       console.error(e);
       alert('Error');
@@ -207,7 +239,7 @@ export const CostApprovals: React.FC = () => {
     if (!text) return;
     try {
       await settlementApi.addLog(id, text);
-      await fetchData();
+      await refreshData();
     } catch (e) {
       console.error(e);
       alert('Error');
@@ -217,7 +249,7 @@ export const CostApprovals: React.FC = () => {
   const handleMarkVerguetet = async (costId: number) => {
     try {
       await settlementApi.updateSettlementCost(costId, { status: 'verguetet' });
-      await fetchData();
+      await refreshData();
     } catch (e) {
       console.error(e);
       alert('Error marking as verguetet');
@@ -291,7 +323,7 @@ export const CostApprovals: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">{t('cost_approvals_title') || 'Kostengutsprachen (Cost Approvals)'}</h1>
@@ -322,25 +354,25 @@ export const CostApprovals: React.FC = () => {
 
             <div className="mb-4 grid grid-cols-2 gap-4">
                <div>
-                  <label className="block text-sm font-medium mb-1">{t('add_missing_institution') || 'Add missing Institution'}</label>
+                  <label htmlFor="addInst" className="block text-sm font-medium mb-1">{t('add_missing_institution') || 'Add missing Institution'}</label>
                   <div className="flex">
-                    <input type="text" value={newInstName} onChange={e => setNewInstName(e.target.value)} className="border p-2 rounded-l-xl w-full" placeholder={t('name_placeholder') || 'Name...'} />
-                    <button type="button" onClick={handleAddInst} className="bg-green-600 text-white px-4 rounded-r-xl">{t('add') || 'Add'}</button>
+                    <input id="addInst" type="text" value={newInstName} onChange={e => setNewInstName(e.target.value)} className="border p-2 rounded-l-xl w-full" placeholder={t('name_placeholder') || 'Name...'} />
+                    <button type="button" onClick={() => { void handleAddInst(); }} className="bg-green-600 text-white px-4 rounded-r-xl">{t('add') || 'Add'}</button>
                   </div>
                </div>
                <div>
-                  <label className="block text-sm font-medium mb-1">{t('add_missing_insurance') || 'Add missing Insurance'}</label>
+                  <label htmlFor="addIns" className="block text-sm font-medium mb-1">{t('add_missing_insurance') || 'Add missing Insurance'}</label>
                   <div className="flex">
-                    <input type="text" value={newInsName} onChange={e => setNewInsName(e.target.value)} className="border p-2 rounded-l-xl w-full" placeholder={t('name_placeholder') || 'Name...'} />
-                    <button type="button" onClick={handleAddIns} className="bg-green-600 text-white px-4 rounded-r-xl">{t('add') || 'Add'}</button>
+                    <input id="addIns" type="text" value={newInsName} onChange={e => setNewInsName(e.target.value)} className="border p-2 rounded-l-xl w-full" placeholder={t('name_placeholder') || 'Name...'} />
+                    <button type="button" onClick={() => { void handleAddIns(); }} className="bg-green-600 text-white px-4 rounded-r-xl">{t('add') || 'Add'}</button>
                   </div>
                </div>
             </div>
 
-            <form onSubmit={handleCreateApproval} className="space-y-4">
+            <form onSubmit={(e) => { void handleCreateApproval(e); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium">{t('dependent') || 'Dependent'}</label>
-                <select className="mt-1 w-full border p-2 rounded-xl" value={dependentId} onChange={e => setDependentId(Number(e.target.value))} required>
+                <label htmlFor="dependentId" className="block text-sm font-medium">{t('dependent') || 'Dependent'}</label>
+                <select id="dependentId" className="mt-1 w-full border p-2 rounded-xl" value={dependentId} onChange={e => setDependentId(Number(e.target.value))} required>
                   <option value="">{t('select_dependent') || 'Select Dependent'}</option>
                   {dependents.map(d => <option key={d.id} value={d.id}>{d.first_name} {d.last_name}</option>)}
                 </select>
@@ -348,15 +380,15 @@ export const CostApprovals: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">{t('ordering_institution') || 'Ordering Institution (Verfügt)'}</label>
-                  <select className="mt-1 w-full border p-2 rounded-xl" value={orderingId} onChange={e => setOrderingId(Number(e.target.value))} required>
+                  <label htmlFor="orderingId" className="block text-sm font-medium">{t('ordering_institution') || 'Ordering Institution (Verfügt)'}</label>
+                  <select id="orderingId" className="mt-1 w-full border p-2 rounded-xl" value={orderingId} onChange={e => setOrderingId(Number(e.target.value))} required>
                     <option value="">{t('select_institution') || 'Select Institution'}</option>
                     {institutions.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">{t('executing_institution') || 'Executing Institution (Führt aus)'}</label>
-                  <select className="mt-1 w-full border p-2 rounded-xl" value={executingId} onChange={e => setExecutingId(Number(e.target.value))} required>
+                  <label htmlFor="executingId" className="block text-sm font-medium">{t('executing_institution') || 'Executing Institution (Führt aus)'}</label>
+                  <select id="executingId" className="mt-1 w-full border p-2 rounded-xl" value={executingId} onChange={e => setExecutingId(Number(e.target.value))} required>
                     <option value="">{t('select_institution') || 'Select Institution'}</option>
                     {institutions.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                   </select>
@@ -365,15 +397,15 @@ export const CostApprovals: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">{t('insurance_label') || 'Insurance (Zahlt)'}</label>
-                  <select className="mt-1 w-full border p-2 rounded-xl" value={insuranceId} onChange={e => setInsuranceId(Number(e.target.value))} required>
+                  <label htmlFor="insuranceId" className="block text-sm font-medium">{t('insurance_label') || 'Insurance (Zahlt)'}</label>
+                  <select id="insuranceId" className="mt-1 w-full border p-2 rounded-xl" value={insuranceId} onChange={e => setInsuranceId(Number(e.target.value))} required>
                     <option value="">{t('select_insurance') || 'Select Insurance'}</option>
                     {insurances.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">{t('coverage_type') || 'Coverage Type'}</label>
-                  <select className="mt-1 w-full border p-2 rounded-xl" value={coverageType} onChange={e => setCoverageType(e.target.value)} required>
+                  <label htmlFor="coverageType" className="block text-sm font-medium">{t('coverage_type') || 'Coverage Type'}</label>
+                  <select id="coverageType" className="mt-1 w-full border p-2 rounded-xl" value={coverageType} onChange={e => setCoverageType(e.target.value)} required>
                     <option value="IV_GGV">IV Geburtsgebrechen</option>
                     <option value="IV_HILFSMITTEL">IV Hilfsmittel</option>
                     <option value="IV_ASSISTENZ">IV Assistenzbeitrag</option>
@@ -387,38 +419,38 @@ export const CostApprovals: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                   <div>
-                      <label className="block text-sm font-medium">{t('case_number') || 'Case Number / Aktenzeichen'}</label>
-                      <input type="text" className="mt-1 w-full border p-2 rounded-xl" value={caseNumber} onChange={e => setCaseNumber(e.target.value)} />
+                      <label htmlFor="caseNumber" className="block text-sm font-medium">{t('case_number') || 'Case Number / Aktenzeichen'}</label>
+                      <input id="caseNumber" type="text" className="mt-1 w-full border p-2 rounded-xl" value={caseNumber} onChange={e => setCaseNumber(e.target.value)} />
                   </div>
                   <div>
-                      <label className="block text-sm font-medium">{t('document') || 'Verfügung (PDF/Image)'}</label>
-                      <input type="file" className="mt-1 w-full border p-2 rounded-xl bg-gray-50" disabled title="Upload will be implemented later" />
+                      <label htmlFor="documentId" className="block text-sm font-medium">{t('document') || 'Verfügung (PDF/Image)'}</label>
+                      <input id="documentId" type="file" className="mt-1 w-full border p-2 rounded-xl bg-gray-50" disabled title="Upload will be implemented later" />
                   </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                   <div>
-                      <label className="block text-sm font-medium">{t('valid_from') || 'Valid From'}</label>
-                      <input type="date" className="mt-1 w-full border p-2 rounded-xl" value={validFrom} onChange={e => setValidFrom(e.target.value)} />
+                      <label htmlFor="validFrom" className="block text-sm font-medium">{t('valid_from') || 'Valid From'}</label>
+                      <input id="validFrom" type="date" className="mt-1 w-full border p-2 rounded-xl" value={validFrom} onChange={e => setValidFrom(e.target.value)} />
                   </div>
                   <div>
-                      <label className="block text-sm font-medium">{t('valid_to') || 'Valid To'}</label>
-                      <input type="date" className="mt-1 w-full border p-2 rounded-xl" value={validTo} onChange={e => setValidTo(e.target.value)} />
+                      <label htmlFor="validTo" className="block text-sm font-medium">{t('valid_to') || 'Valid To'}</label>
+                      <input id="validTo" type="date" className="mt-1 w-full border p-2 rounded-xl" value={validTo} onChange={e => setValidTo(e.target.value)} />
                   </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">{t('approved_amount') || 'Approved Amount'}</label>
-                  <input type="number" step="0.01" className="mt-1 w-full border p-2 rounded-xl" value={approvedAmount} onChange={e => setApprovedAmount(e.target.value)} required />
+                  <label htmlFor="approvedAmount" className="block text-sm font-medium">{t('approved_amount') || 'Approved Amount'}</label>
+                  <input id="approvedAmount" type="number" step="0.01" className="mt-1 w-full border p-2 rounded-xl" value={approvedAmount} onChange={e => setApprovedAmount(e.target.value)} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">{t('settled_amount') || 'Settled Amount'}</label>
-                  <input type="number" step="0.01" className="mt-1 w-full border p-2 rounded-xl" value={settledAmount} onChange={e => setSettledAmount(e.target.value)} required />
+                  <label htmlFor="settledAmount" className="block text-sm font-medium">{t('settled_amount') || 'Settled Amount'}</label>
+                  <input id="settledAmount" type="number" step="0.01" className="mt-1 w-full border p-2 rounded-xl" value={settledAmount} onChange={e => setSettledAmount(e.target.value)} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">{t('next_reminder') || 'Next Reminder'}</label>
-                  <input type="date" className="mt-1 w-full border p-2 rounded-xl" value={nextReminder} onChange={e => setNextReminder(e.target.value)} />
+                  <label htmlFor="nextReminder" className="block text-sm font-medium">{t('next_reminder') || 'Next Reminder'}</label>
+                  <input id="nextReminder" type="date" className="mt-1 w-full border p-2 rounded-xl" value={nextReminder} onChange={e => setNextReminder(e.target.value)} />
                 </div>
               </div>
 
@@ -434,10 +466,18 @@ export const CostApprovals: React.FC = () => {
             const dependent = dependents.find(d => d.id === approval.dependent_id);
             const depName = dependent ? `${dependent.first_name} ${dependent.last_name}` : `ID: ${approval.dependent_id}`;
             const isExpanded = expandedApprovalId === approval.id;
+            const daysExp = approval.days_until_expiration;
+
+            let expirationBadge = null;
+            if (daysExp !== null) {
+              const badgeClass = daysExp < 0 ? 'bg-red-600' : daysExp < 30 ? 'bg-yellow-500' : 'bg-green-600';
+              const badgeText = daysExp < 0 ? (t('expired') || 'Abgelaufen') : `${t('expires_in') || 'Expires in'} ${daysExp} ${t('days') || 'days'}`;
+              expirationBadge = <div className={`text-xs font-bold px-3 py-1 rounded-full text-white ${badgeClass}`}>{badgeText}</div>;
+            }
 
             return (
             <div key={approval.id} className="bg-white shadow overflow-hidden sm:rounded-2xl border border-gray-200">
-              <div className="px-4 py-5 sm:px-6 flex justify-between items-start bg-gray-50 border-b cursor-pointer" onClick={() => toggleAccordion(approval.id)}>
+              <button className="w-full text-left px-4 py-5 sm:px-6 flex justify-between items-start bg-gray-50 border-b cursor-pointer" onClick={() => toggleAccordion(approval.id)} onKeyDown={(e) => { if (e.key === 'Enter') toggleAccordion(approval.id); }}>
                 <div>
                   <h3 className="text-lg leading-6 font-semibold text-gray-900 flex items-center gap-2">
                     {approval.insurance.name} - {approval.coverage_type}
@@ -450,18 +490,14 @@ export const CostApprovals: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex flex-col items-end space-y-2">
-                  {approval.days_until_expiration !== null && (
-                    <div className={`text-xs font-bold px-3 py-1 rounded-full text-white ${approval.days_until_expiration < 0 ? 'bg-red-600' : approval.days_until_expiration < 30 ? 'bg-yellow-500' : 'bg-green-600'}`}>
-                       {approval.days_until_expiration < 0 ? t('expired') || 'Abgelaufen' : `${t('expires_in') || 'Expires in'} ${approval.days_until_expiration} ${t('days') || 'days'}`}
-                    </div>
-                  )}
+                  {expirationBadge}
                   {approval.next_reminder && (
                     <div className="text-xs font-bold text-red-600 bg-red-100 px-3 py-1 rounded-full border border-red-200">
                       Reminder: {approval.next_reminder}
                     </div>
                   )}
                 </div>
-              </div>
+              </button>
               <div className="px-4 py-5 sm:p-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -494,26 +530,26 @@ export const CostApprovals: React.FC = () => {
 
                   {showCostForm === approval.id && (
                     <div className="bg-white p-4 rounded-xl border border-gray-200 mb-4">
-                      <form onSubmit={(e) => handleCreateCost(e, approval.id)} className="space-y-4">
+                      <form onSubmit={(e) => { void handleCreateCost(e, approval.id); }} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium">{t('invoice_date') || 'Rechnungsdatum'}</label>
-                            <input type="date" className="mt-1 w-full border p-2 rounded-xl" value={costInvoiceDate} onChange={e => setCostInvoiceDate(e.target.value)} required />
+                            <label htmlFor="costInvoiceDate" className="block text-sm font-medium">{t('invoice_date') || 'Rechnungsdatum'}</label>
+                            <input id="costInvoiceDate" type="date" className="mt-1 w-full border p-2 rounded-xl" value={costInvoiceDate} onChange={e => setCostInvoiceDate(e.target.value)} required />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium">{t('invoice_no') || 'Rechnungs-Nr'}</label>
-                            <input type="text" className="mt-1 w-full border p-2 rounded-xl" value={costInvoiceNumber} onChange={e => setCostInvoiceNumber(e.target.value)} />
+                            <label htmlFor="costInvoiceNumber" className="block text-sm font-medium">{t('invoice_no') || 'Rechnungs-Nr'}</label>
+                            <input id="costInvoiceNumber" type="text" className="mt-1 w-full border p-2 rounded-xl" value={costInvoiceNumber} onChange={e => setCostInvoiceNumber(e.target.value)} />
                           </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium">{t('amount') || 'Betrag (CHF)'}</label>
-                            <input type="number" step="0.01" className="mt-1 w-full border p-2 rounded-xl" value={costAmount} onChange={e => setCostAmount(e.target.value)} required />
+                            <label htmlFor="costAmount" className="block text-sm font-medium">{t('amount') || 'Betrag (CHF)'}</label>
+                            <input id="costAmount" type="number" step="0.01" className="mt-1 w-full border p-2 rounded-xl" value={costAmount} onChange={e => setCostAmount(e.target.value)} required />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium">{t('status') || 'Status'}</label>
-                            <select className="mt-1 w-full border p-2 rounded-xl" value={costStatus} onChange={e => setCostStatus(e.target.value)} required>
+                            <label htmlFor="costStatus" className="block text-sm font-medium">{t('status') || 'Status'}</label>
+                            <select id="costStatus" className="mt-1 w-full border p-2 rounded-xl" value={costStatus} onChange={e => setCostStatus(e.target.value)} required>
                               <option value="offen">Offen</option>
                               <option value="eingereicht">Eingereicht bei Kostenträger</option>
                               <option value="verguetet">Vergütet</option>
@@ -528,8 +564,8 @@ export const CostApprovals: React.FC = () => {
                             <label htmlFor={`paid_by_parents_${approval.id}`} className="ml-2 block text-sm text-gray-900">{t('paid_by_parents') || 'Privat vorfinanziert'}</label>
                           </div>
                           <div>
-                            <label className="block text-sm font-medium">{t('receipt_document') || 'Beleg (PDF/Foto)'}</label>
-                            <input type="file" className="mt-1 w-full border p-2 rounded-xl bg-gray-50 text-sm" disabled title="Upload will be implemented later" />
+                            <label htmlFor="costDocument" className="block text-sm font-medium">{t('receipt_document') || 'Beleg (PDF/Foto)'}</label>
+                            <input id="costDocument" type="file" className="mt-1 w-full border p-2 rounded-xl bg-gray-50 text-sm" disabled title="Upload will be implemented later" />
                           </div>
                         </div>
 
@@ -576,7 +612,7 @@ export const CostApprovals: React.FC = () => {
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                                 {cost.status !== 'verguetet' && (
-                                  <button onClick={(e) => { e.stopPropagation(); handleMarkVerguetet(cost.id); }} className="text-teal-600 hover:text-teal-900 mr-3">
+                                  <button onClick={(e) => { e.stopPropagation(); void handleMarkVerguetet(cost.id); }} className="text-teal-600 hover:text-teal-900 mr-3">
                                     {t('mark_paid') || 'Als vergütet markieren'}
                                   </button>
                                 )}
@@ -598,8 +634,8 @@ export const CostApprovals: React.FC = () => {
               )}
 
               <div className="px-4 py-3 bg-gray-50 border-t flex gap-4">
-                <button onClick={() => handleAddStatus(approval.id)} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-xl hover:bg-blue-200">{t('add_status') || '+ Status'}</button>
-                <button onClick={() => handleAddLog(approval.id)} className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-xl hover:bg-green-200">{t('add_log') || '+ Log'}</button>
+                <button onClick={() => { void handleAddStatus(approval.id); }} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-xl hover:bg-blue-200">{t('add_status') || '+ Status'}</button>
+                <button onClick={() => { void handleAddLog(approval.id); }} className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-xl hover:bg-green-200">{t('add_log') || '+ Log'}</button>
               </div>
 
               {(approval.statuses.length > 0 || approval.logs.length > 0) && (
@@ -634,6 +670,6 @@ export const CostApprovals: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 };
