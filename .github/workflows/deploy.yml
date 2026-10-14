@@ -30,6 +30,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Validate Test deployment secrets
+        env:
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD_TEST || secrets.TEST_USER_PASSWORD }}
+          ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD_TEST || secrets.ADMIN_USER_PASSWORD }}
+        run: |
+          missing=()
+          [ -n "${TEST_USER_PASSWORD:-}" ] || missing+=("TEST_USER_PASSWORD_TEST or TEST_USER_PASSWORD")
+          [ -n "${ADMIN_USER_PASSWORD:-}" ] || missing+=("ADMIN_USER_PASSWORD_TEST or ADMIN_USER_PASSWORD")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            printf 'Missing required Test secrets: %s\n' "$(IFS=', '; echo "${missing[*]}")" >&2
+            exit 1
+          fi
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
