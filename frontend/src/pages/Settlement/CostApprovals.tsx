@@ -263,8 +263,8 @@ export const CostApprovals: React.FC = () => {
   };
 
   const renderBudgetAmpel = (approval: CostApproval) => {
-    const approved = parseFloat(approval.approved_amount) || 0;
-    const settled = parseFloat(approval.settled_amount) || 0;
+    const approved = Number.parseFloat(approval.approved_amount) || 0;
+    const settled = Number.parseFloat(approval.settled_amount) || 0;
 
     if (approved === 0) return null;
 
@@ -283,7 +283,7 @@ export const CostApprovals: React.FC = () => {
         </div>
         {percentage > 100 && (
           <div className="mt-1 text-xs text-red-600 font-bold">
-            {t('budget_exceeded_by') || 'Budget exceeded by'} {Math.abs(parseFloat(approval.open_amount)).toFixed(2)} CHF
+            {t('budget_exceeded_by') || 'Budget exceeded by'} {Math.abs(Number.parseFloat(approval.open_amount)).toFixed(2)} CHF
           </div>
         )}
       </div>
