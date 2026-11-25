@@ -11,7 +11,7 @@ module.exports = defineConfig({
   projectId: "smcvoc",
 
   e2e: {
-    baseUrl: process.env.CYPRESS_BASE_URL || 'http://localhost:5173',
+    baseUrl: process.env.CYPRESS_BASE_URL,
     setupNodeEvents(on, config) {
       on('task', {
         log(message) {

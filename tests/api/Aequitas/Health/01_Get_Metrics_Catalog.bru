@@ -1,0 +1,19 @@
+meta {
+  name: 01_Get_Metrics_Catalog
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/api/health/metrics/
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+assert {
+  res.status: eq 200
+}

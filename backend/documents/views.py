@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from rest_framework import viewsets, permissions, status
+from rest_framework.exceptions import PermissionDenied, APIException
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from cryptography.fernet import Fernet
@@ -22,7 +23,6 @@ class DocumentViewSet(viewsets.ModelViewSet):
         dependent = serializer.validated_data.get('dependent')
         # Validate that the user is linked to the dependent
         if not dependent.users.filter(id=self.request.user.id).exists():
-            from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("You do not have permission to add documents to this dependent.")
 
         # Encrypt the file
@@ -44,7 +44,6 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 # Update the validated data to use the encrypted file
                 serializer.validated_data['file'] = encrypted_file
             except Exception as e:
-                from rest_framework.exceptions import APIException
                 raise APIException(f"Encryption failed: {str(e)}")
 
         serializer.save()
@@ -71,3 +70,16 @@ class DocumentViewSet(viewsets.ModelViewSet):
             return response
         except Exception as e:
             return Response({'error': f'Decryption failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from .models import EncryptedDocument
+from .serializers import EncryptedDocumentSerializer
+
+class EncryptedDocumentViewSet(viewsets.ModelViewSet):
+    serializer_class = EncryptedDocumentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return EncryptedDocument.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

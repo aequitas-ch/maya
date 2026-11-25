@@ -41,3 +41,38 @@ class ProfileUploadTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('profile_picture', response.data)
         self.assertTrue(response.data['profile_picture'].endswith('test_image.jpg') or response.data['profile_picture'].find('test_image') != -1)
+
+from core.models import Profile, Dependent
+from rest_framework.test import APIRequestFactory, force_authenticate
+from core.views import DependentViewSet
+
+class CoreSignalTests(APITestCase):
+    def test_post_save_signal_creates_profile(self):
+        user = User.objects.create_user(username='new_signal_user', password='password123')
+        self.assertTrue(Profile.objects.filter(user=user).exists())
+
+class DependentViewSetIsolationTests(APITestCase):
+    def setUp(self):
+        self.user_a = User.objects.create_user(username='user_a', password='testpassword123')
+        self.user_b = User.objects.create_user(username='user_b', password='testpassword123')
+
+        self.dep_a = Dependent.objects.create(first_name='Child', last_name='A')
+        self.dep_a.users.add(self.user_a)
+
+        self.dep_b = Dependent.objects.create(first_name='Child', last_name='B')
+        self.dep_b.users.add(self.user_b)
+
+        self.factory = APIRequestFactory()
+        self.view = DependentViewSet.as_view({'get': 'list'})
+
+    def test_tenant_isolation_get_queryset(self):
+        request = self.factory.get('/api/dependents/')
+        force_authenticate(request, user=self.user_a)
+        response = self.view(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Assuming pagination or raw list, DRF uses pagination here:
+        results = response.data.get('results', response.data)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['first_name'], 'Child')
+        self.assertEqual(results[0]['last_name'], 'A')

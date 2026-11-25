@@ -1,0 +1,24 @@
+meta {
+  name: 02_Create_Health_Record
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/api/health/records/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "dependent": 1,
+    "metric": 1,
+    "date": "2023-01-01",
+    "value": "45.5"
+  }
+}

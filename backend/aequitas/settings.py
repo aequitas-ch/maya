@@ -26,6 +26,11 @@ import dj_database_url
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
 
+# AI Provider Settings
+AI_PROVIDER = os.environ.get('AI_PROVIDER', 'gemini')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY', '')
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
@@ -54,6 +59,7 @@ INSTALLED_APPS = [
     "schedule",
     "documents",
     "assistants",
+    "ai",
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
@@ -63,14 +69,23 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "drf_spectacular",
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Maya Core API',
+    'DESCRIPTION': 'API Dokumentation Maya Plattform',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 from datetime import timedelta
